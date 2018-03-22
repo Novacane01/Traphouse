@@ -5,3 +5,7 @@ stdafx.h
 CMakeLists.txt
 cmake-build-debug
 cmake_modules/
+.vs/
+TrapHouse.vcxproj
+TrapHouse.vcxproj.filters
+TrapHouse.vcxproj.user

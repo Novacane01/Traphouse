@@ -1,5 +1,5 @@
-#include "SFML/Graphics.hpp"
-#include <iostream>
+#include "GameManager.h"
+
 class Pickup
 {
 public:

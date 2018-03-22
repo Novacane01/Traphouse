@@ -1,6 +1,8 @@
+#pragma once
+
 #include "Pickup.h"
-#include "SFML/Graphics.hpp"
-#include <iostream>
+#include "GameManager.h"
+
 class Chest
 {
 public:
