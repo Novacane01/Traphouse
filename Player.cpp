@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include "Player.h"
 
 Player::Player(std::string name, int hp, int attack, double walkspeed){

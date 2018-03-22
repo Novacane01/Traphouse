@@ -1,4 +1,4 @@
-#include "SFML/Graphics.hpp"
+#include "SFML\Graphics.hpp"
 #include <iostream>
 #include <string>
 #include <vector>
@@ -17,9 +17,8 @@ public:
 	void Pause();
 	void Quit();
 	~GameManager();
-
+	sf::RenderWindow window;
 private:
-	static sf::RenderWindow window(sf::VideoMode(int,int,std::string);
 	int WINDOW_LENGTH = 0;
 	int WINDOW_WIDTH = 0;
 };
