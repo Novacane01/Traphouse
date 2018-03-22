@@ -17,9 +17,9 @@ public:
 	 int getHp();
 	 int getAttack();
 	 sf::Sprite() getPlayer();
-	 void Update(double);
+	 void Update();
 	~Player();
-	
+
 private:
 	const std::string name;
 	sf::Spirte player;

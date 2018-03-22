@@ -2,10 +2,10 @@
 class Map
 {
 public:
-	Map();
+	//Map();
 	void Generate();
-	~Map();
+	//~Map();
 private:
-	sf::RectangleShape map[];
+	sf::RectangleShape map;
 	sf::Texture txture;
 };
