@@ -8,3 +8,4 @@ TrapHouse.vcxproj
 TrapHouse.vcxproj.filters
 TrapHouse.vcxproj.user
 .vs/
+cmake_modules/
