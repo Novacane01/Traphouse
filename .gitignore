@@ -4,21 +4,9 @@ stdafx.h
 .idea
 CMakeLists.txt
 cmake-build-debug
-<<<<<<< HEAD
 TrapHouse.vcxproj
 TrapHouse.vcxproj.filters
 TrapHouse.vcxproj.user
 .vs/
 cmake_modules/
-.vs/
-TrapHouse.vcxproj
-TrapHouse.vcxproj.filters
-TrapHouse.vcxproj.user
-<<<<<<< HEAD
-=======
-cmake_modules/
->>>>>>> e17f20f53c3c75c472486f043597f2812d7dd023
-=======
 Debug/
-cmake_modules/FindSFML.cmake
->>>>>>> Game
