@@ -4,6 +4,7 @@ stdafx.h
 .idea
 CMakeLists.txt
 cmake-build-debug
+<<<<<<< HEAD
 TrapHouse.vcxproj
 TrapHouse.vcxproj.filters
 TrapHouse.vcxproj.user
@@ -13,3 +14,6 @@ cmake_modules/
 TrapHouse.vcxproj
 TrapHouse.vcxproj.filters
 TrapHouse.vcxproj.user
+=======
+cmake_modules/
+>>>>>>> e17f20f53c3c75c472486f043597f2812d7dd023
