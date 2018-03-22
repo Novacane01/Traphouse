@@ -10,3 +10,4 @@ TrapHouse.vcxproj
 TrapHouse.vcxproj.filters
 TrapHouse.vcxproj.user
 Debug/
+cmake_modules/FindSFML.cmake
