@@ -27,9 +27,6 @@ void GameManager::Start() {
 		window.clear();
 		window.display();
 	}
-
-
-
 }
 
 sf::RenderWindow& GameManager::getWindow() {

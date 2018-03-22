@@ -2,6 +2,7 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <Windows.h>
 
 
 class GameManager
@@ -16,8 +17,8 @@ public:
 	void Start();
 	void Pause();
 	void Quit();
-	~GameManager();
 	sf::RenderWindow window;
+	~GameManager();
 private:
 	int WINDOW_LENGTH = 0;
 	int WINDOW_WIDTH = 0;

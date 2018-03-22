@@ -52,5 +52,5 @@ bool Player::setTexture(std::string texturePath){
 }
 
 void Update(double dt) {
-
+	
 }
