@@ -5,16 +5,8 @@
 
 int main()
 {
-	GameManager gameManager(400,400);
-	/*sf::RenderWindow window = gameManager.getWindow();
-	while (window.isOpen()) {
-		sf::Event event;
-		while (window.pollEvent()) {
-
-		}
-		window.clear();
-		window.display();
-	}*/
+	GameManager gameManager(1080,720);
+	gameManager.Start();
     return 0;
 }
 

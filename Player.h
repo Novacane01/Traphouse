@@ -1,4 +1,4 @@
-#include "GameManager.h"
+#include "SFML/Graphics.hpp"
 
 class Player
 {
@@ -16,7 +16,9 @@ public:
 	 bool setTexture(std::string);
 	 sf::Sprite getPlayer() const;
 	 void Update(double);
-	~Player();
+	 void getMovement();
+    sf::CircleShape shape;
+
 	
 private:
 	std::string name;
@@ -25,4 +27,5 @@ private:
 	int hp = 0;
 	int attack = 0;
 	double walkspeed = 0;
+
 };
