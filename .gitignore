@@ -1,3 +1,6 @@
 stdafx.cpp
 targetver.h
 stdafx.h
+.idea
+CMakeLists.txt
+cmake-build-debug
