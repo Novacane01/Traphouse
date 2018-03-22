@@ -1,10 +1,9 @@
-#include "SFML/Graphics.hpp"
-#include <iostream>
+#include "GameManager.h"
+
 class Enemy
 {
 public:
 	Enemy();
-
     void setHp(int);
 	void setWalkspeed(double);
 	void Spawn();

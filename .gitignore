@@ -4,3 +4,7 @@ stdafx.h
 .idea
 CMakeLists.txt
 cmake-build-debug
+TrapHouse.vcxproj
+TrapHouse.vcxproj.filters
+TrapHouse.vcxproj.user
+.vs/
