@@ -1,5 +1,5 @@
-#include "SFML\\Graphics.hpp"
-
+#include "SFML\Graphics.hpp"
+#include <iostream>
 class Player
 {
 public:
@@ -9,7 +9,7 @@ public:
 	 void setHp(int);
 	 void setAttack(int);
 	 void setWalkspeed(double);
-	 void setLevel(int);
+
 	 void LevelUp();
 	 std::string getName();
 	 int getLevel();

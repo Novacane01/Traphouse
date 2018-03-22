@@ -1,5 +1,6 @@
 #include "Pickup.h"
-
+#include "SFML/Graphics.hpp"
+#include <iostream>
 class Chest
 {
 public:

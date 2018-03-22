@@ -1,3 +1,5 @@
+#include "SFML/Graphics.hpp"
+#include <iostream>
 class Pickup
 {
 public:
