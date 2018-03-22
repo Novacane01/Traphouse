@@ -5,43 +5,23 @@
 #include "SFML/Graphics.hpp"
 #include <iostream>
 #include <math.h>
+#include "Player.h"
 Map::Map(){}
 
 void Map::Generate() {
     sf::RenderWindow window(sf::VideoMode(500,500),"Window");
-    sf::CircleShape shape(25);
-    shape.setPosition(100,100);
 
+    Player player("Donald", 100, 5, 5);
 
+    /* MUST CHANGE SHAPE TO SPRITE AND LOAD TEXTURES APPROPRIATELY*/
 
     int speed = 2;
     double diagonalSpeed = (speed * pow(2,.5))/2;
+
     while(window.isOpen()) {
         sf::Event event;
 
-        if(sf::Keyboard::isKeyPressed(sf::Keyboard::W) && sf::Keyboard::isKeyPressed(sf::Keyboard::D)){
-            shape.move(diagonalSpeed, -diagonalSpeed);
-        } else if(sf::Keyboard::isKeyPressed(sf::Keyboard::W) && sf::Keyboard::isKeyPressed(sf::Keyboard::A)){
-            shape.move(-diagonalSpeed,-diagonalSpeed);
-        } else if(sf::Keyboard::isKeyPressed(sf::Keyboard::S) && sf::Keyboard::isKeyPressed(sf::Keyboard::A)){
-            shape.move(-diagonalSpeed,diagonalSpeed);
-        } else if(sf::Keyboard::isKeyPressed(sf::Keyboard::S) && sf::Keyboard::isKeyPressed(sf::Keyboard::D)){
-            shape.move(diagonalSpeed, diagonalSpeed);
-        } else if(sf::Keyboard::isKeyPressed(sf::Keyboard::A)){
-
-            shape.move(-speed, 0);
-        } else if(sf::Keyboard::isKeyPressed(sf::Keyboard::D)){
-
-            shape.move(speed, 0);
-        }else if(sf::Keyboard::isKeyPressed(sf::Keyboard::W)){
-
-            shape.move(0,-speed);
-        }else if(sf::Keyboard::isKeyPressed(sf::Keyboard::S)){
-          shape.move(0,speed);
-
-        }
-
-
+        player.getMovement();
 
         while(window.pollEvent(event)){
 
@@ -52,7 +32,8 @@ void Map::Generate() {
 
         }
         window.clear();
-        window.draw(shape);
+        //WILL USE GETSPRITE METHOD HERE
+        window.draw(player.shape);
         window.display();
     }
 }
