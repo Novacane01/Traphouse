@@ -4,15 +4,16 @@
 #include "Map.h"
 #include "SFML/Graphics.hpp"
 #include <iostream>
-
 #include <math.h>
+Map::Map(){}
+
 void Map::Generate() {
     sf::RenderWindow window(sf::VideoMode(500,500),"Window");
     sf::CircleShape shape(25);
     shape.setPosition(100,100);
 
 
-    sf::Vector2f velocity;
+
     int speed = 2;
     double diagonalSpeed = (speed * pow(2,.5))/2;
     while(window.isOpen()) {

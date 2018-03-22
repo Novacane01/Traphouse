@@ -1,11 +1,15 @@
 // Term Project.cpp : Defines the entry point for the console application.
 //
-#include "stdafx.h"
-#include "GameManager.h"
+
+
+#include "Map.h"
 
 int main()
 {
-	GameManager gameManager(400,400);
+
+    Map map;
+    map.Generate();
+
 	/*sf::RenderWindow window = gameManager.getWindow();
 	while (window.isOpen()) {
 		sf::Event event;

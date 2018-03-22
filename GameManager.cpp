@@ -27,5 +27,5 @@ void GameManager::Start() {
 }
 
 sf::RenderWindow& GameManager::getWindow() {
-	return window;
+	/*return window;*/
 }

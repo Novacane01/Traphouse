@@ -19,7 +19,7 @@ public:
 	~GameManager();
 
 private:
-	static sf::RenderWindow window(sf::VideoMode(int,int,std::string);
+	/*static sf::RenderWindow window(sf::VideoMode(int,int,std::string);*/
 	int WINDOW_LENGTH = 0;
 	int WINDOW_WIDTH = 0;
 };
