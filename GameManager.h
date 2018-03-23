@@ -19,6 +19,6 @@ public:
 	void Quit();
 	~GameManager();
 private:
-	int WINDOW_LENGTH = 0;
-	int WINDOW_WIDTH = 0;
+	unsigned WINDOW_LENGTH = 0;
+	unsigned WINDOW_WIDTH = 0;
 };

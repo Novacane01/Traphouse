@@ -1,8 +1,11 @@
-#include "Pickup.h"
+#pragma once
+#include "SFML\Graphics.hpp"
+#include <string>
 
-class Weapon:Pickup
+class Weapon
 {
 public:
+	Weapon(std::string, int, int, double, double);
 	Weapon(std::string, int, int, int, double, double, double);
 	void Update(double);
 	void setCurrentMax(int);
@@ -16,9 +19,11 @@ public:
 	double getDamage() const;
 	double getAttackSpeed() const;
 	double getDropChance()const;
+
 private:
 	const std::string name;
 	const int maxAmmo = 0;
+	const int range = 0;
 	int currentMax = 0;
 	int currentClip = 0;
 	double damage = 0;
@@ -26,3 +31,4 @@ private:
 	const double dropChance = 0;
 	sf::Sprite weapon;
 	sf::Texture texture;
+};

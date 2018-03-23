@@ -1,11 +1,15 @@
+#include "stdafx.h"
 #include "Player.h"
+#include "Pickup.h"
 
-Player::Player(std::string name, int hp, int attack, double walkspeed){
+Player::Player(std::string name, int hp, double walkspeed){
 	setName(name);
 	setHp(hp);
-	setAttack(attack);
 	setWalkSpeed(walkspeed);
-    weaponInventory.push_back(Pickup::defaultPistol);
+	weaponInventory.push_back(pickups.defaultKnife);
+	std::cout << "\'Knife\' added to inventory" << std::endl;
+	weaponInventory.push_back(pickups.defaultPistol);
+	std::cout << "\'Pistol\' added to inventory" << std::endl;
 }
 
 //Sets player name
@@ -31,16 +35,6 @@ void Player::setWalkSpeed(double value){
 //Returns player walkspeed
 double Player::getWalkspeed() const {
 	return walkspeed;
-}
-
-//Sets player attack
-void Player::setAttack(int value){
-	attack = value;
-}
-
-//Returns player attack
-int Player::getAttack() const{
-	return attack;
 }
 
 //Sets player sprite

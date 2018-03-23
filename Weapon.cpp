@@ -1,17 +1,20 @@
 //
 // Created by Tyler Goodman on 3/22/18.
 //
+#include "stdafx.h"
 #include "Weapon.h"
 
-Weapon::Weapon(std::string name, int maxAmmo, int currentMax, int currentClip, double damage,
-               double attackspeed, double dropChance):name(name),maxAmmo(maxAmmo),
-                                                      dropChance(dropChance){
+Weapon::Weapon(std::string meleeName, int damage, int range, double attackspeed, double dropChance):name(meleeName),range(range),dropChance(dropChance) {
+	setDamage(damage);
+	setAttackSpeed(attackspeed);
+}
 
+Weapon::Weapon(std::string gunName, int MaxAmmo, int currentMax, int currentClip, double damage,
+double attackspeed, double DropChance):name(gunName),maxAmmo(MaxAmmo),dropChance(DropChance){
     setCurrentClip(currentClip);
     setCurrentMax(currentMax);
     setDamage(damage);
     setAttackSpeed(attackspeed);
-
 }
 
 void Weapon::Update(double){
@@ -30,7 +33,7 @@ void Weapon::setDamage(double damage) {
     this->damage = damage;
 }
 
-void Weapon::setAttackSpeed(double) {
+void Weapon::setAttackSpeed(double attackSpeed) {
     this->attackSpeed = attackSpeed;
 }
 

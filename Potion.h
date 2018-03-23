@@ -1,10 +1,10 @@
-//
-// Created by Tyler Goodman on 3/22/18.
-//
+#pragma once
+#include <string>
 #include "Pickup.h"
-#include "Player.h"
 
-class Potion:Pickup {
+class Player;
+
+class Potion{
 
 public:
     Potion::Potion(std::string name, double dropChance, double duration):name(name), dropChance(dropChance),
@@ -15,31 +15,31 @@ protected:
     const double duration;
 };
 
-class HealthPotion:Potion{
+class HealthPotion:public Potion{
 public:
     HealthPotion() : Potion("Health Potion", 0.1, 10){}
     void Heal(Player *player);
 };
 
-class SpeedPotion:Potion{
+class SpeedPotion:public Potion{
 public:
     SpeedPotion():Potion("Speed Potion", 0.1, 20){}
     void Speed(Player *player);
 };
 
-class StaminaPotion:Potion{
+class StaminaPotion:public Potion{
 public:
     StaminaPotion():Potion("Stamina Potion", 0.1, 20){}
     void Stamina(Player *player);
 };
 
-class AttackPotion:Potion{
+class AttackPotion:public Potion{
 public:
     AttackPotion():Potion("Attack Potion", 0.1, 20){}
     void increaseAttack(Player *player);
 };
 
-class TimePotion:Potion{
+class TimePotion:public Potion{
 public:
     TimePotion():Potion("Time Potion", 0.1, 20){}
     void slowTime();
