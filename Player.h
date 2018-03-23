@@ -1,3 +1,4 @@
+#pragma once
 #include "GameManager.h"
 
 class Player
@@ -12,18 +13,22 @@ public:
 	 double getWalkspeed() const;
 	 int getHp() const;
 	 int getAttack() const;
-	 void setSprite(sf::Texture &);
+	 void setSprite();
 	 bool setTexture(std::string);
-	 sf::Sprite getPlayer() const;
+	 sf::Sprite& getPlayer();
+	 void MoveLeft(double);
+	 void MoveUp(double);
+	 void MoveDown(double);
+	 void MoveRight(double);
 	 void Update(double);
-	 void getMovement();
-    sf::CircleShape shape;
-
-	
+	 bool isMovingLeft = false;
+	 bool isMovingRight = false;
+	 bool isMovingUp = false;
+	 bool isMovingDown = false;
+	 sf::Sprite player;
+	 sf::Texture texture;
 private:
 	std::string name;
-	sf::Sprite player;
-	sf::Texture texture;
 	int hp = 0;
 	int attack = 0;
 	double walkspeed = 0;
