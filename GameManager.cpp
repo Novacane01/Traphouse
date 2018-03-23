@@ -94,7 +94,7 @@ Player* GameManager::createPlayer(sf::RenderWindow &window) {
 	textBox.setOutlineThickness(2);
 
 	sf::Font font; //Creates font object to load to text
-	if (!font.loadFromFile("C:\\Fonts\\light_pixel-7.ttf")) {
+	if (!font.loadFromFile("Fonts\\light_pixel-7.ttf")) {
 		std::cout << "Could not load file" << std::endl;
 	}
 	sf::Text text; //Creates text object for name to be drawn to screen
