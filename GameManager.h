@@ -1,7 +1,9 @@
+#pragma once
 #include "SFML\Graphics.hpp"
 #include <iostream>
 #include <string>
 #include <vector>
+#include <Windows.h>
 
 
 class GameManager
@@ -9,15 +11,11 @@ class GameManager
 public:
 	GameManager(int, int);
 	void setWindowWidth(int);
-	int getWindowWidth();
-	sf::RenderWindow& getWindow();
 	void setWindowLength(int);
-	int getWindowLength();
 	void Start();
 	void Pause();
 	void Quit();
 	~GameManager();
-	sf::RenderWindow window;
 private:
 	int WINDOW_LENGTH = 0;
 	int WINDOW_WIDTH = 0;

@@ -36,11 +36,11 @@ int Player::getAttack() const{
 	return attack;
 }
 
-void Player::setSprite(sf::Texture &texture){
+void Player::setSprite(){
 	player.setTexture(texture);
 }
 
-sf::Sprite Player::getPlayer() const{
+sf::Sprite& Player::getPlayer(){
 	return player;
 }
 
@@ -48,9 +48,37 @@ bool Player::setTexture(std::string texturePath){
 	if (!texture.loadFromFile(texturePath)) {
 		return false;
 	}
+	std::cout << "Loaded" << std::endl;
 	return true;
 }
 
-void Update(double dt) {
+void Player::MoveLeft(double dt) {
+	player.setPosition(player.getPosition().x - 1, player.getPosition().y);
+}
 
+void Player::MoveUp(double dt) {
+	player.setPosition(player.getPosition().x, player.getPosition().y-1);
+}
+
+void Player::MoveDown(double dt) {
+	player.setPosition(player.getPosition().x, player.getPosition().y+1);
+}
+
+void Player::MoveRight(double dt) {
+	player.setPosition(player.getPosition().x + 1, player.getPosition().y);
+}
+
+void Player::Update(double dt) {
+	if (isMovingUp) {
+		MoveUp(dt);
+	}
+	if (isMovingDown) {
+		MoveDown(dt);
+	}
+	if (isMovingRight) {
+		MoveRight(dt);
+	}
+	if (isMovingLeft) {
+		MoveLeft(dt);
+	}
 }
