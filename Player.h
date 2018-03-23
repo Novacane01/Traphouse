@@ -1,5 +1,7 @@
 #pragma once
 #include "GameManager.h"
+#include "Weapon.h"
+#include "Pickup.h"
 
 class Player
 {
@@ -27,10 +29,12 @@ public:
 	 bool isMovingDown = false;
 	 sf::Sprite player;
 	 sf::Texture texture;
+	 std::vector<Weapon> weaponInventory;
 private:
 	std::string name;
 	int hp = 0;
 	int attack = 0;
 	double walkspeed = 0;
+
 
 };

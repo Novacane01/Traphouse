@@ -1,9 +1,8 @@
 #pragma once
-#include "SFML\Graphics.hpp"
+#include "SFML/Graphics.hpp"
 #include <iostream>
 #include <string>
 #include <vector>
-#include <Windows.h>
 
 
 class GameManager

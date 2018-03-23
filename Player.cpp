@@ -1,4 +1,3 @@
-#include "stdafx.h"
 #include "Player.h"
 
 Player::Player(std::string name, int hp, int attack, double walkspeed){
@@ -6,6 +5,7 @@ Player::Player(std::string name, int hp, int attack, double walkspeed){
 	setHp(hp);
 	setAttack(attack);
 	setWalkSpeed(walkspeed);
+    weaponInventory.push_back(Pickup::defaultPistol);
 }
 
 void Player::setName(std::string value) {

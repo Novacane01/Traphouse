@@ -1,4 +1,4 @@
-#include "stdafx.h"
+
 #include "GameManager.h"
 #include "Player.h"
 
@@ -21,7 +21,7 @@ void GameManager::Start() {
 	sf::RenderWindow window(sf::VideoMode(WINDOW_WIDTH, WINDOW_LENGTH), "Traphouse");
 	sf::Clock FPSclock;
 	Player *player = new Player("John Doe",100,10,50);
-	player->setTexture("C:\\Users\\Novacane\\Pictures\\2.jpg");
+	player->setTexture("//Users//tylergoodman//Pictures//Gimp Stuff//Season 3//dumbpepe.jpg");
 	player->setSprite();
 	player->player.setPosition(400, 400);
 	while (window.isOpen()) {
