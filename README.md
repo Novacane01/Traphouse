@@ -3,11 +3,11 @@ COP3503 Spring 2018 Semester Project
 Game Design
 
 Items: 
-Red Health Potion +Full Health
-Blue Speed Boost Potion +50% Speed +50% Attackspeed for 20 seconds
-Green Stamina Potion +Unlimited Stamina for 20 seconds
-Yellow Attack Potion +50% Damage for 20 seconds
-White Time Potion -50% enemy Walkspeed and Attackspeed for 20 seconds
+Red Health Potion +Full Health (15% spawn chance)
+Blue Speed Boost Potion +50% Speed +50% Attackspeed for 20 seconds (10% spawn chance)
+Green Stamina Potion +Unlimited Stamina for 20 seconds (10% spawn chance)
+Yellow Attack Potion +50% Damage for 20 seconds (8% spawn chance)
+White Time Potion -50% enemy Walkspeed and Attackspeed for 20 seconds (7% spawn chance)
 
 Weapons:
 Rarities:
@@ -34,6 +34,7 @@ Heavy Pistol (Desert Eagle) - U
 -50 HP per shot
 Penetration: 2 enemies
 2 second reload time
+15% Spawn Chance
 Bolt Action Sniper Rifle (L96A1) - E
 15 Ammo 
 5 Ammo per clip 
@@ -41,12 +42,14 @@ Bolt Action Sniper Rifle (L96A1) - E
 +1 second bolt time 
 Penetration: 5 enemies
 3 second reload time
+2% Spawn Chance
 Semi Auto Rifle (M14) - R
 60 Ammo
 10 Ammo per clip
  -25 HP per shot 
 Penetration: 2 enemies
 2 second reload time
+5% spawn chance
 Pump Action Shotgun (KSG) - R
 30 Ammo
  6 Ammo per clip
@@ -54,30 +57,35 @@ Pump Action Shotgun (KSG) - R
 Shoots out 12 projectiles at a certain angle from each other in a 30 degree cone 
 Penetration: Each pellet, 1 enemy
 0.25 second reload time for each shell
+5% spawn chance
 Assault Rifle (M16 / AK47) - E
 90 Ammo
 30 Ammo per clip
 -30 HP per shot
 Penetration: 2 enemies
 2 second reload time
+4% spawn chance
 Machine Gun ( Minigun) - E
 180 Ammo
 60 Ammo per clip
  -20 HP per shot 
 Penetration: 2 enemies
 5 second reload time
+2% spawn chance
 Semi Auto Sniper Rifle (Barrett .50 Cal) - E
 30 Ammo
 10 Ammo per clip
 -80 HP per shot
 Penetration: 4 enemies
 4 second reload time
+2% spawn chance
 Submachine gun (MP40) - U
 96 Ammo
 32 ammo per clip
 -20 HP per shot
 Penetration: 1 enemy
 2 seconds reload time
+15% Spawn Chance
 
 
 Monsters
