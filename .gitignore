@@ -4,10 +4,9 @@ stdafx.h
 .idea
 CMakeLists.txt
 cmake-build-debug
-cmake_modules/
-.vs/
 TrapHouse.vcxproj
 TrapHouse.vcxproj.filters
 TrapHouse.vcxproj.user
+.vs/
+cmake_modules/
 Debug/
-cmake_modules/FindSFML.cmake

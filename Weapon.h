@@ -3,20 +3,26 @@
 class Weapon:Pickup
 {
 public:
-	Weapon(std::string, int, int, double, sf::Texture &);
+	Weapon(std::string, int, int, int, double, double, double);
 	void Update(double);
-	void setAmmo(int);
-	void setName(std::string);
-	std::string getName() const;
-	int getAmmo() const;
+	void setCurrentMax(int);
+	void setCurrentClip(int);
 	void setAttackSpeed(double);
+	void setDamage(double);
+	std::string getName() const;
+	int getMaxAmmo() const;
+	int getCurrentMax() const;
+	int getCurrentClip() const;
+	double getDamage() const;
 	double getAttackSpeed() const;
-	~Weapon();
+	double getDropChance()const;
 private:
-	double attackspeed = 0;
-	int ammo = 0;
-	int damage = 0;
 	const std::string name;
+	const int maxAmmo = 0;
+	int currentMax = 0;
+	int currentClip = 0;
+	double damage = 0;
+	double attackSpeed = 0;
+	const double dropChance = 0;
 	sf::Sprite weapon;
 	sf::Texture texture;
-};
