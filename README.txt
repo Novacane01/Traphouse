@@ -1,3 +1,5 @@
+# mattybtraphouse
+COP3503 Spring 2018 Semester Project
 Game Design
 
 Items: 
@@ -20,18 +22,22 @@ Attack Range: 2 Nodes
 Sword - R 
 -60 HP per hit
 Attack Range: 5 Nodes
+
+
 Default Pistol (M1911) - D
 Unlimited Ammo
 10 Ammo per clip
 -10 HP per shot 
 Penetration: 1 enemy
 1 second reload time
+
 Heavy Pistol (Desert Eagle) - U
 35 Ammo
 7 Ammo per clip 
 -50 HP per shot
 Penetration: 2 enemies
 2 second reload time
+
 Bolt Action Sniper Rifle (L96A1) - E
 15 Ammo 
 5 Ammo per clip 
@@ -39,12 +45,14 @@ Bolt Action Sniper Rifle (L96A1) - E
 +1 second bolt time 
 Penetration: 5 enemies
 3 second reload time
+
 Semi Auto Rifle (M14) - R
 60 Ammo
 10 Ammo per clip
  -25 HP per shot 
 Penetration: 2 enemies
 2 second reload time
+
 Pump Action Shotgun (KSG) - R
 30 Ammo
  6 Ammo per clip
@@ -52,24 +60,21 @@ Pump Action Shotgun (KSG) - R
 Shoots out 12 projectiles at a certain angle from each other in a 30 degree cone 
 Penetration: Each pellet, 1 enemy
 0.25 second reload time for each shell
-Assault Rifle (M16 / AK47) - E
+
+Assault Rifle (AK47) - E
 90 Ammo
 30 Ammo per clip
 -30 HP per shot
 Penetration: 2 enemies
 2 second reload time
-Machine Gun ( Minigun) - E
+
+Machine Gun (Minigun) - E
 180 Ammo
 60 Ammo per clip
  -20 HP per shot 
 Penetration: 2 enemies
 5 second reload time
-Semi Auto Sniper Rifle (Barrett .50 Cal) - E
-30 Ammo
-10 Ammo per clip
--80 HP per shot
-Penetration: 4 enemies
-4 second reload time
+
 Submachine gun (MP40) - U
 96 Ammo
 32 ammo per clip
