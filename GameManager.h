@@ -1,5 +1,6 @@
 #pragma once
 #include "SFML\Graphics.hpp"
+#include "Player.h"
 #include <iostream>
 #include <string>
 #include <vector>
@@ -13,6 +14,7 @@ public:
 	void setWindowWidth(int);
 	void setWindowLength(int);
 	void Start();
+	Player* createPlayer(sf::RenderWindow &);
 	void Pause();
 	void Quit();
 	~GameManager();

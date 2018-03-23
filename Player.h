@@ -1,5 +1,6 @@
 #pragma once
-#include "GameManager.h"
+#include "SFML\Graphics.hpp"
+#include <iostream>
 
 class Player
 {
@@ -25,6 +26,7 @@ public:
 	 bool isMovingRight = false;
 	 bool isMovingUp = false;
 	 bool isMovingDown = false;
+	 void Draw(sf::RenderWindow &);
 	 sf::Sprite player;
 	 sf::Texture texture;
 private:
