@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "GameManager.h"
-#include "Player.h"
+#include "Weapon.h"
+#include "Pickup.h"
 
 //Game Manager Constructor
 GameManager::GameManager(int width, int length){
@@ -87,22 +88,29 @@ Player* GameManager::createPlayer(sf::RenderWindow &window) {
 	bool created = false;
 	//Creating textbox
 	sf::RectangleShape textBox(sf::Vector2f(250, 50));
-	textBox.setPosition(WINDOW_WIDTH / 2 - 100, WINDOW_LENGTH / 2 - 100);
+	textBox.setPosition(WINDOW_WIDTH / 2.f - textBox.getSize().x/2.f, WINDOW_LENGTH / 2.f - textBox.getSize().y/2.f);
 	textBox.setFillColor(sf::Color::Transparent);
 	textBox.setOutlineColor(sf::Color::Red);
-	textBox.setOutlineThickness(1);
+	textBox.setOutlineThickness(2);
 
 	sf::Font font; //Creates font object to load to text
 	if (!font.loadFromFile("C:\\Fonts\\light_pixel-7.ttf")) {
 		std::cout << "Could not load file" << std::endl;
 	}
-	sf::Text text; //Creates text object to draw to screen
+	sf::Text text; //Creates text object for name to be drawn to screen
 	text.setFont(font);
-	std::string name;
-
-	text.setPosition(textBox.getPosition().x+textBox.getSize().x/2,textBox.getPosition().y + textBox.getSize().y / 5);
+	text.setPosition(textBox.getPosition().x + textBox.getSize().x / 2.f, textBox.getPosition().y + textBox.getSize().y / 5.f);
 	text.setCharacterSize(25);
 	text.setFillColor(sf::Color::White);
+
+	sf::Text namePrompt; //Creates text object for user prompt
+	namePrompt.setFont(font);
+	namePrompt.setString("Enter your name:");
+	namePrompt.setPosition(WINDOW_WIDTH/2-namePrompt.getCharacterSize()*5.4f, textBox.getPosition().y - (textBox.getSize().y*1.5f));
+	namePrompt.setFillColor(sf::Color::White);
+
+	std::string name;
+
 	
 	//Draw Loop
 	while (window.isOpen()&&!created) {
@@ -112,7 +120,7 @@ Player* GameManager::createPlayer(sf::RenderWindow &window) {
 				if (event.key.code == sf::Keyboard::BackSpace&&name.size()>0) {
 					name = name.substr(0, name.size() - 1);
 					text.setString(name);
-					text.setPosition(text.getPosition().x + (textBox.getSize().x / (text.getCharacterSize()*1.15)), text.getPosition().y);
+					text.setPosition(text.getPosition().x + (textBox.getSize().x / (text.getCharacterSize()*1.15f)), text.getPosition().y);
 				}
 				if (name.size() > 0 && event.key.code == sf::Keyboard::Return) {
 					created = true;
@@ -120,21 +128,21 @@ Player* GameManager::createPlayer(sf::RenderWindow &window) {
 				}
 			}
 			if (event.type == sf::Event::TextEntered&&(char)event.text.unicode!='\b'&&name.size()<10) {
-				std::cout << (char)event.text.unicode << std::endl;
 				name += (char)event.text.unicode;
 				text.setString(name);
-				text.setPosition(text.getPosition().x - (textBox.getSize().x/ (text.getCharacterSize()*1.15)), text.getPosition().y);
+				text.setPosition(text.getPosition().x - (textBox.getSize().x/ (text.getCharacterSize()*1.15f)), text.getPosition().y);
 			}
 		}
 		window.clear();
 		window.draw(text);
+		window.draw(namePrompt);
 		window.draw(textBox);
 		window.display();
 	}
 
 	window.setVerticalSyncEnabled(false);
 	//Creating player
-	Player *player = new Player(name, 100, 10, 50);
+	Player *player = new Player(name);
 	player->setTexture("C:\\Users\\Novacane\\Pictures\\2.jpg");
 	player->setSprite();
 	player->player.setPosition(400, 400);

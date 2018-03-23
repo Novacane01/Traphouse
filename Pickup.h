@@ -1,18 +1,21 @@
-#include "GameManager.h"
+#pragma once
 #include "Weapon.h"
 
 class Pickup
 {
 public:
 	Pickup();
-	static Weapon defaultPistol;
-	static Weapon heavyPistol;
-	static Weapon boltSniper;
-	static Weapon semiAuto;
-	static Weapon shotGun;
-	static Weapon assaultRifle;
-	static Weapon miniGun;
-	static Weapon subMachine;
-	~Pickup();
+	Weapon defaultKnife;
+	Weapon defaultPistol;
+	Weapon heavyPistol;
+	Weapon boltSniper;
+	Weapon semiAuto;
+	Weapon shotgun;
+	Weapon assaultRifle;
+	Weapon minigun;
+	Weapon semiSniper;
+	Weapon submachine;
+	void initialize();
 private:
+	
 };

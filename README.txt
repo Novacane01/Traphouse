@@ -16,12 +16,18 @@ Uncommon - U
 Rare - R
 Epic - E
 
+*SPS -Swings per second*
+
 Default Knife - D
--25 HP per hit
+-20 HP per hit
 Attack Range: 2 Nodes
+-1/2 SPS
+
 Sword - R 
 -60 HP per hit
 Attack Range: 5 Nodes
+1/5 SPS
+5% spawn chance
 
 
 Default Pistol (M1911) - D
@@ -52,7 +58,7 @@ Penetration: 5 enemies
 Semi Auto Rifle (M14) - R
 60 Ammo
 10 Ammo per clip
- -25 HP per shot 
+ -20 HP per shot 
 Penetration: 2 enemies
 2 second reload time
 =======
@@ -65,12 +71,11 @@ Pump Action Shotgun (KSG) - R
 Shoots out 12 projectiles at a certain angle from each other in a 30 degree cone 
 Penetration: Each pellet, 1 enemy
 0.25 second reload time for each shell
-
-Assault Rifle (AK47) - E
-=======
 5% spawn chance
 
-
+Assault Rifle (AK47) - R
+=======
+4% spawn chance
 90 Ammo
 30 Ammo per clip
 -30 HP per shot
@@ -79,8 +84,7 @@ Penetration: 2 enemies
 
 Machine Gun (Minigun) - E
 =======
-4% spawn chance
-Machine Gun ( Minigun) - E
+2% spawn chance
 180 Ammo
 60 Ammo per clip
  -20 HP per shot 
@@ -88,7 +92,6 @@ Penetration: 2 enemies
 5 second reload time
 
 =======
-2% spawn chance
 Semi Auto Sniper Rifle (Barrett .50 Cal) - E
 30 Ammo
 10 Ammo per clip
@@ -103,7 +106,7 @@ Submachine gun (MP40) - U
 -20 HP per shot
 Penetration: 1 enemy
 2 seconds reload time
-15% Spawn Chance
+10% Spawn Chance
 
 
 Monsters
