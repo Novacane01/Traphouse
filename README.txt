@@ -19,7 +19,7 @@ Epic - E
 *SPS -Swings per second*
 
 Default Knife - D
--20 HP per hit
+-25 HP per hit
 Attack Range: 2 Nodes
 -1/2 SPS
 
@@ -71,9 +71,8 @@ Pump Action Shotgun (KSG) - R
 Shoots out 12 projectiles at a certain angle from each other in a 30 degree cone 
 Penetration: Each pellet, 1 enemy
 0.25 second reload time for each shell
-5% spawn chance
 
-Assault Rifle (AK47) - R
+Assault Rifle (AK47) - E
 =======
 4% spawn chance
 90 Ammo
@@ -84,7 +83,7 @@ Penetration: 2 enemies
 
 Machine Gun (Minigun) - E
 =======
-2% spawn chance
+4% spawn chance
 180 Ammo
 60 Ammo per clip
  -20 HP per shot 
@@ -92,6 +91,7 @@ Penetration: 2 enemies
 5 second reload time
 
 =======
+2% spawn chance
 Semi Auto Sniper Rifle (Barrett .50 Cal) - E
 30 Ammo
 10 Ammo per clip
@@ -472,3 +472,11 @@ Demon:Enemy
 -----------------------
 + void Fireball();
 + void groundSmash();
+
+
+**********************Pseudocode**********************************
+~enumeration for sprinting, walking , idle
+~while true check each enumeration status and loop corresponding audio clip
+~break loop when enumeration is idle
+~if state changes (sprinting->walking), play current audio for extra half second, but start new state audio clip
+~if state changes to idle cut sound immediately
