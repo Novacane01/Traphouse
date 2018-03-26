@@ -6,6 +6,7 @@
 class Player;
 class Bullet;
 
+//Weapon Class
 class Weapon
 {
 public:
@@ -43,6 +44,7 @@ private:
 	sf::Texture texture;
 };
 
+//Bullet Class
 class Bullet {
 public:
 	Bullet(Player *);

@@ -111,6 +111,7 @@ Bullet::Bullet(Player *player) {
 	bullet.setPosition(player->getPlayer().getPosition().x, player->getPlayer().getPosition().y);
 }
 
+//Sets direction of bullet
 void Bullet::setDirection(sf::Vector2f dVector) {
 	sf::Vector2f uVector;
 	double mag = sqrt(pow(dVector.x, 2) + pow(dVector.y, 2));

@@ -96,7 +96,8 @@ void GameManager::Start() {
 Player* GameManager::createPlayer(sf::RenderWindow &window) {
 	window.setKeyRepeatEnabled(true);
 	bool created = false;
-	//Creating textbox
+
+	//Creates textbox
 	sf::RectangleShape textBox(sf::Vector2f(250, 50));
 	textBox.setPosition(WINDOW_WIDTH / 2.f - textBox.getSize().x/2.f, WINDOW_LENGTH / 2.f - textBox.getSize().y/2.f);
 	textBox.setFillColor(sf::Color::Transparent);
@@ -119,7 +120,7 @@ Player* GameManager::createPlayer(sf::RenderWindow &window) {
 	namePrompt.setPosition(WINDOW_WIDTH/2-namePrompt.getCharacterSize()*5.4f, textBox.getPosition().y - (textBox.getSize().y*1.5f));
 	namePrompt.setFillColor(sf::Color::White);
 
-	std::string name;
+	std::string name; //Player name
 
 	
 	//Draw Loop

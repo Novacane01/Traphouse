@@ -2,6 +2,7 @@
 #include "Player.h"
 #include "Pickup.h"
 
+//Player Constructor
 Player::Player(std::string name, int hp, double walkspeed){
 	setName(name);
 	setHp(hp);
@@ -62,25 +63,25 @@ bool Player::setTexture(std::string texturePath){
 
 //Moves player left
 void Player::MoveLeft(double dt) {
-	player.setPosition(player.getPosition().x - 1, player.getPosition().y);
+	player.setPosition(player.getPosition().x - (dt*walkspeed), player.getPosition().y);
 }
 
 //Moves player right
 void Player::MoveUp(double dt) {
-	player.setPosition(player.getPosition().x, player.getPosition().y-1);
+	player.setPosition(player.getPosition().x, player.getPosition().y- (dt*walkspeed));
 }
 
 //Movbes player down
 void Player::MoveDown(double dt) {
-	player.setPosition(player.getPosition().x, player.getPosition().y+1);
+	player.setPosition(player.getPosition().x, player.getPosition().y+(dt*walkspeed));
 }
 
 //Moves player Right
 void Player::MoveRight(double dt) {
-	player.setPosition(player.getPosition().x + 1, player.getPosition().y);
+	player.setPosition(player.getPosition().x + (dt*walkspeed), player.getPosition().y);
 }
 
-//Updates player position
+//Updates player position and rotation
 void Player::Update(sf::RenderWindow &window, double dt) {
 	if (isMovingUp) {
 		MoveUp(dt);
@@ -94,10 +95,11 @@ void Player::Update(sf::RenderWindow &window, double dt) {
 	if (isMovingLeft) {
 		MoveLeft(dt);
 	}
+
+	//Rotates player based off of mouse position
 	sf::Vector2f playerPosition = player.getPosition();
 	double a = sf::Mouse::getPosition(window).x - playerPosition.x;
 	double b = sf::Mouse::getPosition(window).y - playerPosition.y;
-
 	double angle = -atan2(a, b) * 180 / 3.14;
 	player.setRotation(angle);
 }
@@ -129,16 +131,13 @@ void Player::switchWeapons() {
 	weaponInventory.clear();
 	weaponInventory.push_back(temp[1]);
 	weaponInventory.push_back(temp[0]);
-	//weaponInventory.clear();
-	/*weaponInventory.push_back(weaponInventory[0]);
-	weaponInventory.erase(weaponInventory.begin());*/
-	
 	std::cout << "Weapons Swapped: " << std::endl;
 	for (int i = 0; i < weaponInventory.size();i++) {
 		std::cout << i + 1 << ". " << weaponInventory[i].getName() << std::endl;
 	}
 }
 
+//Player Deconstructor
 Player::~Player() {
 
 }

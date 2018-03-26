@@ -5,11 +5,14 @@
 #include "Potion.h"
 #include <iostream>
 
+//Player class
 class Player{
 public:
 	friend class SpeedPotion;
 	friend class AttackPotion;
-	 Player(std::string, int health = 100, double = 50);
+
+	//Player
+	 Player(std::string, int health = 100, double = 200);
 	 void setName(std::string);
 	 void setHp(int);
 	 void setWalkSpeed(double);
@@ -19,6 +22,8 @@ public:
 	 void setSprite();
 	 bool setTexture(std::string);
 	 sf::Sprite& getPlayer();
+
+	 //Moving
 	 void MoveLeft(double);
 	 void MoveUp(double);
 	 void MoveDown(double);
@@ -29,17 +34,19 @@ public:
 	 bool isMovingUp = false;
 	 bool isMovingDown = false;
 	 void Draw(sf::RenderWindow &);
+
+	 //Weapons
 	 std::vector<Weapon>& getWeapons();
 	 Weapon& getCurrentWeapon();
 	 void switchWeapons();
 	 void setWeapon(Weapon &);
-	 std::vector<Weapon> weaponInventory;
+
 	 ~Player();
 private:
 	sf::Sprite player;
 	sf::Texture texture;
 	std::string name;
-
+	std::vector<Weapon> weaponInventory;
 	std::vector<Potion> potionInventory;
 	int hp = 0;
 	double walkspeed = 0;
