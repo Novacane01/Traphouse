@@ -7,14 +7,14 @@ Player::Player(std::string name, int hp, double walkspeed){
 	setName(name);
 	setHp(hp);
 	setWalkSpeed(walkspeed);
-	player.setOrigin(10,20);
+	player.setOrigin(20,20);
 	player.setPosition(400, 400);
 	setTexture("Sprites\\PlayerAnims\\Walking\\Walking1.png");
 	setSprite();
 	weaponInventory.push_back(pickups.defaultPistol);
 	std::cout << "\'Pistol\' added to inventory" << std::endl;
-	weaponInventory.push_back(pickups.defaultKnife);
-	std::cout << "\'Knife\' added to inventory" << std::endl;
+	/*weaponInventory.push_back(pickups.defaultKnife);
+	std::cout << "\'Knife\' added to inventory" << std::endl;*/
 }
 
 //Sets player name
@@ -127,13 +127,15 @@ void Player::setWeapon(Weapon &weapon) {
 
 //Swaps weapons
 void Player::switchWeapons() {
-	std::vector<Weapon> temp = weaponInventory;
-	weaponInventory.clear();
-	weaponInventory.push_back(temp[1]);
-	weaponInventory.push_back(temp[0]);
-	std::cout << "Weapons Swapped: " << std::endl;
-	for (int i = 0; i < weaponInventory.size();i++) {
-		std::cout << i + 1 << ". " << weaponInventory[i].getName() << std::endl;
+	if (weaponInventory.size() > 1) {
+		std::vector<Weapon> temp = weaponInventory;
+		weaponInventory.clear();
+		weaponInventory.push_back(temp[1]);
+		weaponInventory.push_back(temp[0]);
+		std::cout << "Weapons Swapped: " << std::endl;
+		for (int i = 0; i < weaponInventory.size();i++) {
+			std::cout << i + 1 << ". " << weaponInventory[i].getName() << std::endl;
+		}
 	}
 }
 

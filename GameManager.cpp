@@ -151,7 +151,8 @@ Player* GameManager::createPlayer(sf::RenderWindow &window) {
 		window.display();
 	}
 
-	window.setVerticalSyncEnabled(false);
+	window.setKeyRepeatEnabled(false);
+
 	//Creating player
 	Player *player = new Player(name);
 	return player;

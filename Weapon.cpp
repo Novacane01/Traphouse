@@ -22,7 +22,18 @@ void Weapon::Shoot(Player *player,sf::RenderWindow &window) {
 	std::cout << sf::Mouse::getPosition().x << " " << sf::Mouse::getPosition().y << std::endl;
 	std::cout << player->getPlayer().getPosition().x << " " << player->getPlayer().getPosition().y << std::endl;
 	Bullet b(player);
-	b.setDirection((sf::Vector2f)sf::Mouse::getPosition(window)-player->getPlayer().getPosition());
+
+	//Setting accuracy
+	sf::Vector2f dVector = (sf::Vector2f)sf::Mouse::getPosition(window)-player->getPlayer().getPosition();
+	double newX1 = dVector.x*cos(5*3.14/180) - dVector.y*sin(5 * 3.14 / 180);
+	double newY1 = dVector.x*sin(5 * 3.14 / 180) + dVector.y*cos(5 * 3.14 / 180);
+
+	double newX2 = dVector.x*cos(-5 * 3.14 / 180) - dVector.y*sin(-5 * 3.14 / 180);
+	double newY2 = dVector.x*sin(-5 * 3.14 / 180) + dVector.y*cos(-5 * 3.14 / 180);
+	float n = ((newX2 - newX1) * ((float)rand() / RAND_MAX)) + newX1;
+	float n2 = ((newY2 - newY1) * ((float)rand() / RAND_MAX)) + newY1;
+	sf::Vector2f newDir = sf::Vector2f(n, n2);
+	b.setDirection(newDir);
 	bullets.push_back(b);
 }
 
