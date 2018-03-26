@@ -6,6 +6,10 @@ Player::Player(std::string name, int hp, double walkspeed){
 	setName(name);
 	setHp(hp);
 	setWalkSpeed(walkspeed);
+	player.setOrigin(10,20);
+	player.setPosition(400, 400);
+	setTexture("Sprites\\PlayerAnims\\Walking\\Walking1.png");
+	setSprite();
 	weaponInventory.push_back(pickups.defaultPistol);
 	std::cout << "\'Pistol\' added to inventory" << std::endl;
 	weaponInventory.push_back(pickups.defaultKnife);
@@ -90,7 +94,12 @@ void Player::Update(sf::RenderWindow &window, double dt) {
 	if (isMovingLeft) {
 		MoveLeft(dt);
 	}
-	
+	sf::Vector2f playerPosition = player.getPosition();
+	double a = sf::Mouse::getPosition(window).x - playerPosition.x;
+	double b = sf::Mouse::getPosition(window).y - playerPosition.y;
+
+	double angle = -atan2(a, b) * 180 / 3.14;
+	player.setRotation(angle);
 }
 
 //Draws player to screen

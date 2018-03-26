@@ -153,9 +153,6 @@ Player* GameManager::createPlayer(sf::RenderWindow &window) {
 	window.setVerticalSyncEnabled(false);
 	//Creating player
 	Player *player = new Player(name);
-	player->setTexture("Sprites\\PlayerAnims\\Walking\\Walking1.png");
-	player->setSprite();
-	player->getPlayer().setPosition(400, 400);
 	return player;
 }
 
