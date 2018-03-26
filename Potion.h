@@ -5,10 +5,8 @@
 class Player;
 
 class Potion{
-
 public:
-    Potion(std::string name, double dropChance, double duration):name(name), dropChance(dropChance),
-    duration(duration){};
+	Potion(std::string, double, double);
 protected:
     const std::string name;
     const double dropChance;

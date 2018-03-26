@@ -2,6 +2,8 @@
 #include "GameManager.h"
 #include "Weapon.h"
 #include "Pickup.h"
+#include "Map.h"
+
 
 //Game Manager Constructor
 GameManager::GameManager(int width, int length){
@@ -32,6 +34,8 @@ void GameManager::Start() {
 
 	//Creates player object
 	Player* player = createPlayer(window);
+	//Creates bounded Map rectangle object
+	Map map;
 
 	//Main loop
 	while (window.isOpen()) {
@@ -60,6 +64,7 @@ void GameManager::Start() {
 					player->isMovingRight = true;
 					
 				}
+
 			}
 			else if (event.type == sf::Event::KeyReleased) {
 				if (event.key.code == sf::Keyboard::W) {
@@ -75,11 +80,23 @@ void GameManager::Start() {
 					player->isMovingRight = false;
 				}
 			}
+			else if (event.type == sf::Event::MouseWheelScrolled) {
+				player->switchWeapons();
+			}
+			else if (event.type == sf::Event::MouseButtonPressed) {
+				if (event.mouseButton.button == sf::Mouse::Left) {
+					std::cout << "Left mouse clicked" << std::endl;
+					player->getCurrentWeapon().Shoot(player,window);
+				}
+			}
 		}
 		window.clear(); //Clears window
-		player->Update(deltaTime); //Updates player position
+		window.draw(map.map);
+		player->Update(window, deltaTime, map.collisionTest(player)); //Updates player position
 		player->Draw(window); //Draws player to screen
+		player->getCurrentWeapon().Update(window,player,deltaTime);
 		window.display(); //Displays all drawn objects
+
 	}
 }
 
@@ -143,9 +160,9 @@ Player* GameManager::createPlayer(sf::RenderWindow &window) {
 	window.setVerticalSyncEnabled(false);
 	//Creating player
 	Player *player = new Player(name);
-	player->setTexture("C:\\Users\\Novacane\\Pictures\\2.jpg");
+	player->setTexture("/Users/KaytonFletcher/CLionProjects/TrapHouse/Sprites/PlayerAnims/Walking/Walking1.png");
 	player->setSprite();
-	player->player.setPosition(400, 400);
+	player->getPlayer().setPosition(400, 400);
 	return player;
 }
 
