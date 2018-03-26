@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "SFML/Graphics.hpp"
 #include "GameManager.h"
 #include "Weapon.h"
 #include "Pickup.h"
