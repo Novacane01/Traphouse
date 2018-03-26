@@ -6,10 +6,10 @@ Player::Player(std::string name, int hp, double walkspeed){
 	setName(name);
 	setHp(hp);
 	setWalkSpeed(walkspeed);
-	weaponInventory.push_back(pickups.defaultKnife);
-	std::cout << "\'Knife\' added to inventory" << std::endl;
 	weaponInventory.push_back(pickups.defaultPistol);
 	std::cout << "\'Pistol\' added to inventory" << std::endl;
+	weaponInventory.push_back(pickups.defaultKnife);
+	std::cout << "\'Knife\' added to inventory" << std::endl;
 }
 
 //Sets player name
@@ -77,7 +77,7 @@ void Player::MoveRight(double dt) {
 }
 
 //Updates player position
-void Player::Update(double dt) {
+void Player::Update(sf::RenderWindow &window, double dt) {
 	if (isMovingUp) {
 		MoveUp(dt);
 	}
@@ -90,9 +90,46 @@ void Player::Update(double dt) {
 	if (isMovingLeft) {
 		MoveLeft(dt);
 	}
+	
 }
 
 //Draws player to screen
 void Player::Draw(sf::RenderWindow &window) {
 	window.draw(player);
+}
+
+//Returns current weapon
+Weapon& Player::getCurrentWeapon() {
+	return weaponInventory[0];
+}
+
+//Returns weapon inventory
+std::vector<Weapon>& Player::getWeapons() {
+	return weaponInventory;
+}
+
+//Sets current weapon
+void Player::setWeapon(Weapon &weapon) {
+	weaponInventory[0] = weapon;
+	std::cout << "Weapon set to \"" << weapon.getName() << "\"" << std::endl;
+}
+
+//Swaps weapons
+void Player::switchWeapons() {
+	std::vector<Weapon> temp = weaponInventory;
+	weaponInventory.clear();
+	weaponInventory.push_back(temp[1]);
+	weaponInventory.push_back(temp[0]);
+	//weaponInventory.clear();
+	/*weaponInventory.push_back(weaponInventory[0]);
+	weaponInventory.erase(weaponInventory.begin());*/
+	
+	std::cout << "Weapons Swapped: " << std::endl;
+	for (int i = 0; i < weaponInventory.size();i++) {
+		std::cout << i + 1 << ". " << weaponInventory[i].getName() << std::endl;
+	}
+}
+
+Player::~Player() {
+
 }

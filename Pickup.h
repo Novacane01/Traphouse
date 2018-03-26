@@ -15,7 +15,6 @@ public:
 	Weapon minigun;
 	Weapon semiSniper;
 	Weapon submachine;
-	void initialize();
 private:
 	
 };

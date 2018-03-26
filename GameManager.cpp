@@ -75,10 +75,20 @@ void GameManager::Start() {
 					player->isMovingRight = false;
 				}
 			}
+			else if (event.type == sf::Event::MouseWheelScrolled) {
+				player->switchWeapons();
+			}
+			else if (event.type == sf::Event::MouseButtonPressed) {
+				if (event.mouseButton.button == sf::Mouse::Left) {
+					std::cout << "Left mouse clicked" << std::endl;
+					player->getCurrentWeapon().Shoot(player,window);
+				}
+			}
 		}
 		window.clear(); //Clears window
-		player->Update(deltaTime); //Updates player position
+		player->Update(window, deltaTime); //Updates player position
 		player->Draw(window); //Draws player to screen
+		player->getCurrentWeapon().Update(window,player,deltaTime);
 		window.display(); //Displays all drawn objects
 	}
 }
@@ -143,9 +153,9 @@ Player* GameManager::createPlayer(sf::RenderWindow &window) {
 	window.setVerticalSyncEnabled(false);
 	//Creating player
 	Player *player = new Player(name);
-	player->setTexture("C:\\Users\\Novacane\\Pictures\\2.jpg");
+	player->setTexture("Sprites\\PlayerAnims\\Walking\\Walking1.png");
 	player->setSprite();
-	player->player.setPosition(400, 400);
+	player->getPlayer().setPosition(400, 400);
 	return player;
 }
 
