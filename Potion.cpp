@@ -10,9 +10,9 @@ void HealthPotion::Heal(Player *player) {
 }
 
 void SpeedPotion::Speed(Player *player) {
-    player->setWalkSpeed(1.5 * player->getWalkspeed());
+    player->setWalkSpeed(1.5f * player->getWalkspeed());
     for(Weapon i:player->weaponInventory){
-        i.setAttackSpeed(1.5 * i.getAttackSpeed());
+        i.setAttackSpeed(1.5f * i.getAttackSpeed());
     }
 }
 

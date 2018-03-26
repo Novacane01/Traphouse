@@ -1,8 +1,5 @@
 #include "stdafx.h"
 #include "GameManager.h"
-#include "Weapon.h"
-#include "Pickup.h"
-#include "Map.h"
 
 
 //Game Manager Constructor
@@ -39,7 +36,7 @@ void GameManager::Start() {
 
 	//Main loop
 	while (window.isOpen()) {
-		double deltaTime = FPSclock.restart().asSeconds();
+		float deltaTime = FPSclock.restart().asSeconds();
 
 		//Records window events such as mouse movement, mouse clicks, and key strokes
 		sf::Event event;
@@ -91,10 +88,10 @@ void GameManager::Start() {
 			}
 		}
 		window.clear(); //Clears window
-		window.draw(map.map);
+		window.draw(map.map); //Draws map
 		player->Update(window, deltaTime, map.collisionTest(player)); //Updates player position
 		player->Draw(window); //Draws player to screen
-		player->getCurrentWeapon().Update(window,player,deltaTime);
+		player->getCurrentWeapon().Update(window,player,deltaTime); //Updates weapon and bullets
 		window.display(); //Displays all drawn objects
 
 	}

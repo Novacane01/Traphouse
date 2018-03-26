@@ -12,23 +12,23 @@ public:
 	friend class AttackPotion;
 
 	//Player
-	 Player(std::string, int health = 100, double = 200);
+	 Player(std::string, int health = 100, float = 200.f);
 	 void setName(std::string);
 	 void setHp(int);
-	 void setWalkSpeed(double);
+	 void setWalkSpeed(float);
 	 std::string getName() const;
-	 double getWalkspeed() const;
+	 float getWalkspeed() const;
 	 int getHp() const;
 	 void setSprite();
 	 bool setTexture(std::string);
 	 sf::Sprite& getPlayer();
 
 	 //Moving
-	 void MoveLeft(double);
-	 void MoveUp(double);
-	 void MoveDown(double);
-	 void MoveRight(double);
-	 void Update(sf::RenderWindow &window, double, int);
+	 void MoveLeft(float);
+	 void MoveUp(float);
+	 void MoveDown(float);
+	 void MoveRight(float);
+	 void Update(sf::RenderWindow &window, float, int);
 	 bool isMovingLeft = false;
 	 bool isMovingRight = false;
 	 bool isMovingUp = false;
@@ -49,7 +49,7 @@ private:
 	std::vector<Weapon> weaponInventory;
 	std::vector<Potion> potionInventory;
 	int hp = 0;
-	double walkspeed = 0;
+	float walkspeed = 0;
 
 public:
 	Pickup pickups;

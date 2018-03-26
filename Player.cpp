@@ -4,7 +4,7 @@
 #include "Map.h"
 
 //Player Constructor
-Player::Player(std::string name, int hp, double walkspeed){
+Player::Player(std::string name, int hp, float walkspeed){
 	setName(name);
 	setHp(hp);
 	setWalkSpeed(walkspeed);
@@ -34,12 +34,12 @@ int Player::getHp() const{
 }
 
 //Sets player walkspeed
-void Player::setWalkSpeed(double value){
+void Player::setWalkSpeed(float value){
 	walkspeed = value;
 }
 
 //Returns player walkspeed
-double Player::getWalkspeed() const {
+float Player::getWalkspeed() const {
 	return walkspeed;
 }
 
@@ -63,28 +63,28 @@ bool Player::setTexture(std::string texturePath){
 }
 
 //Moves player left
-void Player::MoveLeft(double dt) {
+void Player::MoveLeft(float dt) {
 	player.setPosition(player.getPosition().x - (dt*walkspeed), player.getPosition().y);
 }
 
 //Moves player right
-void Player::MoveUp(double dt) {
+void Player::MoveUp(float dt) {
 	player.setPosition(player.getPosition().x, player.getPosition().y- (dt*walkspeed));
 }
 
 //Movbes player down
-void Player::MoveDown(double dt) {
+void Player::MoveDown(float dt) {
 	player.setPosition(player.getPosition().x, player.getPosition().y+(dt*walkspeed));
 }
 
 //Moves player Right
-void Player::MoveRight(double dt) {
+void Player::MoveRight(float dt) {
 	player.setPosition(player.getPosition().x + (dt*walkspeed), player.getPosition().y);
 }
 
 
 //Updates player position and player rotation
-void Player::Update(sf::RenderWindow &window, double dt, int isColliding) {
+void Player::Update(sf::RenderWindow &window, float dt, int isColliding) {
 
 	if (isMovingUp && isColliding != 1 && isColliding != 5 && isColliding != 6) {
 		MoveUp(dt);
@@ -101,9 +101,9 @@ void Player::Update(sf::RenderWindow &window, double dt, int isColliding) {
 
 	//Rotates player based off of mouse position
 	sf::Vector2f playerPosition = player.getPosition();
-	double a = sf::Mouse::getPosition(window).x - playerPosition.x;
-	double b = sf::Mouse::getPosition(window).y - playerPosition.y;
-	double angle = -atan2(a, b) * 180 / 3.14;
+	float a = sf::Mouse::getPosition(window).x - playerPosition.x;
+	float b = sf::Mouse::getPosition(window).y - playerPosition.y;
+	float angle = -atan2(a, b) * 180 / 3.14f;
 	player.setRotation(angle);
 }
 
@@ -137,7 +137,7 @@ void Player::switchWeapons() {
 		weaponInventory.push_back(temp[1]);
 		weaponInventory.push_back(temp[0]);
 		std::cout << "Weapons Swapped: " << std::endl;
-		for (int i = 0; i < weaponInventory.size();i++) {
+		for (unsigned i = 0; i < weaponInventory.size();i++) {
 			std::cout << i + 1 << ". " << weaponInventory[i].getName() << std::endl;
 		}
 	}

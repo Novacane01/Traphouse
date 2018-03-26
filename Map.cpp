@@ -2,7 +2,6 @@
 #include "Map.h"
 #include <iostream>
 #include <math.h>
-#include "Player.h"
 
 
 Map::Map():map(sf::Vector2f(1080,720)) {
