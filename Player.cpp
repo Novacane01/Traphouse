@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "Player.h"
 #include "Pickup.h"
+#include "Map.h"
 
 //Player Constructor
 Player::Player(std::string name, int hp, double walkspeed){
@@ -81,18 +82,20 @@ void Player::MoveRight(double dt) {
 	player.setPosition(player.getPosition().x + (dt*walkspeed), player.getPosition().y);
 }
 
-//Updates player position and rotation
-void Player::Update(sf::RenderWindow &window, double dt) {
-	if (isMovingUp) {
+
+//Updates player position and player rotation
+void Player::Update(sf::RenderWindow &window, double dt, int isColliding) {
+
+	if (isMovingUp && isColliding != 1 && isColliding != 5 && isColliding != 6) {
 		MoveUp(dt);
 	}
-	if (isMovingDown) {
+	if (isMovingDown && isColliding != 2 && isColliding != 7 && isColliding != 8) {
 		MoveDown(dt);
 	}
-	if (isMovingRight) {
+	if (isMovingRight && isColliding != 3 && isColliding != 5 && isColliding != 7) {
 		MoveRight(dt);
 	}
-	if (isMovingLeft) {
+	if (isMovingLeft && isColliding != 4 && isColliding != 6 && isColliding != 8) {
 		MoveLeft(dt);
 	}
 
@@ -103,6 +106,7 @@ void Player::Update(sf::RenderWindow &window, double dt) {
 	double angle = -atan2(a, b) * 180 / 3.14;
 	player.setRotation(angle);
 }
+
 
 //Draws player to screen
 void Player::Draw(sf::RenderWindow &window) {

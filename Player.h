@@ -1,5 +1,5 @@
 #pragma once
-#include "SFML\Graphics.hpp"
+#include "SFML/Graphics.hpp"
 #include <string>
 #include "Weapon.h"
 #include "Potion.h"
@@ -28,7 +28,7 @@ public:
 	 void MoveUp(double);
 	 void MoveDown(double);
 	 void MoveRight(double);
-	 void Update(sf::RenderWindow &window, double);
+	 void Update(sf::RenderWindow &window, double, int);
 	 bool isMovingLeft = false;
 	 bool isMovingRight = false;
 	 bool isMovingUp = false;

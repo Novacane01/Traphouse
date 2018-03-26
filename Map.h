@@ -1,11 +1,14 @@
+#pragma once
 #include "GameManager.h"
+
 class Map
 {
 public:
 	Map();
-	void Generate();
-	~Map();
+	sf::RectangleShape map;
+	int collisionTest(Player*);
+
 private:
-	sf::RectangleShape *map;
+	float bottom, top, right, left;
 	sf::Texture txture;
 };

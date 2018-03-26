@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "Player.h"
 #include "Weapon.h"
+#include <cmath>
 
 //Weapon(Melee) Constructor
 Weapon::Weapon(std::string meleeName, int damage, int range, double attackspeed, double dropChance):name(meleeName),range(range),dropChance(dropChance) {
