@@ -1,10 +1,10 @@
 #pragma once
-#include "SFML\Graphics.hpp"
+#include "SFML/Graphics.hpp"
 #include "Player.h"
 #include <iostream>
 #include <string>
 #include <vector>
-#include <Windows.h>
+
 
 
 class GameManager

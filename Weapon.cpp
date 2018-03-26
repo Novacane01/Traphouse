@@ -1,7 +1,7 @@
 //
 // Created by Tyler Goodman on 3/22/18.
 //
-#include "stdafx.h"
+
 #include "Weapon.h"
 
 Weapon::Weapon(std::string meleeName, int damage, int range, double attackspeed, double dropChance):name(meleeName),range(range),dropChance(dropChance) {
