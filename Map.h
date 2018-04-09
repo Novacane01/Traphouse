@@ -1,17 +1,14 @@
-#ifndef MAP_H
-#define MAP_H
+#pragma once
 #include "GameManager.h"
+#include "Player.h"
 
 class Map
 {
 public:
 	Map();
 	sf::RectangleShape map;
-	int collisionTest(Player*);
+	void collisionTest(Player*);
 
 private:
-	float bottom, top, right, left;
 	sf::Texture txture;
 };
-
-#endif

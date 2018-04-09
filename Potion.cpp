@@ -1,4 +1,4 @@
-
+#include "stdafx.h"
 #include "Potion.h"
 #include "Player.h"
 
@@ -10,9 +10,9 @@ void HealthPotion::Heal(Player *player) {
 }
 
 void SpeedPotion::Speed(Player *player) {
-    player->setWalkSpeed(1.5 * player->getWalkspeed());
+    player->setWalkSpeed(1.5f * player->getWalkspeed());
     for(Weapon i:player->weaponInventory){
-        i.setAttackSpeed(1.5 * i.getAttackSpeed());
+        i.setAttackSpeed(1.5f * i.getAttackSpeed());
     }
 }
 
@@ -22,7 +22,7 @@ void StaminaPotion::Stamina(Player *player) {
 
 void AttackPotion::increaseAttack(Player *player) {
     for(Weapon i:player->weaponInventory){
-        i.setDamage(1.5 * i.getDamage());
+        i.setDamage(1.5f * i.getDamage());
     }
 }
 

@@ -1,12 +1,16 @@
-
+#include "stdafx.h"
 #include "Player.h"
 #include "Pickup.h"
 #include "Map.h"
 
-Player::Player(std::string name, int hp, double walkspeed){
+//Player Constructor
+Player::Player(std::string name, int hp, float walkspeed){
 	setName(name);
 	setHp(hp);
 	setWalkSpeed(walkspeed);
+	player.setOrigin(20,20);
+	player.setPosition(400, 400);
+	setTexture("Sprites\\PlayerAnims\\Walking\\Walking1.png");
 	weaponInventory.push_back(pickups.defaultPistol);
 	std::cout << "\'Pistol\' added to inventory" << std::endl;
 	weaponInventory.push_back(pickups.defaultKnife);
@@ -29,18 +33,13 @@ int Player::getHp() const{
 }
 
 //Sets player walkspeed
-void Player::setWalkSpeed(double value){
+void Player::setWalkSpeed(float value){
 	walkspeed = value;
 }
 
 //Returns player walkspeed
-double Player::getWalkspeed() const {
+float Player::getWalkspeed() const {
 	return walkspeed;
-}
-
-//Sets player sprite
-void Player::setSprite(){
-	player.setTexture(texture);
 }
 
 //Returns player sprite
@@ -49,51 +48,55 @@ sf::Sprite& Player::getPlayer(){
 }
 
 //Sets player texture
-bool Player::setTexture(std::string texturePath){
-	if (!texture.loadFromFile(texturePath)) {
-		return false;
+void Player::setTexture(std::string texturePath){
+	if (texture.loadFromFile(texturePath)) {
+		player.setTexture(texture);
 	}
-	std::cout << "Loaded" << std::endl;
-	return true;
 }
 
 //Moves player left
-void Player::MoveLeft(double dt) {
-	player.setPosition(player.getPosition().x - 1, player.getPosition().y);
+void Player::MoveLeft(float dt) {
+	player.move(- (dt*walkspeed), 0);
 }
 
 //Moves player right
-void Player::MoveUp(double dt) {
-	player.setPosition(player.getPosition().x, player.getPosition().y-1);
+void Player::MoveUp(float dt) {
+	player.move(0,- (dt*walkspeed));
 }
 
 //Movbes player down
-void Player::MoveDown(double dt) {
-	player.setPosition(player.getPosition().x, player.getPosition().y+1);
+void Player::MoveDown(float dt) {
+	player.move(0, (dt*walkspeed));
 }
 
 //Moves player Right
-void Player::MoveRight(double dt) {
-	player.setPosition(player.getPosition().x + 1, player.getPosition().y);
+void Player::MoveRight(float dt) {
+	player.move((dt*walkspeed), 0);
 }
 
-//Updates player position
-void Player::Update(sf::RenderWindow &window, double dt, int isColliding) {
 
-		if (isMovingUp && isColliding != 1 && isColliding != 5 && isColliding != 6) {
-			MoveUp(dt);
-		}
-		if (isMovingDown && isColliding != 2 && isColliding != 7 && isColliding != 8) {
-			MoveDown(dt);
-		}
-		if (isMovingRight && isColliding != 3 && isColliding != 5 && isColliding != 7) {
-			MoveRight(dt);
-		}
-		if (isMovingLeft && isColliding != 4 && isColliding != 6 && isColliding != 8) {
-			MoveLeft(dt);
-		}
+//Updates player position and player rotation
+void Player::Update(sf::RenderWindow &window, float dt, Map *map) {
+	if (isMovingUp) {
+		MoveUp(dt);
 	}
-	
+	if (isMovingDown) {
+		MoveDown(dt);
+	}
+	if (isMovingRight) {
+		MoveRight(dt);
+	}
+	if (isMovingLeft) {
+		MoveLeft(dt);
+	}
+	map->collisionTest(this);
+	//Rotates player based off of mouse position
+	sf::Vector2f playerPosition = player.getPosition();
+	float a = sf::Mouse::getPosition(window).x - playerPosition.x;
+	float b = sf::Mouse::getPosition(window).y - playerPosition.y;
+	float angle = -atan2(a, b) * 180 / 3.14f;
+	player.setRotation(angle);
+}
 
 
 //Draws player to screen
@@ -119,20 +122,19 @@ void Player::setWeapon(Weapon &weapon) {
 
 //Swaps weapons
 void Player::switchWeapons() {
-	std::vector<Weapon> temp = weaponInventory;
-	weaponInventory.clear();
-	weaponInventory.push_back(temp[1]);
-	weaponInventory.push_back(temp[0]);
-	//weaponInventory.clear();
-	/*weaponInventory.push_back(weaponInventory[0]);
-	weaponInventory.erase(weaponInventory.begin());*/
-	
-	std::cout << "Weapons Swapped: " << std::endl;
-	for (int i = 0; i < weaponInventory.size();i++) {
-		std::cout << i + 1 << ". " << weaponInventory[i].getName() << std::endl;
+	if (weaponInventory.size() > 1) {
+		std::vector<Weapon> temp = weaponInventory;
+		weaponInventory.clear();
+		weaponInventory.push_back(temp[1]);
+		weaponInventory.push_back(temp[0]);
+		std::cout << "Weapons Swapped: " << std::endl;
+		for (unsigned i = 0; i < weaponInventory.size();i++) {
+			std::cout << i + 1 << ". " << weaponInventory[i].getName() << std::endl;
+		}
 	}
 }
 
+//Player Deconstructor
 Player::~Player() {
 
 }

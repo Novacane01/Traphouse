@@ -1,8 +1,5 @@
-#include "SFML/Graphics.hpp"
+#include "stdafx.h"
 #include "GameManager.h"
-#include "Weapon.h"
-#include "Pickup.h"
-#include "Map.h"
 
 
 //Game Manager Constructor
@@ -35,11 +32,16 @@ void GameManager::Start() {
 	//Creates player object
 	Player* player = createPlayer(window);
 	//Creates bounded Map rectangle object
-	Map map;
+	Map *map = new Map;
+
+	std::vector<Enemy *> enemies;
+	/*Skeleton c;*/
+	enemies.push_back(new Skeleton());
+
 
 	//Main loop
 	while (window.isOpen()) {
-		double deltaTime = FPSclock.restart().asSeconds();
+		float deltaTime = FPSclock.restart().asSeconds();
 
 		//Records window events such as mouse movement, mouse clicks, and key strokes
 		sf::Event event;
@@ -50,7 +52,6 @@ void GameManager::Start() {
 			if (event.type == sf::Event::KeyPressed) {
 				if (event.key.code == sf::Keyboard::W) {
 					player->isMovingUp = true;
-					
 				}
 				if (event.key.code == sf::Keyboard::A) {
 					player->isMovingLeft = true;
@@ -91,10 +92,19 @@ void GameManager::Start() {
 			}
 		}
 		window.clear(); //Clears window
-		window.draw(map.map);
-		player->Update(window, deltaTime, map.collisionTest(player)); //Updates player position
+		window.draw(map->map); //Draws map
+		for (unsigned i = 0; i < enemies.size();i++) {
+			enemies[i]->Update(player, deltaTime);
+			window.draw(enemies[i]->getEnemy());
+			if (enemies[i]->isDead()) {
+				enemies.erase(enemies.begin()+i);
+			}
+		}
+		player->Update(window, deltaTime, map); //Updates player position
 		player->Draw(window); //Draws player to screen
-		player->getCurrentWeapon().Update(window,player,deltaTime);
+		for (unsigned i = 0;i < player->getWeapons().size();i++) {
+			player->getWeapons()[i].Update(window, player, deltaTime); //Updates weapons and bullets
+		}
 		window.display(); //Displays all drawn objects
 
 	}
@@ -103,7 +113,8 @@ void GameManager::Start() {
 Player* GameManager::createPlayer(sf::RenderWindow &window) {
 	window.setKeyRepeatEnabled(true);
 	bool created = false;
-	//Creating textbox
+
+	//Creates textbox
 	sf::RectangleShape textBox(sf::Vector2f(250, 50));
 	textBox.setPosition(WINDOW_WIDTH / 2.f - textBox.getSize().x/2.f, WINDOW_LENGTH / 2.f - textBox.getSize().y/2.f);
 	textBox.setFillColor(sf::Color::Transparent);
@@ -111,7 +122,7 @@ Player* GameManager::createPlayer(sf::RenderWindow &window) {
 	textBox.setOutlineThickness(2);
 
 	sf::Font font; //Creates font object to load to text
-	if (!font.loadFromFile("/Users/KaytonFletcher/CLionProjects/TrapHouse/Fonts/light_pixel-7.ttf")) {
+	if (!font.loadFromFile("Fonts\\light_pixel-7.ttf")) {
 		std::cout << "Could not load file" << std::endl;
 	}
 	sf::Text text; //Creates text object for name to be drawn to screen
@@ -126,7 +137,7 @@ Player* GameManager::createPlayer(sf::RenderWindow &window) {
 	namePrompt.setPosition(WINDOW_WIDTH/2-namePrompt.getCharacterSize()*5.4f, textBox.getPosition().y - (textBox.getSize().y*1.5f));
 	namePrompt.setFillColor(sf::Color::White);
 
-	std::string name;
+	std::string name; //Player name
 
 	
 	//Draw Loop
@@ -157,12 +168,10 @@ Player* GameManager::createPlayer(sf::RenderWindow &window) {
 		window.display();
 	}
 
-	window.setVerticalSyncEnabled(false);
+	window.setKeyRepeatEnabled(false);
+
 	//Creating player
 	Player *player = new Player(name);
-	player->setTexture("/Users/KaytonFletcher/CLionProjects/TrapHouse/Sprites/PlayerAnims/Walking/Walking1.png");
-	player->setSprite();
-	player->getPlayer().setPosition(400, 400);
 	return player;
 }
 
