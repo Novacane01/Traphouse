@@ -13,8 +13,10 @@ class GameManager
 {
 public:
 	GameManager(int, int);
-	void setWindowWidth(int);
 	void setWindowLength(int);
+	void setWindowWidth(int);
+	static unsigned getWindowWidth();
+	static unsigned getWindowLength();
 	void Start();
 	Player* createPlayer(sf::RenderWindow &);
 	void Pause();

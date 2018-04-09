@@ -1,4 +1,3 @@
-#include "stdafx.h"
 #include "GameManager.h"
 
 
@@ -98,6 +97,7 @@ void GameManager::Start() {
 			window.draw(enemies[i]->getEnemy());
 			if (enemies[i]->isDead()) {
 				enemies.erase(enemies.begin()+i);
+				Enemy::Spawn(player, WINDOW_WIDTH, WINDOW_LENGTH);
 			}
 		}
 		player->Update(window, deltaTime, map); //Updates player position
@@ -122,7 +122,7 @@ Player* GameManager::createPlayer(sf::RenderWindow &window) {
 	textBox.setOutlineThickness(2);
 
 	sf::Font font; //Creates font object to load to text
-	if (!font.loadFromFile("Fonts\\light_pixel-7.ttf")) {
+	if (!font.loadFromFile("Fonts/light_pixel-7.ttf")) {
 		std::cout << "Could not load file" << std::endl;
 	}
 	sf::Text text; //Creates text object for name to be drawn to screen

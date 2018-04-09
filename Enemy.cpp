@@ -1,4 +1,3 @@
-#include "stdafx.h"
 #include "Enemy.h"
 #include "Player.h"
 
@@ -45,6 +44,31 @@ void Enemy::setDirection(sf::Vector2f &dVector) {
 	uVector.x = dVector.x / mag;
 	uVector.y = dVector.y / mag;
 	direction = uVector;
+}
+
+void Enemy::Spawn(Player *player, int windowWidth, int windowLength){
+	sf::Vector2f playerPosition = player->getPlayer().getPosition();
+	float enemyx;
+	float enemyy;
+	float i1 = rand()%(int)((windowWidth - (playerPosition.x + 100) + 1)+(playerPosition.x+100));
+	float i2 = rand()%(int)(playerPosition.x - 99);
+	float j1 = rand()%(int)((windowLength - (playerPosition.y + 100) + 1)+(playerPosition.y+100));
+	float j2 = rand()%(int)(playerPosition.y - 99);
+	float num = rand()/RAND_MAX;
+	float num2 = rand()/RAND_MAX;
+	if (num > 0.5){
+		enemyx = i1;
+	}
+	if (num <= 0.5){
+		enemyx = i2;
+	}
+	if (num > 0.5){
+		enemyy = j1;
+	}
+	if (num <= 0.5){
+		enemyy = j2;
+	}
+
 }
 
 bool Enemy::isDead() {
@@ -95,7 +119,7 @@ Enemy::~Enemy() {
 
 //Skeleton Class
 Skeleton::Skeleton():Enemy("Skeleton",100,10.f,30.f) {
-	setTexture("Sprites\\EnemyAnims\\Skeleton\\Idle.png");
+	setTexture("Sprites/EnemyAnims/Skeleton/Idle.png");
 }
 
 void Skeleton::boneWhack(Player *player) {

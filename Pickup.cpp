@@ -1,4 +1,4 @@
-#include "stdafx.h"
+
 #include "Pickup.h"
 
 Pickup::Pickup():defaultKnife("Knife", 100000.f, 2, .5f, 0.f),defaultPistol("M1911", 88, 88, 8, 10.f, 0.25f, 0.f),
