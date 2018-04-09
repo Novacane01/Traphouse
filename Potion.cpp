@@ -22,7 +22,7 @@ void StaminaPotion::Stamina(Player *player) {
 
 void AttackPotion::increaseAttack(Player *player) {
     for(Weapon i:player->weaponInventory){
-        i.setDamage(1.5 * i.getDamage());
+        i.setDamage(1.5f * i.getDamage());
     }
 }
 

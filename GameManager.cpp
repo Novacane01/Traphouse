@@ -32,7 +32,12 @@ void GameManager::Start() {
 	//Creates player object
 	Player* player = createPlayer(window);
 	//Creates bounded Map rectangle object
-	Map map;
+	Map *map = new Map;
+
+	std::vector<Enemy *> enemies;
+	/*Skeleton c;*/
+	enemies.push_back(new Skeleton());
+
 
 	//Main loop
 	while (window.isOpen()) {
@@ -47,7 +52,6 @@ void GameManager::Start() {
 			if (event.type == sf::Event::KeyPressed) {
 				if (event.key.code == sf::Keyboard::W) {
 					player->isMovingUp = true;
-					
 				}
 				if (event.key.code == sf::Keyboard::A) {
 					player->isMovingLeft = true;
@@ -88,10 +92,19 @@ void GameManager::Start() {
 			}
 		}
 		window.clear(); //Clears window
-		window.draw(map.map); //Draws map
-		player->Update(window, deltaTime, map.collisionTest(player)); //Updates player position
+		window.draw(map->map); //Draws map
+		for (unsigned i = 0; i < enemies.size();i++) {
+			enemies[i]->Update(player, deltaTime);
+			window.draw(enemies[i]->getEnemy());
+			if (enemies[i]->isDead()) {
+				enemies.erase(enemies.begin()+i);
+			}
+		}
+		player->Update(window, deltaTime, map); //Updates player position
 		player->Draw(window); //Draws player to screen
-		player->getCurrentWeapon().Update(window,player,deltaTime); //Updates weapon and bullets
+		for (unsigned i = 0;i < player->getWeapons().size();i++) {
+			player->getWeapons()[i].Update(window, player, deltaTime); //Updates weapons and bullets
+		}
 		window.display(); //Displays all drawn objects
 
 	}
@@ -159,9 +172,6 @@ Player* GameManager::createPlayer(sf::RenderWindow &window) {
 
 	//Creating player
 	Player *player = new Player(name);
-	player->setTexture("Sprites\\PlayerAnims\\Walking\\Walking1.png");
-	player->setSprite();
-	player->getPlayer().setPosition(400, 400);
 	return player;
 }
 

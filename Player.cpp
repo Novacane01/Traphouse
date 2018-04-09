@@ -11,11 +11,10 @@ Player::Player(std::string name, int hp, float walkspeed){
 	player.setOrigin(20,20);
 	player.setPosition(400, 400);
 	setTexture("Sprites\\PlayerAnims\\Walking\\Walking1.png");
-	setSprite();
 	weaponInventory.push_back(pickups.defaultPistol);
 	std::cout << "\'Pistol\' added to inventory" << std::endl;
-	/*weaponInventory.push_back(pickups.defaultKnife);
-	std::cout << "\'Knife\' added to inventory" << std::endl;*/
+	weaponInventory.push_back(pickups.defaultKnife);
+	std::cout << "\'Knife\' added to inventory" << std::endl;
 }
 
 //Sets player name
@@ -43,62 +42,54 @@ float Player::getWalkspeed() const {
 	return walkspeed;
 }
 
-//Sets player sprite
-void Player::setSprite(){
-	player.setTexture(texture);
-}
-
 //Returns player sprite
 sf::Sprite& Player::getPlayer(){
 	return player;
 }
 
 //Sets player texture
-bool Player::setTexture(std::string texturePath){
-	if (!texture.loadFromFile(texturePath)) {
-		return false;
+void Player::setTexture(std::string texturePath){
+	if (texture.loadFromFile(texturePath)) {
+		player.setTexture(texture);
 	}
-	std::cout << "Loaded" << std::endl;
-	return true;
 }
 
 //Moves player left
 void Player::MoveLeft(float dt) {
-	player.setPosition(player.getPosition().x - (dt*walkspeed), player.getPosition().y);
+	player.move(- (dt*walkspeed), 0);
 }
 
 //Moves player right
 void Player::MoveUp(float dt) {
-	player.setPosition(player.getPosition().x, player.getPosition().y- (dt*walkspeed));
+	player.move(0,- (dt*walkspeed));
 }
 
 //Movbes player down
 void Player::MoveDown(float dt) {
-	player.setPosition(player.getPosition().x, player.getPosition().y+(dt*walkspeed));
+	player.move(0, (dt*walkspeed));
 }
 
 //Moves player Right
 void Player::MoveRight(float dt) {
-	player.setPosition(player.getPosition().x + (dt*walkspeed), player.getPosition().y);
+	player.move((dt*walkspeed), 0);
 }
 
 
 //Updates player position and player rotation
-void Player::Update(sf::RenderWindow &window, float dt, int isColliding) {
-
-	if (isMovingUp && isColliding != 1 && isColliding != 5 && isColliding != 6) {
+void Player::Update(sf::RenderWindow &window, float dt, Map *map) {
+	if (isMovingUp) {
 		MoveUp(dt);
 	}
-	if (isMovingDown && isColliding != 2 && isColliding != 7 && isColliding != 8) {
+	if (isMovingDown) {
 		MoveDown(dt);
 	}
-	if (isMovingRight && isColliding != 3 && isColliding != 5 && isColliding != 7) {
+	if (isMovingRight) {
 		MoveRight(dt);
 	}
-	if (isMovingLeft && isColliding != 4 && isColliding != 6 && isColliding != 8) {
+	if (isMovingLeft) {
 		MoveLeft(dt);
 	}
-
+	map->collisionTest(this);
 	//Rotates player based off of mouse position
 	sf::Vector2f playerPosition = player.getPosition();
 	float a = sf::Mouse::getPosition(window).x - playerPosition.x;
