@@ -1,17 +1,17 @@
-
+#include "stdafx.h"
 #include "Player.h"
 #include "Weapon.h"
 #include <cmath>
 
 //Weapon(Melee) Constructor
-Weapon::Weapon(std::string meleeName, int damage, int range, double attackspeed, double dropChance):name(meleeName),range(range),dropChance(dropChance) {
+Weapon::Weapon(std::string meleeName, float damage, int range, float attackspeed, float dropChance):name(meleeName),range(range),dropChance(dropChance) {
 	setDamage(damage);
 	setAttackSpeed(attackspeed);
 }
 
 //Weapon(Ranged) Construtor
-Weapon::Weapon(std::string gunName, int MaxAmmo, int currentMax, int currentClip, double damage,
-double attackspeed, double DropChance):name(gunName),maxAmmo(MaxAmmo),dropChance(DropChance){
+Weapon::Weapon(std::string gunName, int MaxAmmo, int currentMax, int currentClip, float damage,
+float attackspeed, float DropChance):name(gunName),maxAmmo(MaxAmmo),dropChance(DropChance){
     setCurrentClip(currentClip);
     setCurrentMax(currentMax);
     setDamage(damage);
@@ -25,14 +25,11 @@ void Weapon::Shoot(Player *player,sf::RenderWindow &window) {
 	Bullet b(player);
 
 	//Setting accuracy
-
-
-	sf::Vector2f dVector = (sf::Vector2f)sf::Mouse::getPosition(window) - player->getPlayer().getPosition();
-	double newX1 = dVector.x*cos(5*3.14/180) - dVector.y*sin(5 * 3.14 / 180);
-	double newY1 = dVector.x*sin(5 * 3.14 / 180) + dVector.y*cos(5 * 3.14 / 180);
-
-	double newX2 = dVector.x*cos(-5 * 3.14 / 180) - dVector.y*sin(-5 * 3.14 / 180);
-	double newY2 = dVector.x*sin(-5 * 3.14 / 180) + dVector.y*cos(-5 * 3.14 / 180);
+	sf::Vector2f dVector = (sf::Vector2f)sf::Mouse::getPosition(window)-player->getPlayer().getPosition();
+	float newX1 = dVector.x*cos(5*3.14f/180) - dVector.y*sin(5 * 3.14f / 180);
+	float newY1 = dVector.x*sin(5 * 3.14f / 180) + dVector.y*cos(5 * 3.14f / 180);
+	float newX2 = dVector.x*cos(-5 * 3.14f / 180) - dVector.y*sin(-5 * 3.14f / 180);
+	float newY2 = dVector.x*sin(-5 * 3.14f / 180) + dVector.y*cos(-5 * 3.14f / 180);
 	float n = ((newX2 - newX1) * ((float)rand() / RAND_MAX)) + newX1;
 	float n2 = ((newY2 - newY1) * ((float)rand() / RAND_MAX)) + newY1;
 	sf::Vector2f newDir = sf::Vector2f(n, n2);
@@ -40,10 +37,15 @@ void Weapon::Shoot(Player *player,sf::RenderWindow &window) {
 	bullets.push_back(b);
 }
 
+//Returns bullet
+sf::CircleShape Bullet::getBullet() const {
+	return bullet;
+}
+
 //Updates weapon position
-void Weapon::Update(sf::RenderWindow &window, Player *player,double dt){
+void Weapon::Update(sf::RenderWindow &window, Player *player,float dt){
 	for (unsigned i = 0;i < bullets.size();i++) {
-		bullets[i].Update(dt);
+		bullets[i].Update(window,dt);
 		bullets[i].Draw(window);
 	}
 	//weapon.setPosition(player->getPlayer().getPosition().x, player->getPlayer().getPosition().y);
@@ -66,12 +68,12 @@ void Weapon::setCurrentMax(int currentMax) {
 }
 
 //Sets weapon damage
-void Weapon::setDamage(double damage) {
+void Weapon::setDamage(float damage) {
     this->damage = damage;
 }
 
 //Sets weapon attackspeed
-void Weapon::setAttackSpeed(double attackSpeed) {
+void Weapon::setAttackSpeed(float attackSpeed) {
     this->attackSpeed = attackSpeed;
 	
 }
@@ -97,17 +99,17 @@ int Weapon::getCurrentClip() const{
 }
 
 //Returns weapon's damage
-double Weapon::getDamage() const{
+float Weapon::getDamage() const{
     return damage;
 }
 
 //Returns weapons' attackspeed
-double Weapon::getAttackSpeed() const{
+float Weapon::getAttackSpeed() const{
     return attackSpeed;
 }
 
 //Returns weapon's drop chance
-double Weapon::getDropChance() const {
+float Weapon::getDropChance() const {
     return dropChance;
 }
 
@@ -123,20 +125,21 @@ Bullet::Bullet(Player *player) {
 	bullet.setRadius(2.5);
 	bullet.setFillColor(sf::Color::White);
 	bullet.setPosition(player->getPlayer().getPosition().x, player->getPlayer().getPosition().y);
+	damage = player->getCurrentWeapon().getDamage();
 }
 
 //Sets direction of bullet
-void Bullet::setDirection(sf::Vector2f dVector) {
+void Bullet::setDirection(sf::Vector2f &dVector) {
 	sf::Vector2f uVector;
-	double mag = sqrt(pow(dVector.x, 2) + pow(dVector.y, 2));
+	float mag = sqrt(pow(dVector.x, 2) + pow(dVector.y, 2));
 	uVector.x = dVector.x / mag;
 	uVector.y = dVector.y / mag;
 	direction = uVector;
 }
 
 //Updates bullet's position
-void Bullet::Update(double dt) {
-	bullet.setPosition(bullet.getPosition().x +(velocity*dt*direction.x), bullet.getPosition().y + (velocity*dt*direction.y));
+void Bullet::Update(sf::RenderWindow &window, float dt) {
+	bullet.move(velocity*dt*direction.x, velocity*dt*direction.y);
 }
 
 //Draws bullet to screen
