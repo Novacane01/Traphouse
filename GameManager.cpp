@@ -1,4 +1,4 @@
-#include "stdafx.h"
+
 #include "GameManager.h"
 
 
@@ -33,10 +33,13 @@ void GameManager::Start() {
 	Player* player = createPlayer(window);
 	//Creates bounded Map rectangle object
 	Map map;
+    sf::View view(sf::FloatRect(player->getPlayer().getPosition().x, player->getPlayer().getPosition().y, window.getSize().x, window.getSize().y));
 
 	//Main loop
 	while (window.isOpen()) {
 		float deltaTime = FPSclock.restart().asSeconds();
+
+        view.setCenter(player->getPlayer().getPosition().x,player->getPlayer().getPosition().y);
 
 		//Records window events such as mouse movement, mouse clicks, and key strokes
 		sf::Event event;
@@ -44,6 +47,17 @@ void GameManager::Start() {
 			if (event.type == event.Closed) {
 				window.close();
 			}
+
+
+
+            if(event.type == sf::Event::Resized){
+                sf::FloatRect visibleArea(0, 0, event.size.width, event.size.height);
+
+
+                //window.setView(sf::View(visibleArea));
+
+
+            }
 			if (event.type == sf::Event::KeyPressed) {
 				if (event.key.code == sf::Keyboard::W) {
 					player->isMovingUp = true;
@@ -92,6 +106,7 @@ void GameManager::Start() {
 		player->Update(window, deltaTime, map.collisionTest(player)); //Updates player position
 		player->Draw(window); //Draws player to screen
 		player->getCurrentWeapon().Update(window,player,deltaTime); //Updates weapon and bullets
+        //window.setView(view); //sets view of window
 		window.display(); //Displays all drawn objects
 
 	}
@@ -109,7 +124,7 @@ Player* GameManager::createPlayer(sf::RenderWindow &window) {
 	textBox.setOutlineThickness(2);
 
 	sf::Font font; //Creates font object to load to text
-	if (!font.loadFromFile("Fonts\\light_pixel-7.ttf")) {
+	if (!font.loadFromFile("/Users/KaytonFletcher/CLionProjects/TrapHouse/Fonts/light_pixel-7.ttf")) {
 		std::cout << "Could not load file" << std::endl;
 	}
 	sf::Text text; //Creates text object for name to be drawn to screen
@@ -159,7 +174,7 @@ Player* GameManager::createPlayer(sf::RenderWindow &window) {
 
 	//Creating player
 	Player *player = new Player(name);
-	player->setTexture("Sprites\\PlayerAnims\\Walking\\Walking1.png");
+	player->setTexture("/Users/KaytonFletcher/CLionProjects/TrapHouse/Sprites/PlayerAnims/Walking/Walking1.png");
 	player->setSprite();
 	player->getPlayer().setPosition(400, 400);
 	return player;

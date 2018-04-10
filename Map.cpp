@@ -1,7 +1,8 @@
-#include "stdafx.h"
+
 #include "Map.h"
 #include <iostream>
 #include <math.h>
+#include "SFML/Graphics.hpp"
 
 
 Map::Map():map(sf::Vector2f(1080,720)) {

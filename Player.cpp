@@ -1,4 +1,4 @@
-#include "stdafx.h"
+
 #include "Player.h"
 #include "Pickup.h"
 #include "Map.h"
@@ -10,7 +10,7 @@ Player::Player(std::string name, int hp, float walkspeed){
 	setWalkSpeed(walkspeed);
 	player.setOrigin(20,20);
 	player.setPosition(400, 400);
-	setTexture("Sprites\\PlayerAnims\\Walking\\Walking1.png");
+	setTexture("/Users/KaytonFletcher/CLionProjects/TrapHouse/Sprites/PlayerAnims/Walking/Walking1.png");
 	setSprite();
 	weaponInventory.push_back(pickups.defaultPistol);
 	std::cout << "\'Pistol\' added to inventory" << std::endl;

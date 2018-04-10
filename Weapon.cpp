@@ -1,4 +1,4 @@
-#include "stdafx.h"
+
 #include "Player.h"
 #include "Weapon.h"
 #include <cmath>
@@ -25,7 +25,9 @@ void Weapon::Shoot(Player *player,sf::RenderWindow &window) {
 	Bullet b(player);
 
 	//Setting accuracy
-	sf::Vector2f dVector = (sf::Vector2f)sf::Mouse::getPosition(window)-player->getPlayer().getPosition();
+
+
+	sf::Vector2f dVector = (sf::Vector2f)sf::Mouse::getPosition(window) - player->getPlayer().getPosition();
 	double newX1 = dVector.x*cos(5*3.14/180) - dVector.y*sin(5 * 3.14 / 180);
 	double newY1 = dVector.x*sin(5 * 3.14 / 180) + dVector.y*cos(5 * 3.14 / 180);
 
