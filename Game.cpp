@@ -5,7 +5,7 @@
 
 int main()
 {
-	GameManager gameManager(1080,720);
+	GameManager gameManager(1920,1080);
 	gameManager.Start();
     return 0;
 }

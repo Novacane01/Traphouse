@@ -13,15 +13,18 @@ public:
 	friend class AttackPotion;
 
 	//Player
-	 Player(std::string, int health = 100, float = 200.f);
+	 Player(std::string, int health = 100, float walkspeed= 200.f, float stamina = 500.f);
 	 void setName(std::string);
 	 void setHp(int);
+	 void setStamina(float);
 	 void setWalkSpeed(float);
-	 std::string getName() const;
+	 const std::string getName() const;
 	 float getWalkspeed() const;
 	 int getHp() const;
+	 float getStamina() const;
 	 void setTexture(std::string);
 	 sf::Sprite& getPlayer();
+	 bool isDead() const;
 
 	 //Moving
 	 void MoveLeft(float);
@@ -34,6 +37,8 @@ public:
 	 bool isMovingUp = false;
 	 bool isMovingDown = false;
 	 void Draw(sf::RenderWindow &);
+	 bool bIsSprinting;
+
 	 //Raycasting
 	 sf::RectangleShape rayUp;
 	 sf::RectangleShape rayDown;
@@ -45,6 +50,10 @@ public:
 	 Weapon& getCurrentWeapon();
 	 void switchWeapons();
 	 void setWeapon(Weapon &);
+
+	 //UI
+	 void setUI();
+	 void displayPlayerInfo(sf::RenderWindow &);
 	 ~Player();
 private:
 	sf::Sprite player;
@@ -53,9 +62,16 @@ private:
 	std::vector<Weapon> weaponInventory;
 	std::vector<Potion> potionInventory;
 	int hp = 0;
-	float walkspeed = 0;
+	float walkspeed = 0.f;
+	float stamina = 0.f;
 	bool invulnerable;
+	bool bIsDead;
 
+private:
+	sf::RectangleShape healthBar;
+	sf::RectangleShape staminaBar;
+	sf::Text playerName;
+	sf::Font font;
 public:
 	Pickup pickups;
 };

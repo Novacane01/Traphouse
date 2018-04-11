@@ -5,7 +5,6 @@
 #include <cmath>
 
 class Player;
-class Bullet;
 
 //Weapon Class
 class Weapon
@@ -16,28 +15,39 @@ public:
 		return *this;
 	}
 	Weapon(std::string, float, int, float, float);
-	Weapon(std::string, int, int, int, float, float, float);
+	Weapon(std::string, int maxAmmo, int currentMax, int currentClip,int maxClip, float damage, float attackSpeed, float dropChance);
 	void Update(sf::RenderWindow &, Player *, float);
 	void Draw(sf::RenderWindow &);
 	void setCurrentMax(int);
 	void setCurrentClip(int);
+	void setMaxClip(int);
 	void setAttackSpeed(float);
 	void setDamage(float);
 	std::string getName() const;
 	int getMaxAmmo() const;
 	int getCurrentMax() const;
 	int getCurrentClip() const;
+	int getMaxClip() const;
 	float getDamage() const;
 	float getAttackSpeed() const;
 	float getDropChance()const;
 	void Shoot(Player *,sf::RenderWindow &window);
+	void Reload(Player *);
 	~Weapon();
+private:
+	struct Bullet {
+		sf::Clock deleteTime;
+		sf::Vector2f direction;
+		float velocity = 1000.f;
+		sf::CircleShape bullet;
+	};
 private:
 	const std::string name;
 	const int maxAmmo = 0;
 	const int range = 0;
 	int currentMax = 0;
 	int currentClip = 0;
+	int maxClip = 0;
 	float damage = 0.f;
 	float attackSpeed = 0.f;
 	const float dropChance = 0;
@@ -46,19 +56,17 @@ private:
 	sf::Texture texture;
 };
 
-//Bullet Class
-class Bullet {
-public:
-	Bullet(Player *);
-	void Update(sf::RenderWindow &, float);
-	void Draw(sf::RenderWindow &);
-	sf::CircleShape getBullet() const;
-	void setDirection(sf::Vector2f &);
-	float damage = 0.f;
-	void setVelocity(float);
-	float getVelocity() const;
-private:
-	sf::Vector2f direction;
-	float velocity = 1000.f;
-	sf::CircleShape bullet;
-};
+////Bullet Class
+//class Bullet {
+//public:
+//	Bullet(Player *);
+//	
+//	void Update(sf::RenderWindow &, float);
+//	void Draw(sf::RenderWindow &);
+//	sf::CircleShape getBullet() const;
+//	void setDirection(sf::Vector2f &);
+//	void setVelocity(float);
+//	float getVelocity() const;
+//private:
+//	
+//};

@@ -6,6 +6,9 @@
 GameManager::GameManager(int width, int length){
 	setWindowLength(length);
 	setWindowWidth(width);
+	if (!font.loadFromFile("Fonts\\light_pixel-7.ttf")) {
+		std::cout << "Could not load file" << std::endl;
+	}
 }
 
 //Sets window length
@@ -21,8 +24,7 @@ void GameManager::setWindowWidth(int value) {
 //Starts The Game
 void GameManager::Start() {
 	//Creates Window with size WINDOW_WITDTH x WINDOW_LENGTH
-	sf::RenderWindow window(sf::VideoMode(WINDOW_WIDTH, WINDOW_LENGTH), "Traphouse");
-
+	static sf::RenderWindow window(sf::VideoMode(WINDOW_WIDTH, WINDOW_LENGTH), "Traphouse",sf::Style::Close);
 	window.setKeyRepeatEnabled(false); //Disables repeated keypresses
 	window.setVerticalSyncEnabled(false); //Limits refresh rate to monitor
 
@@ -34,20 +36,22 @@ void GameManager::Start() {
 	//Creates bounded Map rectangle object
 	Map *map = new Map;
 
-	std::vector<Enemy *> enemies;
+//	std::vector<Enemy *> enemies;
 	/*Skeleton c;*/
-	enemies.push_back(new Skeleton());
+	Enemy::Spawn(new Skeleton());
 
 
 	//Main loop
 	while (window.isOpen()) {
 		float deltaTime = FPSclock.restart().asSeconds();
-
 		//Records window events such as mouse movement, mouse clicks, and key strokes
 		sf::Event event;
 		while (window.pollEvent(event)) {
 			if (event.type == event.Closed) {
 				window.close();
+			}
+			if (event.type == sf::Event::Resized) {
+				window.setView(view);
 			}
 			if (event.type == sf::Event::KeyPressed) {
 				if (event.key.code == sf::Keyboard::W) {
@@ -65,6 +69,15 @@ void GameManager::Start() {
 					player->isMovingRight = true;
 					
 				}
+				if (event.key.code == sf::Keyboard::R) {
+					player->getCurrentWeapon().Reload(player);
+				}
+				if (event.key.code == sf::Keyboard::LShift) {
+					player->bIsSprinting = true;
+				}
+				if (event.key.code == sf::Keyboard::Escape) {
+					Pause(window);
+				}
 
 			}
 			else if (event.type == sf::Event::KeyReleased) {
@@ -80,24 +93,28 @@ void GameManager::Start() {
 				if (event.key.code == sf::Keyboard::D) {
 					player->isMovingRight = false;
 				}
+				if (event.key.code == sf::Keyboard::LShift) {
+					player->bIsSprinting = false;
+				}
 			}
 			else if (event.type == sf::Event::MouseWheelScrolled) {
 				player->switchWeapons();
 			}
 			else if (event.type == sf::Event::MouseButtonPressed) {
 				if (event.mouseButton.button == sf::Mouse::Left) {
-					std::cout << "Left mouse clicked" << std::endl;
 					player->getCurrentWeapon().Shoot(player,window);
 				}
 			}
 		}
 		window.clear(); //Clears window
 		window.draw(map->map); //Draws map
-		for (unsigned i = 0; i < enemies.size();i++) {
-			enemies[i]->Update(player, deltaTime);
-			window.draw(enemies[i]->getEnemy());
-			if (enemies[i]->isDead()) {
-				enemies.erase(enemies.begin()+i);
+
+		//Draws Enemmies to screen
+		for (unsigned i = 0; i < Enemy::getEnemies().size();i++) {
+			Enemy::getEnemies()[i]->Update(player, deltaTime);
+			Enemy::getEnemies()[i]->Draw(window);
+			if (Enemy::getEnemies()[i]->isDead()) {
+				Enemy::Destroy(Enemy::getEnemies().begin()+i);
 			}
 		}
 		player->Update(window, deltaTime, map); //Updates player position
@@ -106,7 +123,9 @@ void GameManager::Start() {
 			player->getWeapons()[i].Update(window, player, deltaTime); //Updates weapons and bullets
 		}
 		window.display(); //Displays all drawn objects
-
+		if (player->isDead()) {
+			GameOver();
+		}
 	}
 }
 
@@ -121,10 +140,6 @@ Player* GameManager::createPlayer(sf::RenderWindow &window) {
 	textBox.setOutlineColor(sf::Color::Red);
 	textBox.setOutlineThickness(2);
 
-	sf::Font font; //Creates font object to load to text
-	if (!font.loadFromFile("Fonts\\light_pixel-7.ttf")) {
-		std::cout << "Could not load file" << std::endl;
-	}
 	sf::Text text; //Creates text object for name to be drawn to screen
 	text.setFont(font);
 	text.setPosition(textBox.getPosition().x + textBox.getSize().x / 2.f, textBox.getPosition().y + textBox.getSize().y / 5.f);
@@ -178,4 +193,21 @@ Player* GameManager::createPlayer(sf::RenderWindow &window) {
 //Game Manager Destructor
 GameManager::~GameManager() {
 
+}
+
+void GameManager::GameOver() {
+	std::cout << "You have died" << std::endl;
+	Enemy::getEnemies().clear();
+	Start();
+}
+
+void GameManager::Pause(sf::RenderWindow &window) {
+	sf::Event event;
+	sf::Text resumeButton;
+	resumeButton.setFont(font);
+	resumeButton.setCharacterSize(12);
+	resumeButton.setPosition(WINDOW_LENGTH, WINDOW_WIDTH);
+	while (window.pollEvent(event)) {
+
+	}
 }

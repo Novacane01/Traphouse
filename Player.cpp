@@ -4,9 +4,10 @@
 #include "Map.h"
 
 //Player Constructor
-Player::Player(std::string name, int hp, float walkspeed){
+Player::Player(std::string name, int hp, float walkspeed, float stamina){
 	setName(name);
 	setHp(hp);
+	setStamina(stamina);
 	setWalkSpeed(walkspeed);
 	player.setOrigin(20,20);
 	player.setPosition(400, 400);
@@ -15,11 +16,41 @@ Player::Player(std::string name, int hp, float walkspeed){
 	std::cout << "\'Pistol\' added to inventory" << std::endl;
 	weaponInventory.push_back(pickups.defaultKnife);
 	std::cout << "\'Knife\' added to inventory" << std::endl;
+	setUI();
+	//healthBar.setSize(sf::Vector2f(100,10));
+}
+
+//Sets UI
+void Player::setUI() {
+	font.loadFromFile("Fonts\\light_pixel-7.ttf");
+	healthBar.setPosition(20, 35);
+	healthBar.setFillColor(sf::Color::Red);
+	staminaBar.setFillColor(sf::Color::Green);
+	staminaBar.setPosition(20, 45);
+	playerName.setString(getName());
+	playerName.setCharacterSize(25);
+	playerName.setPosition(20, 5);
+	playerName.setFont(font);
 }
 
 //Sets player name
 void Player::setName(std::string value) {
 	name = value;
+}
+
+//Returns player name
+const std::string Player::getName() const{
+	return name;
+}
+
+//Sets player stamina
+void Player::setStamina(float value) {
+	stamina = value;
+}
+
+//Returns player stamina
+float Player::getStamina() const {
+	return stamina;
 }
 
 //Sets player HP
@@ -56,27 +87,61 @@ void Player::setTexture(std::string texturePath){
 
 //Moves player left
 void Player::MoveLeft(float dt) {
-	player.move(- (dt*walkspeed), 0);
+	if (bIsSprinting&&stamina>0)
+		player.move(-(dt*walkspeed*1.5f), 0);
+	else
+		player.move(-(dt*walkspeed), 0);
 }
 
-//Moves player right
+//Moves player up
 void Player::MoveUp(float dt) {
-	player.move(0,- (dt*walkspeed));
+	if (bIsSprinting&&stamina>0)
+		player.move(0, -(dt*walkspeed*1.5f));
+	else
+		player.move(0, -(dt*walkspeed));
 }
 
 //Movbes player down
 void Player::MoveDown(float dt) {
-	player.move(0, (dt*walkspeed));
+	if (bIsSprinting&&stamina>0)
+		player.move(0, (dt*walkspeed*1.5f));
+	else
+		player.move(0, (dt*walkspeed));
 }
 
-//Moves player Right
+//Moves player right
 void Player::MoveRight(float dt) {
-	player.move((dt*walkspeed), 0);
+	if(bIsSprinting&&stamina>0)
+		player.move((dt*walkspeed*1.5f), 0);
+	else 
+		player.move((dt*walkspeed), 0);
 }
 
+//Returns status of player
+bool Player::isDead() const{
+	return bIsDead;
+}
+
+//Displays player info to screen
+void Player::displayPlayerInfo(sf::RenderWindow &window) {
+	healthBar.setSize(sf::Vector2f(hp*2.5f,5));
+	staminaBar.setSize(sf::Vector2f(stamina/2, 5));
+	window.draw(staminaBar);
+	window.draw(healthBar);
+	window.draw(playerName);
+}
 
 //Updates player position and player rotation
 void Player::Update(sf::RenderWindow &window, float dt, Map *map) {
+	if (bIsSprinting&&stamina>0) {
+		stamina -= 1;
+	}
+	else if (stamina < 500) {
+		stamina += .5;
+	}
+	if (hp <= 0) {
+		bIsDead = true;
+	}
 	if (isMovingUp) {
 		MoveUp(dt);
 	}
@@ -102,6 +167,7 @@ void Player::Update(sf::RenderWindow &window, float dt, Map *map) {
 //Draws player to screen
 void Player::Draw(sf::RenderWindow &window) {
 	window.draw(player);
+	displayPlayerInfo(window);
 }
 
 //Returns current weapon

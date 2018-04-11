@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "Player.h"
 #include "Weapon.h"
+#include <exception>
 #include <cmath>
 
 //Weapon(Melee) Constructor
@@ -10,43 +11,75 @@ Weapon::Weapon(std::string meleeName, float damage, int range, float attackspeed
 }
 
 //Weapon(Ranged) Construtor
-Weapon::Weapon(std::string gunName, int MaxAmmo, int currentMax, int currentClip, float damage,
+Weapon::Weapon(std::string gunName, int MaxAmmo, int currentMax, int currentClip, int maxClip, float damage,
 float attackspeed, float DropChance):name(gunName),maxAmmo(MaxAmmo),dropChance(DropChance){
     setCurrentClip(currentClip);
     setCurrentMax(currentMax);
     setDamage(damage);
     setAttackSpeed(attackspeed);
+	setMaxClip(maxClip);
 }
 
 //Shoots bullet
 void Weapon::Shoot(Player *player,sf::RenderWindow &window) {
-	std::cout << sf::Mouse::getPosition().x << " " << sf::Mouse::getPosition().y << std::endl;
-	std::cout << player->getPlayer().getPosition().x << " " << player->getPlayer().getPosition().y << std::endl;
-	Bullet b(player);
+	if (player->getCurrentWeapon().getCurrentClip() > 0) {
+		/*std::cout << sf::Mouse::getPosition().x << " " << sf::Mouse::getPosition().y << std::endl;
+		std::cout << player->getPlayer().getPosition().x << " " << player->getPlayer().getPosition().y << std::endl;*/
+		
+		//Instantiating bullet
+		Bullet b;
+		b.bullet.setRadius(2.5f);
+		b.bullet.setPosition(player->getPlayer().getPosition());
 
-	//Setting accuracy
-	sf::Vector2f dVector = (sf::Vector2f)sf::Mouse::getPosition(window)-player->getPlayer().getPosition();
-	float newX1 = dVector.x*cos(5*3.14f/180) - dVector.y*sin(5 * 3.14f / 180);
-	float newY1 = dVector.x*sin(5 * 3.14f / 180) + dVector.y*cos(5 * 3.14f / 180);
-	float newX2 = dVector.x*cos(-5 * 3.14f / 180) - dVector.y*sin(-5 * 3.14f / 180);
-	float newY2 = dVector.x*sin(-5 * 3.14f / 180) + dVector.y*cos(-5 * 3.14f / 180);
-	float n = ((newX2 - newX1) * ((float)rand() / RAND_MAX)) + newX1;
-	float n2 = ((newY2 - newY1) * ((float)rand() / RAND_MAX)) + newY1;
-	sf::Vector2f newDir = sf::Vector2f(n, n2);
-	b.setDirection(newDir);
-	bullets.push_back(b);
+		//Setting accuracy
+		sf::Vector2f dVector = (sf::Vector2f)sf::Mouse::getPosition(window) - player->getPlayer().getPosition();
+		float newX1 = dVector.x*cos(5 * 3.14f / 180) - dVector.y*sin(5 * 3.14f / 180);
+		float newY1 = dVector.x*sin(5 * 3.14f / 180) + dVector.y*cos(5 * 3.14f / 180);
+		float newX2 = dVector.x*cos(-5 * 3.14f / 180) - dVector.y*sin(-5 * 3.14f / 180);
+		float newY2 = dVector.x*sin(-5 * 3.14f / 180) + dVector.y*cos(-5 * 3.14f / 180);
+		float n = ((newX2 - newX1) * ((float)rand() / RAND_MAX)) + newX1;
+		float n2 = ((newY2 - newY1) * ((float)rand() / RAND_MAX)) + newY1;
+		sf::Vector2f newDir = sf::Vector2f(n, n2);
+		float mag = sqrt(pow(newDir.x, 2) + pow(newDir.y, 2));
+		b.direction = sf::Vector2f(newDir.x / mag, newDir.y / mag);
+		bullets.push_back(b);
+
+		//Subtracting from current ammo
+		player->getCurrentWeapon().setCurrentClip(player->getCurrentWeapon().getCurrentClip() - 1);
+	}
+	else if (player->getCurrentWeapon().getCurrentClip()==0&&player->getCurrentWeapon().getCurrentMax()>0) {
+		Reload(player);
+	}
+	else {
+		std::cout << "Out of ammo" << std::endl;
+	}
 }
 
-//Returns bullet
-sf::CircleShape Bullet::getBullet() const {
-	return bullet;
+//Reloads current weapon
+void Weapon::Reload(Player *player) {
+	if (player->getCurrentWeapon().getCurrentClip() == player->getCurrentWeapon().getMaxClip()) {
+		std::cout << "Clip Full" << std::endl;
+	}
+	else {
+		player->getCurrentWeapon().setCurrentClip(player->getCurrentWeapon().getMaxClip());
+		player->getCurrentWeapon().setCurrentMax(player->getCurrentWeapon().getCurrentMax() - player->getCurrentWeapon().getMaxClip());
+		std::cout << "Reloading" << std::endl;
+	}
+}
+
+//Returns weapon max clip
+int Weapon::getMaxClip() const {
+	return maxClip;
 }
 
 //Updates weapon position
 void Weapon::Update(sf::RenderWindow &window, Player *player,float dt){
 	for (unsigned i = 0;i < bullets.size();i++) {
-		bullets[i].Update(window,dt);
-		bullets[i].Draw(window);
+		bullets[i].bullet.move(bullets[i].direction.x*dt*bullets[i].velocity, bullets[i].direction.y*dt*bullets[i].velocity);
+		if (bullets[i].deleteTime.getElapsedTime().asSeconds() > 3) {
+			std::cout << "Deleting bullet" << std::endl;
+			bullets.erase(bullets.begin() + i);
+		}
 	}
 	//weapon.setPosition(player->getPlayer().getPosition().x, player->getPlayer().getPosition().y);
 	Draw(window);
@@ -55,6 +88,9 @@ void Weapon::Update(sf::RenderWindow &window, Player *player,float dt){
 //Draws weapon to screen
 void Weapon::Draw(sf::RenderWindow &window) {
 	window.draw(weapon);
+	for (unsigned i = 0;i < bullets.size();i++) {
+		window.draw(bullets[i].bullet);
+	}
 }
 
 //Sets current clip of weapon
@@ -62,9 +98,14 @@ void Weapon::setCurrentClip(int currentClip) {
     this->currentClip = currentClip;
 }
 
-//Sets max clip of weapon
+//Sets current max clip of weapon
 void Weapon::setCurrentMax(int currentMax) {
     this->currentMax = currentMax;
+}
+
+//Sets max clip of weapon
+void Weapon::setMaxClip(int maxClip) {
+	this->maxClip = maxClip;
 }
 
 //Sets weapon damage
@@ -117,34 +158,3 @@ float Weapon::getDropChance() const {
 Weapon::~Weapon() {
 
 }
-
-
-
-//Bullet Constructor
-Bullet::Bullet(Player *player) {
-	bullet.setRadius(2.5);
-	bullet.setFillColor(sf::Color::White);
-	bullet.setPosition(player->getPlayer().getPosition().x, player->getPlayer().getPosition().y);
-	damage = player->getCurrentWeapon().getDamage();
-}
-
-//Sets direction of bullet
-void Bullet::setDirection(sf::Vector2f &dVector) {
-	sf::Vector2f uVector;
-	float mag = sqrt(pow(dVector.x, 2) + pow(dVector.y, 2));
-	uVector.x = dVector.x / mag;
-	uVector.y = dVector.y / mag;
-	direction = uVector;
-}
-
-//Updates bullet's position
-void Bullet::Update(sf::RenderWindow &window, float dt) {
-	bullet.move(velocity*dt*direction.x, velocity*dt*direction.y);
-}
-
-//Draws bullet to screen
-void Bullet::Draw(sf::RenderWindow &window) {
-	window.draw(bullet);
-}
-
-
