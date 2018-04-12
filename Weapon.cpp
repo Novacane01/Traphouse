@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include "GameManager.h"
 #include "Player.h"
 #include "Weapon.h"
 #include <exception>
@@ -18,11 +19,12 @@ float attackspeed, float DropChance):name(gunName),maxAmmo(MaxAmmo),dropChance(D
     setDamage(damage);
     setAttackSpeed(attackspeed);
 	setMaxClip(maxClip);
+	setUI();
 }
 
 //Shoots bullet
 void Weapon::Shoot(Player *player,sf::RenderWindow &window) {
-	if (player->getCurrentWeapon().getCurrentClip() > 0) {
+	if (player->getCurrentWeapon().getCurrentClip() > 0&&attackTimer.getElapsedTime().asSeconds()>attackSpeed) {
 		//Instantiating bullet
 		Bullet b;
 		b.bullet.setRadius(2.5f);
@@ -44,24 +46,37 @@ void Weapon::Shoot(Player *player,sf::RenderWindow &window) {
 
 		//Subtracting from current ammo
 		player->getCurrentWeapon().setCurrentClip(player->getCurrentWeapon().getCurrentClip() - 1);
+		attackTimer.restart();
 	}
-	else if (player->getCurrentWeapon().getCurrentClip()==0&&player->getCurrentWeapon().getCurrentMax()>0) {
+	else if (player->getCurrentWeapon().getCurrentClip()==0) {
 		Reload(player);
-	}
-	else {
-		std::cout << "Out of ammo" << std::endl;
 	}
 }
 
 //Reloads current weapon
 void Weapon::Reload(Player *player) {
+	int amountToReload = player->getCurrentWeapon().getMaxClip() - player->getCurrentWeapon().getCurrentClip();
 	if (player->getCurrentWeapon().getCurrentClip() == player->getCurrentWeapon().getMaxClip()) {
 		std::cout << "Clip Full" << std::endl;
 	}
-	else {
+	else if(player->getCurrentWeapon().getCurrentMax()-player->getCurrentWeapon().getMaxClip()>=0) {
+
+		player->getCurrentWeapon().setCurrentMax(player->getCurrentWeapon().getCurrentMax() - amountToReload);
 		player->getCurrentWeapon().setCurrentClip(player->getCurrentWeapon().getMaxClip());
-		player->getCurrentWeapon().setCurrentMax(player->getCurrentWeapon().getCurrentMax() - player->getCurrentWeapon().getMaxClip());
 		std::cout << "Reloading" << std::endl;
+	}
+	else if((player->getCurrentWeapon().getCurrentMax() - player->getCurrentWeapon().getMaxClip()<0)){
+		if (player->getCurrentWeapon().getCurrentMax() - amountToReload > 0) {
+			player->getCurrentWeapon().setCurrentClip(player->getCurrentWeapon().getMaxClip());
+			player->getCurrentWeapon().setCurrentMax(player->getCurrentWeapon().getCurrentMax() - amountToReload);
+		}
+		else {
+			player->getCurrentWeapon().setCurrentClip(player->getCurrentWeapon().getCurrentClip()+player->getCurrentWeapon().getCurrentMax());
+			player->getCurrentWeapon().setCurrentMax(0);
+		}
+	}
+	else {
+		std::cout << "Out of ammo" << std::endl;
 	}
 }
 
@@ -150,6 +165,46 @@ float Weapon::getAttackSpeed() const{
 //Returns weapon's drop chance
 float Weapon::getDropChance() const {
     return dropChance;
+}
+
+void Weapon::setUI() {
+	if (!font.loadFromFile("Fonts\\light_pixel-7.ttf")) {
+		std::cout << "Could not open font" << std::endl;
+	}
+	ammoCount.setCharacterSize(20);
+	ammoCount.setFont(font);
+	ammoCount.setPosition(1800, 1000);
+	float offsetX = 0, offsetY = -getMaxClip()/2+4, rectSizeX = 5, rectSizeY = 15, size = 0, standardOffset = 40, desiredOffset = 200;
+	for (unsigned i = 8;i < getMaxClip();i += 8) {
+		rectSizeX -= 4.f / 23.f;
+	}
+	for (unsigned i = 32;i < getMaxClip();i+=32) {
+		if (i < i + 32) {
+			desiredOffset += 100;
+		}
+	}
+	for (unsigned i = 0; i < getMaxClip();i++) {
+		sf::RectangleShape temp(sf::Vector2f(rectSizeX, rectSizeY));
+		temp.setPosition(ammoCount.getPosition().x-standardOffset-offsetX,ammoCount.getPosition().y+offsetY);
+		ammoBlocks.push_back(temp);
+		offsetX += 20;
+		if (standardOffset + offsetX>desiredOffset) {
+			offsetX = 0;
+			offsetY += temp.getSize().y+5;
+		}
+	}
+}
+void Weapon::displayWeaponInfo(sf::RenderWindow &window) {
+	ammoCount.setString(std::to_string(getCurrentClip()) + "/" + std::to_string(getCurrentMax()));
+	for (int i = ammoBlocks.size()-1;i >= 0;i--) {
+		if (getCurrentClip()<ammoBlocks.size()&&i==ammoBlocks.size()-1) {
+			i -= (getMaxClip() - getCurrentClip());
+		}
+		if (i < ammoBlocks.size()) {
+			window.draw(ammoBlocks[i]);
+		}
+	}
+	window.draw(ammoCount);
 }
 
 //Weapon Deconstructor

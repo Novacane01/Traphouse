@@ -15,7 +15,7 @@ public:
 		return *this;
 	}
 	Weapon(std::string, float, int, float, float);
-	Weapon(std::string, int maxAmmo, int currentMax, int currentClip,int maxClip, float damage, float attackSpeed, float dropChance);
+	Weapon(std::string, int maxAmmo, int currentMax, int currentClip, int maxClip, float damage, float attackSpeed, float dropChance);
 	void Update(sf::RenderWindow &, Player *, float);
 	void Draw(sf::RenderWindow &);
 	void setCurrentMax(int);
@@ -31,8 +31,10 @@ public:
 	float getDamage() const;
 	float getAttackSpeed() const;
 	float getDropChance()const;
-	void Shoot(Player *,sf::RenderWindow &window);
+	void displayWeaponInfo(sf::RenderWindow &);
+	void Shoot(Player *, sf::RenderWindow &window);
 	void Reload(Player *);
+	void setUI();
 	~Weapon();
 private:
 	struct Bullet {
@@ -41,7 +43,6 @@ private:
 		float velocity = 1000.f;
 		sf::CircleShape bullet;
 	};
-private:
 	const std::string name;
 	const int maxAmmo = 0;
 	const int range = 0;
@@ -54,19 +55,9 @@ private:
 	std::vector<Bullet> bullets;
 	sf::Sprite weapon;
 	sf::Texture texture;
+	sf::Clock attackTimer;
+private:
+	sf::Text ammoCount;
+	sf::Font font;
+	std::vector<sf::RectangleShape> ammoBlocks;
 };
-
-////Bullet Class
-//class Bullet {
-//public:
-//	Bullet(Player *);
-//	
-//	void Update(sf::RenderWindow &, float);
-//	void Draw(sf::RenderWindow &);
-//	sf::CircleShape getBullet() const;
-//	void setDirection(sf::Vector2f &);
-//	void setVelocity(float);
-//	float getVelocity() const;
-//private:
-//	
-//};

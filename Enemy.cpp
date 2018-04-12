@@ -173,10 +173,6 @@ void Skeleton::walkAnim() {
 
 //Updates skeleton and bone positions
 void Skeleton::Update(Player *player, float dt) {
-	if(attackTimer.getElapsedTime().asSeconds()>getAttackSpeed()){
-		boneThrow(player);
-		attackTimer.restart();
-	}
 	for (unsigned i = 0;i < bones.size();i++) {
 		bones[i].bone.move(bones[i].velocity*bones[i].direction.x*dt,bones[i].velocity * bones[i].direction.y*dt);
 		bones[i].bone.rotate(180*dt);
@@ -194,6 +190,10 @@ void Skeleton::Update(Player *player, float dt) {
 			boneWhack(player);
 			attackTimer.restart();
 		}
+	}
+	else if (attackTimer.getElapsedTime().asSeconds()>getAttackSpeed()) {
+		boneThrow(player);
+		attackTimer.restart();
 	}
 	else {
 		sf::Vector2f dir = player->getPlayer().getPosition() - enemy.getPosition();
