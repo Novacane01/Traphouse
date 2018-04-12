@@ -10,27 +10,29 @@ Player::Player(std::string name, int hp, float walkspeed, float stamina){
 	setStamina(stamina);
 	setWalkSpeed(walkspeed);
 	player.setOrigin(20,20);
-	player.setPosition(400, 400);
+	player.setPosition(WINDOW_WIDTH/2, WINDOW_LENGTH/2);
 	setTexture("Sprites\\PlayerAnims\\Walking\\Walking1.png");
 	weaponInventory.push_back(pickups.defaultPistol);
 	std::cout << "\'Pistol\' added to inventory" << std::endl;
 	weaponInventory.push_back(pickups.defaultKnife);
 	std::cout << "\'Knife\' added to inventory" << std::endl;
 	setUI();
-	//healthBar.setSize(sf::Vector2f(100,10));
 }
 
 //Sets UI
 void Player::setUI() {
 	font.loadFromFile("Fonts\\light_pixel-7.ttf");
-	healthBar.setPosition(20, 35);
+	healthBar.setPosition(20, 55);
 	healthBar.setFillColor(sf::Color::Red);
 	staminaBar.setFillColor(sf::Color::Green);
-	staminaBar.setPosition(20, 45);
+	staminaBar.setPosition(20, 65);
 	playerName.setString(getName());
 	playerName.setCharacterSize(25);
 	playerName.setPosition(20, 5);
 	playerName.setFont(font);
+	hpNum.setPosition(20, 35);
+	hpNum.setCharacterSize(15);
+	hpNum.setFont(font);
 }
 
 //Sets player name
@@ -124,20 +126,22 @@ bool Player::isDead() const{
 
 //Displays player info to screen
 void Player::displayPlayerInfo(sf::RenderWindow &window) {
-	healthBar.setSize(sf::Vector2f(hp*2.5f,5));
-	staminaBar.setSize(sf::Vector2f(stamina/2, 5));
+	healthBar.setSize(sf::Vector2f(hp*2.5f, 5));
+	staminaBar.setSize(sf::Vector2f(stamina / 2, 5));
+	hpNum.setString(std::to_string(hp) + "/100");
 	window.draw(staminaBar);
 	window.draw(healthBar);
 	window.draw(playerName);
+	window.draw(hpNum);
 }
 
 //Updates player position and player rotation
 void Player::Update(sf::RenderWindow &window, float dt, Map *map) {
 	if (bIsSprinting&&stamina>0) {
-		stamina -= 1;
+		stamina -= 1.f;
 	}
 	else if (stamina < 500) {
-		stamina += .5;
+		stamina += .5f;
 	}
 	if (hp <= 0) {
 		bIsDead = true;
@@ -154,11 +158,13 @@ void Player::Update(sf::RenderWindow &window, float dt, Map *map) {
 	if (isMovingLeft) {
 		MoveLeft(dt);
 	}
-	map->collisionTest(this);
+	//map->collisionTest(this);
+
 	//Rotates player based off of mouse position
 	sf::Vector2f playerPosition = player.getPosition();
-	float a = sf::Mouse::getPosition(window).x - playerPosition.x;
-	float b = sf::Mouse::getPosition(window).y - playerPosition.y;
+	sf::Vector2f WorldCoords = window.mapPixelToCoords(sf::Mouse::getPosition(window));
+	float a = WorldCoords.x - playerPosition.x;
+	float b = WorldCoords.y - playerPosition.y;
 	float angle = -atan2(a, b) * 180 / 3.14f;
 	player.setRotation(angle);
 }

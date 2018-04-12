@@ -23,16 +23,14 @@ float attackspeed, float DropChance):name(gunName),maxAmmo(MaxAmmo),dropChance(D
 //Shoots bullet
 void Weapon::Shoot(Player *player,sf::RenderWindow &window) {
 	if (player->getCurrentWeapon().getCurrentClip() > 0) {
-		/*std::cout << sf::Mouse::getPosition().x << " " << sf::Mouse::getPosition().y << std::endl;
-		std::cout << player->getPlayer().getPosition().x << " " << player->getPlayer().getPosition().y << std::endl;*/
-		
 		//Instantiating bullet
 		Bullet b;
 		b.bullet.setRadius(2.5f);
 		b.bullet.setPosition(player->getPlayer().getPosition());
 
 		//Setting accuracy
-		sf::Vector2f dVector = (sf::Vector2f)sf::Mouse::getPosition(window) - player->getPlayer().getPosition();
+		sf::Vector2f WorldCoords = window.mapPixelToCoords(sf::Mouse::getPosition(window));
+		sf::Vector2f dVector = WorldCoords - player->getPlayer().getPosition();
 		float newX1 = dVector.x*cos(5 * 3.14f / 180) - dVector.y*sin(5 * 3.14f / 180);
 		float newY1 = dVector.x*sin(5 * 3.14f / 180) + dVector.y*cos(5 * 3.14f / 180);
 		float newX2 = dVector.x*cos(-5 * 3.14f / 180) - dVector.y*sin(-5 * 3.14f / 180);

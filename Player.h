@@ -13,7 +13,7 @@ public:
 	friend class AttackPotion;
 
 	//Player
-	 Player(std::string, int health = 100, float walkspeed= 200.f, float stamina = 500.f);
+	 Player(std::string, int health = 100, float walkspeed= 200.f, float stamina = 400.f);
 	 void setName(std::string);
 	 void setHp(int);
 	 void setStamina(float);
@@ -71,6 +71,7 @@ private:
 	sf::RectangleShape healthBar;
 	sf::RectangleShape staminaBar;
 	sf::Text playerName;
+	sf::Text hpNum;
 	sf::Font font;
 public:
 	Pickup pickups;

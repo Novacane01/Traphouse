@@ -8,17 +8,19 @@ public:
 	Enemy& operator= (const Enemy&) {
 		return *this;
 	}
-	Enemy(std::string, int, float, float);
+	Enemy(std::string, int, float, float, float);
 	//Setters
     void setHp(int);
 	void setWalkspeed(float);
 	void setAttack(float);
 	void setTexture(sf::Sprite &, sf::Texture &, std::string);
 	void setDirection(sf::Vector2f &);
+	void setAttackSpeed(float);
 	//Getters
 	static std::vector<Enemy *> & getEnemies();
 	sf::Vector2f getDirection() const;
 	std::string getName() const;
+	float getAttackSpeed() const;
 	float getAttack() const;
  	float getWalkspeed() const;
 	int getHp() const;
@@ -41,6 +43,7 @@ private:
 	int hp = 0;
 	float walkspeed = 0.f;
 	float attack = 0.f;
+	float attackSpeed = 0.f;
 	sf::Vector2f spawnlocation;
 
 protected:

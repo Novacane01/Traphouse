@@ -6,9 +6,10 @@ class Map
 {
 public:
 	Map();
-	sf::RectangleShape map;
 	void collisionTest(Player*);
+	void Draw(sf::RenderWindow &);
 
 private:
-	sf::Texture txture;
+	sf::Sprite map;
+	sf::Texture texture;
 };

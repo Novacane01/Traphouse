@@ -1,17 +1,18 @@
 #include "stdafx.h"
 #include "Enemy.h"
 #include "Player.h"
+#include "Collision.h"
 
 std::vector<Enemy *> Enemy::enemies;
 
 //Enemy Constructor
-Enemy::Enemy(std::string name, int hp, float attack, float walkspeed):name(name) {
+Enemy::Enemy(std::string name, int hp, float attack, float walkspeed, float attackSpeed):name(name) {
 	enemy.setOrigin(20, 20);
 	enemy.setPosition(600, 600);
 	setHp(hp);
 	setWalkspeed(walkspeed);
 	setAttack(attack);
-	
+	setAttackSpeed(attackSpeed);
 }
 
 //Checks for bullet collision
@@ -70,6 +71,16 @@ void Enemy::setHp(int value) {
 }
 
 //Sets enemy walkspeed
+void Enemy::setAttackSpeed(float val) {
+	attackSpeed = val;
+}
+
+//Returns attackspeed
+float Enemy::getAttackSpeed() const {
+	return attackSpeed;
+}
+
+//Sets enemy walkspeed
 void Enemy::setWalkspeed(float value) {
 	walkspeed = value;
 }
@@ -118,7 +129,7 @@ Enemy::~Enemy() {
 
 
 //Skeleton Class
-Skeleton::Skeleton():Enemy("Skeleton",100,10.f,100.f) {
+Skeleton::Skeleton():Enemy("Skeleton",100,10.f,100.f, 2.f) {
 	rectSourceSprite = sf::IntRect(0,0,64,67);
 	setTexture(enemy,texture,"Sprites\\EnemyAnims\\Skeleton\\SkeletonWalk.png");
 	setTexture(bone.bone, bone.texture, "Sprites\\EnemyAnims\\Skeleton\\rib.png");
@@ -145,6 +156,7 @@ void Skeleton::boneThrow(Player *player) {
 	bones.push_back(bone);
 }
 
+//Skeleton walking animation
 void Skeleton::walkAnim() {
 	if (animationTimer.getElapsedTime().asSeconds() > 0.05f) {
 		if (rectSourceSprite.left >= 909) {
@@ -161,7 +173,7 @@ void Skeleton::walkAnim() {
 
 //Updates skeleton and bone positions
 void Skeleton::Update(Player *player, float dt) {
-	if(attackTimer.getElapsedTime().asSeconds()>2.f){
+	if(attackTimer.getElapsedTime().asSeconds()>getAttackSpeed()){
 		boneThrow(player);
 		attackTimer.restart();
 	}
@@ -176,16 +188,25 @@ void Skeleton::Update(Player *player, float dt) {
 	}
 	isHit(player);
 	//Moves enemy in respect to player position
-	sf::Vector2f dir = player->getPlayer().getPosition() - enemy.getPosition();
-	setDirection(dir);
-	enemy.move(getDirection().x*dt*getWalkspeed(), getDirection().y*dt*getWalkspeed());
+	if (Collision::PixelPerfectTest(enemy,player->getPlayer())){
+		enemy.move(0, 0);
+		if (attackTimer.getElapsedTime().asSeconds() > getAttackSpeed()) {
+			boneWhack(player);
+			attackTimer.restart();
+		}
+	}
+	else {
+		sf::Vector2f dir = player->getPlayer().getPosition() - enemy.getPosition();
+		setDirection(dir);
+		enemy.move(getDirection().x*dt*getWalkspeed(), getDirection().y*dt*getWalkspeed());
+		walkAnim();
+	}
 	//Rotates enemy based off of player position
 	sf::Vector2f playerPosition = player->getPlayer().getPosition();
 	float a = enemy.getPosition().x - playerPosition.x;
 	float b = enemy.getPosition().y - playerPosition.y;
 	float angle = -atan2(a, b) * 180 / 3.14f;
 	enemy.setRotation(angle);
-	walkAnim();
 }
 
 void Skeleton::Draw(sf::RenderWindow &window) {

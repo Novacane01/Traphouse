@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "GameManager.h"
 
-
+unsigned WINDOW_LENGTH, WINDOW_WIDTH;
 //Game Manager Constructor
 GameManager::GameManager(int width, int length){
 	setWindowLength(length);
@@ -24,10 +24,9 @@ void GameManager::setWindowWidth(int value) {
 //Starts The Game
 void GameManager::Start() {
 	//Creates Window with size WINDOW_WITDTH x WINDOW_LENGTH
-	static sf::RenderWindow window(sf::VideoMode(WINDOW_WIDTH, WINDOW_LENGTH), "Traphouse",sf::Style::Close);
+	static sf::RenderWindow window(sf::VideoMode(WINDOW_WIDTH, WINDOW_LENGTH), "Traphouse");
 	window.setKeyRepeatEnabled(false); //Disables repeated keypresses
 	window.setVerticalSyncEnabled(false); //Limits refresh rate to monitor
-
 	//Initializes clock to record frames per second
 	sf::Clock FPSclock;
 
@@ -49,9 +48,6 @@ void GameManager::Start() {
 		while (window.pollEvent(event)) {
 			if (event.type == event.Closed) {
 				window.close();
-			}
-			if (event.type == sf::Event::Resized) {
-				window.setView(view);
 			}
 			if (event.type == sf::Event::KeyPressed) {
 				if (event.key.code == sf::Keyboard::W) {
@@ -107,7 +103,7 @@ void GameManager::Start() {
 			}
 		}
 		window.clear(); //Clears window
-		window.draw(map->map); //Draws map
+		map->Draw(window); //Draws map
 
 		//Draws Enemmies to screen
 		for (unsigned i = 0; i < Enemy::getEnemies().size();i++) {
@@ -207,7 +203,9 @@ void GameManager::Pause(sf::RenderWindow &window) {
 	resumeButton.setFont(font);
 	resumeButton.setCharacterSize(12);
 	resumeButton.setPosition(WINDOW_LENGTH, WINDOW_WIDTH);
-	while (window.pollEvent(event)) {
+	while (window.isOpen()) {
+		while (window.pollEvent(event)) {
 
+		}
 	}
 }

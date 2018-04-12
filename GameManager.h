@@ -7,7 +7,7 @@
 #include <string>
 #include <vector>
 
-
+extern unsigned WINDOW_LENGTH, WINDOW_WIDTH;
 
 class GameManager
 {
@@ -22,8 +22,6 @@ public:
 	void Quit(sf::RenderWindow &);
 	~GameManager();
 private:
-	unsigned WINDOW_LENGTH = 0;
-	unsigned WINDOW_WIDTH = 0;
 	sf::Font font;
 	sf::View view;
 };
