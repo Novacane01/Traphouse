@@ -4,16 +4,21 @@
 #include "Map.h"
 
 //Player Constructor
-Player::Player(std::string name, int hp, float walkspeed, float stamina){
+Player::Player(std::string name, int hp, float walkspeed, float maxStamina){
 	setName(name);
 	setHp(hp);
-	setStamina(stamina);
+	setMaxStamina(maxStamina);
+	setCurrentStamina(this->maxStamina);
 	setWalkSpeed(walkspeed);
 	player.setOrigin(20,20);
 	player.setPosition(WINDOW_WIDTH/2, WINDOW_LENGTH/2);
 	setTexture("Sprites\\PlayerAnims\\Walking\\Walking1.png");
 	weaponInventory.push_back(pickups.defaultPistol);
 	std::cout << "\'Pistol\' added to inventory" << std::endl;
+	weaponInventory.push_back(pickups.minigun);
+	//weaponInventory.push_back(pickups.assaultRifle);
+	//weaponInventory.push_back(pickups.boltSniper);
+	std::cout << "\'Minigun\' added to inventory" << std::endl;
 	weaponInventory.push_back(pickups.defaultKnife);
 	std::cout << "\'Knife\' added to inventory" << std::endl;
 	setUI();
@@ -45,14 +50,24 @@ const std::string Player::getName() const{
 	return name;
 }
 
-//Sets player stamina
-void Player::setStamina(float value) {
-	stamina = value;
+//Sets player currentStamina
+void Player::setCurrentStamina(float value) {
+	currentStamina = value;
 }
 
-//Returns player stamina
-float Player::getStamina() const {
-	return stamina;
+//Returns player currentStamina
+float Player::getCurrentStamina() const {
+	return currentStamina;
+}
+
+//Sets player maxStamina
+void Player::setMaxStamina(float value) {
+	maxStamina = value;
+}
+
+//Returns player maxStamina
+float Player::getMaxStamina() const {
+	return maxStamina;
 }
 
 //Sets player HP
@@ -89,7 +104,7 @@ void Player::setTexture(std::string texturePath){
 
 //Moves player left
 void Player::MoveLeft(float dt) {
-	if (bIsSprinting&&stamina>0)
+	if (bIsSprinting&&canSprint)
 		player.move(-(dt*walkspeed*1.5f), 0);
 	else
 		player.move(-(dt*walkspeed), 0);
@@ -97,7 +112,7 @@ void Player::MoveLeft(float dt) {
 
 //Moves player up
 void Player::MoveUp(float dt) {
-	if (bIsSprinting&&stamina>0)
+	if (bIsSprinting&&canSprint)
 		player.move(0, -(dt*walkspeed*1.5f));
 	else
 		player.move(0, -(dt*walkspeed));
@@ -105,7 +120,7 @@ void Player::MoveUp(float dt) {
 
 //Movbes player down
 void Player::MoveDown(float dt) {
-	if (bIsSprinting&&stamina>0)
+	if (bIsSprinting&&canSprint)
 		player.move(0, (dt*walkspeed*1.5f));
 	else
 		player.move(0, (dt*walkspeed));
@@ -113,7 +128,7 @@ void Player::MoveDown(float dt) {
 
 //Moves player right
 void Player::MoveRight(float dt) {
-	if(bIsSprinting&&stamina>0)
+	if(bIsSprinting&&canSprint)
 		player.move((dt*walkspeed*1.5f), 0);
 	else 
 		player.move((dt*walkspeed), 0);
@@ -127,7 +142,7 @@ bool Player::isDead() const{
 //Displays player info to screen
 void Player::displayPlayerInfo(sf::RenderWindow &window) {
 	healthBar.setSize(sf::Vector2f(hp*2.5f, 5));
-	staminaBar.setSize(sf::Vector2f(stamina / 2, 5));
+	staminaBar.setSize(sf::Vector2f(currentStamina/2.f, 5));
 	hpNum.setString(std::to_string(hp) + "/100");
 	window.draw(staminaBar);
 	window.draw(healthBar);
@@ -137,11 +152,17 @@ void Player::displayPlayerInfo(sf::RenderWindow &window) {
 
 //Updates player position and player rotation
 void Player::Update(sf::RenderWindow &window, float dt, Map *map) {
-	if (bIsSprinting&&stamina>0) {
-		stamina -= 1.f;
+	if (currentStamina == maxStamina) {
+		canSprint = true;
 	}
-	else if (stamina < 500) {
-		stamina += .5f;
+	else if (currentStamina <= 0) {
+		canSprint = false;
+	}
+	if (bIsSprinting&&canSprint) {
+		currentStamina -= 1.f;
+	}
+	else if (currentStamina < 500.f) {
+		currentStamina += .5f;
 	}
 	if (hp <= 0) {
 		bIsDead = true;

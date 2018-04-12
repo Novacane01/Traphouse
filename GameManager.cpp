@@ -96,11 +96,9 @@ void GameManager::Start() {
 			else if (event.type == sf::Event::MouseWheelScrolled) {
 				player->switchWeapons();
 			}
-			else if (event.type == sf::Event::MouseButtonPressed) {
-				if (event.mouseButton.button == sf::Mouse::Left) {
-					player->getCurrentWeapon().Shoot(player,window);
-				}
-			}
+		}
+		if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Left)) {
+			player->getCurrentWeapon().Shoot(player, window);
 		}
 		window.clear(); //Clears window
 		map->Draw(window); //Draws map
@@ -118,6 +116,7 @@ void GameManager::Start() {
 		for (unsigned i = 0;i < player->getWeapons().size();i++) {
 			player->getWeapons()[i].Update(window, player, deltaTime); //Updates weapons and bullets
 		}
+		player->getCurrentWeapon().displayWeaponInfo(window);
 		window.display(); //Displays all drawn objects
 		if (player->isDead()) {
 			GameOver();

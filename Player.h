@@ -13,15 +13,17 @@ public:
 	friend class AttackPotion;
 
 	//Player
-	 Player(std::string, int health = 100, float walkspeed= 200.f, float stamina = 400.f);
+	 Player(std::string, int health = 100, float walkspeed= 200.f, float stamina = 500.f);
 	 void setName(std::string);
 	 void setHp(int);
-	 void setStamina(float);
+	 void setMaxStamina(float);
+	 void setCurrentStamina(float);
 	 void setWalkSpeed(float);
 	 const std::string getName() const;
 	 float getWalkspeed() const;
 	 int getHp() const;
-	 float getStamina() const;
+	 float getMaxStamina() const;
+	 float getCurrentStamina() const;
 	 void setTexture(std::string);
 	 sf::Sprite& getPlayer();
 	 bool isDead() const;
@@ -38,6 +40,7 @@ public:
 	 bool isMovingDown = false;
 	 void Draw(sf::RenderWindow &);
 	 bool bIsSprinting;
+	 bool canSprint;
 
 	 //Raycasting
 	 sf::RectangleShape rayUp;
@@ -63,7 +66,8 @@ private:
 	std::vector<Potion> potionInventory;
 	int hp = 0;
 	float walkspeed = 0.f;
-	float stamina = 0.f;
+	float maxStamina = 0.f;
+	float currentStamina = 0.f;
 	bool invulnerable;
 	bool bIsDead;
 
