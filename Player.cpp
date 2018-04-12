@@ -1,21 +1,21 @@
-#include "stdafx.h"
+//#include "stdafx.h"
 #include "Player.h"
 #include "Pickup.h"
 #include "Map.h"
 
 //Player Constructor
-Player::Player(std::string name, int hp, float walkspeed, float maxStamina){
+Player::Player(std::string name, float hp, float walkspeed, float maxStamina){
 	setName(name);
 	setHp(hp);
 	setMaxStamina(maxStamina);
 	setCurrentStamina(this->maxStamina);
 	setWalkSpeed(walkspeed);
 	player.setOrigin(20,20);
-	player.setPosition(WINDOW_WIDTH/2, WINDOW_LENGTH/2);
+	player.setPosition(WINDOW_WIDTH/2.f, WINDOW_LENGTH/2.f);
 	setTexture("Sprites\\PlayerAnims\\Walking\\Walking1.png");
 	weaponInventory.push_back(pickups.defaultPistol);
 	std::cout << "\'Pistol\' added to inventory" << std::endl;
-	weaponInventory.push_back(pickups.minigun);
+	weaponInventory.push_back(pickups.shotgun);
 	//weaponInventory.push_back(pickups.assaultRifle);
 	//weaponInventory.push_back(pickups.boltSniper);
 	std::cout << "\'Minigun\' added to inventory" << std::endl;
@@ -71,12 +71,12 @@ float Player::getMaxStamina() const {
 }
 
 //Sets player HP
-void Player::setHp(int value){
+void Player::setHp(float value){
 	hp = value;
 }
 
 //Returns player HP
-int Player::getHp() const{
+float Player::getHp() const{
 	return hp;
 }
 
@@ -143,7 +143,7 @@ bool Player::isDead() const{
 void Player::displayPlayerInfo(sf::RenderWindow &window) {
 	healthBar.setSize(sf::Vector2f(hp*2.5f, 5));
 	staminaBar.setSize(sf::Vector2f(currentStamina/2.f, 5));
-	hpNum.setString(std::to_string(hp) + "/100");
+	hpNum.setString(std::to_string((int)hp) + "/100");
 	window.draw(staminaBar);
 	window.draw(healthBar);
 	window.draw(playerName);
@@ -224,6 +224,8 @@ void Player::switchWeapons() {
 		for (unsigned i = 0; i < weaponInventory.size();i++) {
 			std::cout << i + 1 << ". " << weaponInventory[i].getName() << std::endl;
 		}
+		getCurrentWeapon().bIsReloading = false;
+		getCurrentWeapon().bCanReload = true;
 	}
 }
 

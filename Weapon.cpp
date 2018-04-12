@@ -1,4 +1,4 @@
-#include "stdafx.h"
+//#include "stdafx.h"
 #include "GameManager.h"
 #include "Player.h"
 #include "Weapon.h"
@@ -12,47 +12,57 @@ Weapon::Weapon(std::string meleeName, float damage, int range, float attackspeed
 }
 
 //Weapon(Ranged) Construtor
-Weapon::Weapon(std::string gunName, int MaxAmmo, int currentMax, int currentClip, int maxClip, float damage,
-float attackspeed, float DropChance):name(gunName),maxAmmo(MaxAmmo),dropChance(DropChance){
+Weapon::Weapon(std::string Name, int MaxAmmo, int currentMax, int currentClip, int maxClip, float Damage,
+float attackSpeed, float reloadTime, float Deviation, float DropChance):name(Name),maxAmmo(MaxAmmo),deviation(Deviation),dropChance(DropChance){
     setCurrentClip(currentClip);
     setCurrentMax(currentMax);
-    setDamage(damage);
-    setAttackSpeed(attackspeed);
+    setDamage(Damage);
+    setAttackSpeed(attackSpeed);
 	setMaxClip(maxClip);
+	setReloadTime(reloadTime);
 	setUI();
 }
 
 //Shoots bullet
 void Weapon::Shoot(Player *player,sf::RenderWindow &window) {
-	if (player->getCurrentWeapon().getCurrentClip() > 0&&attackTimer.getElapsedTime().asSeconds()>attackSpeed) {
-		//Instantiating bullet
-		Bullet b;
-		b.bullet.setRadius(2.5f);
-		b.bullet.setPosition(player->getPlayer().getPosition());
-
-		//Setting accuracy
-		sf::Vector2f WorldCoords = window.mapPixelToCoords(sf::Mouse::getPosition(window));
-		sf::Vector2f dVector = WorldCoords - player->getPlayer().getPosition();
-		float newX1 = dVector.x*cos(5 * 3.14f / 180) - dVector.y*sin(5 * 3.14f / 180);
-		float newY1 = dVector.x*sin(5 * 3.14f / 180) + dVector.y*cos(5 * 3.14f / 180);
-		float newX2 = dVector.x*cos(-5 * 3.14f / 180) - dVector.y*sin(-5 * 3.14f / 180);
-		float newY2 = dVector.x*sin(-5 * 3.14f / 180) + dVector.y*cos(-5 * 3.14f / 180);
-		float n = ((newX2 - newX1) * ((float)rand() / RAND_MAX)) + newX1;
-		float n2 = ((newY2 - newY1) * ((float)rand() / RAND_MAX)) + newY1;
-		sf::Vector2f newDir = sf::Vector2f(n, n2);
-		float mag = sqrt(pow(newDir.x, 2) + pow(newDir.y, 2));
-		b.direction = sf::Vector2f(newDir.x / mag, newDir.y / mag);
-		bullets.push_back(b);
-
+	std::cout << currentClip;
+	if (player->getCurrentWeapon().getCurrentClip() > 0&&!bIsReloading) {
+		if (player->getCurrentWeapon().getName() == "KSG") {
+			for (int i = 0;i < 12;i++) {
+				bullets.push_back(createBullet(player, window));
+			}
+		}
+		else {
+			bullets.push_back(createBullet(player, window));
+		}
 		//Subtracting from current ammo
 		player->getCurrentWeapon().setCurrentClip(player->getCurrentWeapon().getCurrentClip() - 1);
-		attackTimer.restart();
 	}
 	else if (player->getCurrentWeapon().getCurrentClip()==0) {
-		Reload(player);
+		bIsReloading = true;
 	}
 }
 
+//Creates bullet
+Weapon::Bullet Weapon::createBullet(Player* player, sf::RenderWindow &window) {
+	//Instantiating bullet
+	Bullet b;
+	b.bullet.setRadius(2.5f);
+	b.bullet.setPosition(player->getPlayer().getPosition());
+	//Setting accuracy
+	sf::Vector2f WorldCoords = window.mapPixelToCoords(sf::Mouse::getPosition(window));
+	sf::Vector2f dVector = WorldCoords - player->getPlayer().getPosition();
+	float newX1 = dVector.x*cos(deviation * 3.14f / 180) - dVector.y*sin(deviation * 3.14f / 180);
+	float newY1 = dVector.x*sin(deviation * 3.14f / 180) + dVector.y*cos(deviation * 3.14f / 180);
+	float newX2 = dVector.x*cos(-deviation * 3.14f / 180) - dVector.y*sin(-deviation * 3.14f / 180);
+	float newY2 = dVector.x*sin(-deviation * 3.14f / 180) + dVector.y*cos(-deviation * 3.14f / 180);
+	float n = ((newX2 - newX1) * ((float)rand() / RAND_MAX)) + newX1;
+	float n2 = ((newY2 - newY1) * ((float)rand() / RAND_MAX)) + newY1;
+	sf::Vector2f newDir = sf::Vector2f(n, n2);
+	float mag = sqrt(pow(newDir.x, 2) + pow(newDir.y, 2));
+	b.direction = sf::Vector2f(newDir.x / mag, newDir.y / mag);
+	return b;
+}
 //Reloads current weapon
 void Weapon::Reload(Player *player) {
 	int amountToReload = player->getCurrentWeapon().getMaxClip() - player->getCurrentWeapon().getCurrentClip();
@@ -80,9 +90,34 @@ void Weapon::Reload(Player *player) {
 	}
 }
 
+//Checks if player is able to reload
+void Weapon::canReload(Player *player) {
+	if (player->getCurrentWeapon().bIsReloading&&player->getCurrentWeapon().bCanReload) {
+		reloadTimer.restart();
+		bCanReload = false;
+		if (name == "KSG") {
+			for (int i = 0; i < maxClip - currentClip;i++) {
+				reloadTime += .5f;
+			}
+		}
+	}
+	if (player->getCurrentWeapon().bIsReloading) {
+		if (player->getCurrentWeapon().reloadTimer.getElapsedTime().asSeconds() >= player->getCurrentWeapon().reloadTime) {
+			Reload(player);
+			bCanReload = true;
+			bIsReloading = false;
+		}
+	}
+}
+
 //Returns weapon max clip
 int Weapon::getMaxClip() const {
 	return maxClip;
+}
+
+//Sets weapon reload time
+void Weapon::setReloadTime(float reloadTime) {
+	this->reloadTime = reloadTime;
 }
 
 //Updates weapon position
@@ -95,6 +130,7 @@ void Weapon::Update(sf::RenderWindow &window, Player *player,float dt){
 		}
 	}
 	//weapon.setPosition(player->getPlayer().getPosition().x, player->getPlayer().getPosition().y);
+	canReload(player);
 	Draw(window);
 }
 
@@ -167,6 +203,7 @@ float Weapon::getDropChance() const {
     return dropChance;
 }
 
+//Sets ammo UI
 void Weapon::setUI() {
 	if (!font.loadFromFile("Fonts\\light_pixel-7.ttf")) {
 		std::cout << "Could not open font" << std::endl;
@@ -174,16 +211,20 @@ void Weapon::setUI() {
 	ammoCount.setCharacterSize(20);
 	ammoCount.setFont(font);
 	ammoCount.setPosition(1800, 1000);
-	float offsetX = 0, offsetY = -getMaxClip()/2+4, rectSizeX = 5, rectSizeY = 15, size = 0, standardOffset = 40, desiredOffset = 200;
-	for (unsigned i = 8;i < getMaxClip();i += 8) {
+	gunName.setString(name);
+	gunName.setFont(font);
+	gunName.setCharacterSize(15);
+	gunName.setPosition(ammoCount.getPosition().x, ammoCount.getPosition().y - 20);
+	float offsetX = 0, offsetY = -getMaxClip()/2.f+4, rectSizeX = 5.f, rectSizeY = 15.f, size = 0.f, standardOffset = 40.f, desiredOffset = 200.f;
+	for (int i = 8;i < getMaxClip();i += 8) {
 		rectSizeX -= 4.f / 23.f;
 	}
-	for (unsigned i = 32;i < getMaxClip();i+=32) {
+	for (int i = 32;i < getMaxClip();i+=32) {
 		if (i < i + 32) {
 			desiredOffset += 100;
 		}
 	}
-	for (unsigned i = 0; i < getMaxClip();i++) {
+	for (int i = 0; i < getMaxClip();i++) {
 		sf::RectangleShape temp(sf::Vector2f(rectSizeX, rectSizeY));
 		temp.setPosition(ammoCount.getPosition().x-standardOffset-offsetX,ammoCount.getPosition().y+offsetY);
 		ammoBlocks.push_back(temp);
@@ -194,17 +235,20 @@ void Weapon::setUI() {
 		}
 	}
 }
+
+//Displays ammo UI
 void Weapon::displayWeaponInfo(sf::RenderWindow &window) {
 	ammoCount.setString(std::to_string(getCurrentClip()) + "/" + std::to_string(getCurrentMax()));
 	for (int i = ammoBlocks.size()-1;i >= 0;i--) {
-		if (getCurrentClip()<ammoBlocks.size()&&i==ammoBlocks.size()-1) {
+		if ((unsigned)getCurrentClip()<ammoBlocks.size()&&i==ammoBlocks.size()-1) {
 			i -= (getMaxClip() - getCurrentClip());
 		}
-		if (i < ammoBlocks.size()) {
+		if ((unsigned)i < ammoBlocks.size()) {
 			window.draw(ammoBlocks[i]);
 		}
 	}
 	window.draw(ammoCount);
+	window.draw(gunName);
 }
 
 //Weapon Deconstructor

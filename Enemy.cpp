@@ -1,4 +1,4 @@
-#include "stdafx.h"
+//#include "stdafx.h"
 #include "Enemy.h"
 #include "Player.h"
 #include "Collision.h"
@@ -21,7 +21,7 @@ void Enemy::isHit(Player * player) {
 		for (unsigned j = 0;j < player->getWeapons()[i].bullets.size();j++) {
 			if (enemy.getGlobalBounds().intersects(player->getWeapons()[i].bullets[j].bullet.getGlobalBounds())) {
 				std::cout << "Hit: " << player->getWeapons()[i].getDamage() << " damage" << std::endl;
-				setHp(getHp() - player->getWeapons()[i].getDamage());
+				setHp(getHp() - (int)player->getWeapons()[i].getDamage());
 				player->getWeapons()[i].bullets.erase(player->getWeapons()[i].bullets.begin() + j);
 				if (hp <= 0) {
 					bIsDead = true;

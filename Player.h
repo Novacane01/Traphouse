@@ -13,15 +13,15 @@ public:
 	friend class AttackPotion;
 
 	//Player
-	 Player(std::string, int health = 100, float walkspeed= 200.f, float stamina = 500.f);
+	 Player(std::string, float health = 100.f, float walkspeed= 200.f, float stamina = 500.f);
 	 void setName(std::string);
-	 void setHp(int);
+	 void setHp(float);
 	 void setMaxStamina(float);
 	 void setCurrentStamina(float);
 	 void setWalkSpeed(float);
 	 const std::string getName() const;
 	 float getWalkspeed() const;
-	 int getHp() const;
+	 float getHp() const;
 	 float getMaxStamina() const;
 	 float getCurrentStamina() const;
 	 void setTexture(std::string);
@@ -64,7 +64,7 @@ private:
 	std::string name;
 	std::vector<Weapon> weaponInventory;
 	std::vector<Potion> potionInventory;
-	int hp = 0;
+	float hp = 0.f;
 	float walkspeed = 0.f;
 	float maxStamina = 0.f;
 	float currentStamina = 0.f;

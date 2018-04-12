@@ -1,4 +1,4 @@
-#include "stdafx.h"
+//#include "stdafx.h"
 #include "GameManager.h"
 
 unsigned WINDOW_LENGTH, WINDOW_WIDTH;
@@ -29,6 +29,7 @@ void GameManager::Start() {
 	window.setVerticalSyncEnabled(false); //Limits refresh rate to monitor
 	//Initializes clock to record frames per second
 	sf::Clock FPSclock;
+	sf::Clock clickInterval;
 
 	//Creates player object
 	Player* player = createPlayer(window);
@@ -65,8 +66,8 @@ void GameManager::Start() {
 					player->isMovingRight = true;
 					
 				}
-				if (event.key.code == sf::Keyboard::R) {
-					player->getCurrentWeapon().Reload(player);
+				if (event.key.code == sf::Keyboard::R&&!player->getCurrentWeapon().bIsReloading) {
+					player->getCurrentWeapon().bIsReloading = true;
 				}
 				if (event.key.code == sf::Keyboard::LShift) {
 					player->bIsSprinting = true;
@@ -97,8 +98,11 @@ void GameManager::Start() {
 				player->switchWeapons();
 			}
 		}
-		if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Left)) {
-			player->getCurrentWeapon().Shoot(player, window);
+		if (clickInterval.getElapsedTime().asSeconds() > player->getCurrentWeapon().getAttackSpeed()) {
+			if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Left)) {
+				player->getCurrentWeapon().Shoot(player, window);
+				clickInterval.restart();
+			}
 		}
 		window.clear(); //Clears window
 		map->Draw(window); //Draws map
@@ -201,7 +205,7 @@ void GameManager::Pause(sf::RenderWindow &window) {
 	sf::Text resumeButton;
 	resumeButton.setFont(font);
 	resumeButton.setCharacterSize(12);
-	resumeButton.setPosition(WINDOW_LENGTH, WINDOW_WIDTH);
+	resumeButton.setPosition((float)WINDOW_LENGTH, (float)WINDOW_WIDTH);
 	while (window.isOpen()) {
 		while (window.pollEvent(event)) {
 
