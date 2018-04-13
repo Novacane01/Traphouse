@@ -1,26 +1,30 @@
-//#include "stdafx.h"
+#include "stdafx.h"
 #include "Player.h"
-#include "Pickup.h"
 #include "Map.h"
 
 //Player Constructor
-Player::Player(std::string name, float hp, float walkspeed, float maxStamina):maxHp(hp){
+Player::Player(std::string name, float hp, float walkspeed, float maxStamina):maxHp(hp),defaultWalkspeed(walkspeed){
+	Weapon weapons;
 	setName(name);
 	setCurrentHp(maxHp);
 	setMaxStamina(maxStamina);
 	setCurrentStamina(this->maxStamina);
-	setWalkSpeed(walkspeed);
+	setCurrentWalkSpeed(walkspeed);
 	player.setOrigin(20,20);
 	player.setPosition(WINDOW_WIDTH/2.f, WINDOW_LENGTH/2.f);
 	setTexture("Sprites\\PlayerAnims\\Walking\\Walking1.png");
-	weaponInventory.push_back(pickups.defaultPistol);
+	weaponInventory.push_back(*weapons.defaultPistol);
 	std::cout << "\'Pistol\' added to inventory" << std::endl;
-	weaponInventory.push_back(pickups.shotgun);
+	weaponInventory.push_back(*weapons.shotgun);
+	std::cout << "\'Shotgun\' added to inventory" << std::endl;
+	potionInventory.push_back(new SpeedPotion());
+	potionInventory.push_back(new AttackPotion());
+	std::cout << "\'Health Potion' added to inventory" << std::endl;
 	//weaponInventory.push_back(pickups.assaultRifle);
 	//weaponInventory.push_back(pickups.boltSniper);
-	std::cout << "\'Minigun\' added to inventory" << std::endl;
-	weaponInventory.push_back(pickups.defaultKnife);
-	std::cout << "\'Knife\' added to inventory" << std::endl;
+	//std::cout << "\'Minigun\' added to inventory" << std::endl;
+	//weaponInventory.push_back(pickups.defaultKnife);
+	//std::cout << "\'Knife\' added to inventory" << std::endl;
 	setUI();
 }
 
@@ -86,13 +90,18 @@ float Player::getMaxHp() const {
 }
 
 //Sets player walkspeed
-void Player::setWalkSpeed(float value){
-	walkspeed = value;
+void Player::setCurrentWalkSpeed(float value){
+	currentWalkspeed = value;
 }
 
-//Returns player walkspeed
-float Player::getWalkspeed() const {
-	return walkspeed;
+//Returns player's current walkspeed
+float Player::getCurrentWalkspeed() const {
+	return currentWalkspeed;
+}
+
+//Returns player's default walkspeed
+float Player::getDefaultWalkspeed() const {
+	return defaultWalkspeed;
 }
 
 //Returns player sprite
@@ -109,34 +118,22 @@ void Player::setTexture(std::string texturePath){
 
 //Moves player left
 void Player::MoveLeft(float dt) {
-	if (bIsSprinting&&canSprint)
-		player.move(-(dt*walkspeed*1.5f), 0);
-	else
-		player.move(-(dt*walkspeed), 0);
+	player.move(-(dt*currentWalkspeed), 0);
 }
 
 //Moves player up
 void Player::MoveUp(float dt) {
-	if (bIsSprinting&&canSprint)
-		player.move(0, -(dt*walkspeed*1.5f));
-	else
-		player.move(0, -(dt*walkspeed));
+	player.move(0, -(dt*currentWalkspeed));
 }
 
 //Movbes player down
 void Player::MoveDown(float dt) {
-	if (bIsSprinting&&canSprint)
-		player.move(0, (dt*walkspeed*1.5f));
-	else
-		player.move(0, (dt*walkspeed));
+	player.move(0, (dt*currentWalkspeed));
 }
 
 //Moves player right
 void Player::MoveRight(float dt) {
-	if(bIsSprinting&&canSprint)
-		player.move((dt*walkspeed*1.5f), 0);
-	else 
-		player.move((dt*walkspeed), 0);
+	player.move((dt*currentWalkspeed), 0);
 }
 
 //Returns status of player
@@ -156,35 +153,114 @@ void Player::displayPlayerInfo(sf::RenderWindow &window) {
 }
 
 //Updates player position and player rotation
-void Player::Update(sf::RenderWindow &window, float dt, Map *map) {
+void Player::Update(sf::RenderWindow &window, float dt) {
+	if (disables.size() == 0) {
+		disableTimer.restart();
+	}
+	else {
+		float dTime = disableTimer.restart().asSeconds();
+		for (unsigned i = 0;i < disables.size();) {
+			if (disables[i].first == "Slow") {
+				slowed = true;
+				currentWalkspeed = defaultWalkspeed / 2.f;
+				disables[i].second -= dTime;
+				if (disables[i].second <= 0) {
+					disables.erase(disables.begin() + i--);
+					currentWalkspeed = defaultWalkspeed;
+					slowed = false;
+				}
+				else {
+					i++;
+				}
+			}
+			else if (disables[i].first == "Stun") {
+				stunned = true;
+				disables[i].second -= dTime;
+				if (disables[i].second <= 0) {
+					disables.erase(disables.begin() + i--);
+					stunned = false;
+				}
+				else {
+					i++;
+				}
+			}
+		}
+	}
+	if (buffs.size() == 0) {
+		buffTimer.restart();
+	}
+	else {
+		float bTime = buffTimer.restart().asSeconds();
+		for (unsigned i = 0;i < buffs.size();) {
+			if (buffs[i].first == "Stamina") {
+				energized = true;
+				buffs[i].second -= bTime;
+				if (buffs[i].second <= 0) {
+					buffs.erase(buffs.begin() + i--);
+					energized = false;
+				}
+				else {
+					i++;
+				}
+			}
+			else if (buffs[i].first == "Attack") {
+				empowered = true;
+				std::cout << buffs[i].second - bTime << " seconds left" << std::endl;
+				buffs[i].second -= bTime;
+				if (buffs[i].second <= 0) {
+					buffs.erase(buffs.begin() + i--);
+					empowered = false;
+				}
+				else {
+					i++;
+				}
+			}
+			else if (buffs[i].first == "Speed") {
+				triggerhappy = true;
+				buffs[i].second -= bTime;
+				if (buffs[i].second <= 0) {
+					buffs.erase(buffs.begin() + i--);
+					triggerhappy = false;
+				}
+				else {
+					i++;
+				}
+			}
+		}
+	}
+
 	if (currentStamina == maxStamina) {
-		canSprint = true;
+		bCanSprint = true;
 	}
 	else if (currentStamina <= 0) {
-		canSprint = false;
+		bCanSprint = false;
 	}
-	if (bIsSprinting&&canSprint) {
-		currentStamina -= 1.f;
+
+	if ((bIsSprinting&&bCanSprint&&!slowed||energized)&&!stunned) {
+		currentWalkspeed = defaultWalkspeed*1.5f;
+		currentStamina -= (energized)?0.f:1.f;
 	}
-	else if (currentStamina < 500.f) {
+	else if (currentStamina < 500.f&&!slowed) {
+		currentWalkspeed = defaultWalkspeed;
 		currentStamina += .5f;
 	}
 	if (currentHp <= 0) {
 		bIsDead = true;
 	}
-	if (isMovingUp) {
-		MoveUp(dt);
+	if (!stunned) {
+		if (isMovingUp) {
+			MoveUp(dt);
+		}
+		if (isMovingDown) {
+			MoveDown(dt);
+		}
+		if (isMovingRight) {
+			MoveRight(dt);
+		}
+		if (isMovingLeft) {
+			MoveLeft(dt);
+		}
 	}
-	if (isMovingDown) {
-		MoveDown(dt);
-	}
-	if (isMovingRight) {
-		MoveRight(dt);
-	}
-	if (isMovingLeft) {
-		MoveLeft(dt);
-	}
-	//map->collisionTest(this);
 
 	//Rotates player based off of mouse position
 	sf::Vector2f playerPosition = player.getPosition();
@@ -210,6 +286,28 @@ Weapon& Player::getCurrentWeapon() {
 //Returns weapon inventory
 std::vector<Weapon>& Player::getWeapons() {
 	return weaponInventory;
+}
+
+//Returns potion iniventory
+std::vector<Potion *>& Player::getPotions() {
+	return potionInventory;
+}
+
+//Returns current potion
+Potion* Player::getCurrentPotion() {
+	return potionInventory[0];
+}
+
+//Swaps potions
+void Player::switchPotions() {
+	std::vector<Potion *> temp = potionInventory;
+	potionInventory.clear();
+	potionInventory.push_back(temp[1]);
+	potionInventory.push_back(temp[0]);
+	std::cout << "Potions swapped" << std::endl;
+	for (unsigned i = 1;i <= potionInventory.size();i++) {
+		std::cout << i << ". " << potionInventory[i-1]->getName() << std::endl;
+	}
 }
 
 //Sets current weapon

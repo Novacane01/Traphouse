@@ -1,9 +1,9 @@
-//#include "stdafx.h"
+#include "stdafx.h"
 #include "GameManager.h"
 
 unsigned WINDOW_LENGTH, WINDOW_WIDTH;
 //Game Manager Constructor
-GameManager::GameManager(int width, int length){
+GameManager::GameManager(int width, int length) {
 	setWindowLength(length);
 	setWindowWidth(width);
 	if (!font.loadFromFile("Fonts\\light_pixel-7.ttf")) {
@@ -38,7 +38,8 @@ void GameManager::Start() {
 
 //	std::vector<Enemy *> enemies;
 	/*Skeleton c;*/
-	Enemy::Spawn(new Skeleton());
+	//Enemy::Spawn(new Skeleton());
+	Enemy::Spawn(new Spider());
 
 	std::cout << typeid(player).name() << std::endl;
 	//Main loop
@@ -66,7 +67,7 @@ void GameManager::Start() {
 					player->isMovingRight = true;
 					
 				}
-				if (event.key.code == sf::Keyboard::R&&!player->getCurrentWeapon().bIsReloading) {
+				if (event.key.code == sf::Keyboard::R&&player->getCurrentWeapon().getCurrentClip()<player->getCurrentWeapon().getMaxClip()) {
 					player->getCurrentWeapon().bIsReloading = true;
 				}
 				if (event.key.code == sf::Keyboard::LShift) {
@@ -74,6 +75,11 @@ void GameManager::Start() {
 				}
 				if (event.key.code == sf::Keyboard::Escape) {
 					Pause(window);
+				}
+				if (event.key.code == sf::Keyboard::X) {
+					player->getCurrentPotion()->Use(player);
+					std::cout << player->getCurrentPotion()->getName() << " used" << std::endl;
+					player->getPotions()->erase(player->getPotions()->begin());
 				}
 
 			}
@@ -98,7 +104,7 @@ void GameManager::Start() {
 				player->switchWeapons();
 			}
 		}
-		if (clickInterval.getElapsedTime().asSeconds() > player->getCurrentWeapon().getAttackSpeed()) {
+		if (clickInterval.getElapsedTime().asSeconds() > ((player->triggerhappy)?player->getCurrentWeapon().getAttackSpeed()/2.f:player->getCurrentWeapon().getAttackSpeed())) {
 			if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Left)) {
 				player->getCurrentWeapon().Shoot(player, window);
 				clickInterval.restart();
@@ -115,7 +121,7 @@ void GameManager::Start() {
 				Enemy::Destroy(Enemy::getEnemies().begin()+i);
 			}
 		}
-		player->Update(window, deltaTime, map); //Updates player position
+		player->Update(window, deltaTime); //Updates player position
 		player->Draw(window); //Draws player to screen
 		for (unsigned i = 0;i < player->getWeapons().size();i++) {
 			player->getWeapons()[i].Update(window, player, deltaTime); //Updates weapons and bullets

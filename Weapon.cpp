@@ -1,12 +1,24 @@
-//#include "stdafx.h"
+#include "stdafx.h"
 #include "GameManager.h"
 #include "Player.h"
 #include "Weapon.h"
 #include <exception>
 #include <cmath>
 
+Weapon::Weapon() {
+	defaultKnife = new Weapon("Melee", "Knife", 100000.f, 2, .5f, 0.f);
+	defaultPistol = new Weapon("Pistol", "M1911", 88, 88, 8, 8, 10.f, 0.25f, 1.f, 2.5f, 0.f);
+	heavyPistol = new Weapon("Heavy Pistol", "Desert Eagle", 35, 35, 7, 7, 50.f, .5f, 2.f, 2.f, 0.15f);
+	boltSniper = new Weapon("Bolt Sniper", "L96A1", 15, 15, 5, 5, 100.f, 2.f, 4.f, 0.f, 0.02f);
+	semiAuto = new Weapon("SemiAuto", "M14", 60, 60, 10, 10, 25.f, .4f, 2.f, 1.f, 0.05f);
+	shotgun = new Weapon("Shotgun", "KSG", 30, 30, 6, 6, 20.f, 1.f, 0.f, 5.f, 0.05f);
+	assaultRifle = new Weapon("Assault Rifle", "AK47", 90, 90, 30, 30, 30.f, .1f, 2.f, 5.f, .04f);
+	minigun = new Weapon("Minigun", "Minigun", 180, 180, 180, 180, 20.f, .05f, 5.f, 7.5f, .02f);
+	semiSniper = new Weapon("Semi Sniper", "Barrett .50 Cal", 30, 30, 10, 10, 80.f, .5f, 4.f, 0.f, .02f);
+	submachineGun = new Weapon("Submachine Gun", "MP40", 96, 96, 32, 32, 20.f, .4f, 2.f, 2.5f, .1f);
+}
 //Weapon(Melee) Constructor
-Weapon::Weapon(std::string type, std::string meleeName, float damage, int range, float attackspeed, float dropChance):name(meleeName),range(range),dropChance(dropChance) {
+Weapon::Weapon(std::string type, std::string meleeName, float damage, int range, float attackspeed, float dropChance):name(meleeName),maxAmmo(0),range(range),dropChance(dropChance) {
 	setDamage(damage);
 	setAttackSpeed(attackspeed);
 }
@@ -25,7 +37,6 @@ float attackSpeed, float reloadTime, float Deviation, float DropChance):type(wea
 
 //Shoots bullet
 void Weapon::Shoot(Player *player,sf::RenderWindow &window) {
-	std::cout << currentClip;
 	if (player->getCurrentWeapon().getCurrentClip() > 0&&!bIsReloading) {
 		if (player->getCurrentWeapon().getType() == "Shotgun") {
 			for (int i = 0;i < 12;i++) {
@@ -47,6 +58,7 @@ void Weapon::Shoot(Player *player,sf::RenderWindow &window) {
 Weapon::Bullet Weapon::createBullet(Player* player, sf::RenderWindow &window) {
 	//Instantiating bullet
 	Bullet b;
+	b.damage = (player->empowered)?damage*1.5f:damage;
 	b.bullet.setRadius(2.5f);
 	b.bullet.setPosition(player->getPlayer().getPosition());
 	//Setting accuracy
@@ -102,7 +114,7 @@ void Weapon::canReload(Player *player) {
 		}
 	}
 	if (player->getCurrentWeapon().bIsReloading) {
-		if (player->getCurrentWeapon().reloadTimer.getElapsedTime().asSeconds() >= player->getCurrentWeapon().reloadTime) {
+		if (player->getCurrentWeapon().reloadTimer.getElapsedTime().asSeconds() >= ((player->triggerhappy)?player->getCurrentWeapon().reloadTime/2:player->getCurrentWeapon().getAttackSpeed())) {
 			Reload(player);
 			bCanReload = true;
 			bIsReloading = false;

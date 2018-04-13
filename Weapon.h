@@ -1,6 +1,7 @@
 #pragma once
 #include "SFML/Graphics.hpp"
 #include "Enemy.h"
+#include "Pickup.h"
 #include <string>
 #include <cmath>
 
@@ -15,12 +16,14 @@ private:
 		sf::Vector2f direction;
 		float velocity = 2000.f;
 		sf::CircleShape bullet;
+		float damage = 0.f;
 	};
 public:
 	friend class Enemy;
 	Weapon& operator= (const Weapon& x) {
 		return *this;
 	}
+	Weapon();
 	Weapon(std::string type,std::string name, float, int, float, float);
 	Weapon(std::string type, std::string name, int maxAmmo, int currentMax, int currentClip, int maxClip, float damage, float attackSpeed,
 		float reloadTime,float deviation, float dropChance);
@@ -54,6 +57,19 @@ public:
 
 	bool bIsReloading;
 	bool bCanReload = true;
+
+	//Guns
+	Weapon * defaultKnife;
+	Weapon * defaultPistol;
+	Weapon * heavyPistol;
+	Weapon * boltSniper;
+	Weapon * semiAuto;
+	Weapon * shotgun;
+	Weapon * assaultRifle;
+	Weapon * minigun;
+	Weapon * semiSniper;
+	Weapon * submachineGun;
+
 private:
 	//Weapon Properties
 	const std::string type;

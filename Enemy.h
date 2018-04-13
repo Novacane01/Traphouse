@@ -1,10 +1,13 @@
 #pragma once
-#include "SFML\Graphics.hpp"
+#include "SFML/Graphics.hpp"
 
 class Player;
 class Enemy
 {
 public:
+	enum class animationState { MELEE, RANGED, IDLE, DEAD };
+	enum class behaviour { AGGRESSIVE, PASSIVE }mode;
+
 	Enemy& operator= (const Enemy&) {
 		return *this;
 	}
@@ -14,8 +17,8 @@ public:
 	void setWalkspeed(float);
 	void setAttack(float);
 	void setTexture(sf::Sprite &, sf::Texture &, std::string);
-	void setDirection(sf::Vector2f &);
 	void setAttackSpeed(float);
+	void setDirection(sf::Vector2f);
 	//Getters
 	static std::vector<Enemy *> & getEnemies();
 	sf::Vector2f getDirection() const;
@@ -25,6 +28,7 @@ public:
  	float getWalkspeed() const;
 	int getHp() const;
  	sf::Sprite getEnemy() const;
+	sf::Vector2f getUDirection(sf::Vector2f &);
 	//Booleans
 	bool isDead()const;
 	void isHit(Player *);
@@ -32,7 +36,7 @@ public:
 	virtual void Update(Player *, float) = 0;
 	virtual void Draw(sf::RenderWindow &) = 0;
 	static void Spawn(Enemy *);
-	static void Destroy(std::vector<Enemy *>::iterator &);
+	static void Destroy(std::vector<Enemy *>::iterator);
 	~Enemy();
 	
 private:
@@ -53,7 +57,7 @@ protected:
 
 class Skeleton:public Enemy {
 public:
-	Skeleton();
+	Skeleton(std::string name = "Skeleton", int hp = 100, float attack = 10.f, float walkspeed = 100.f, float attackspeed = 2.f);
 	void boneWhack(Player *);
 	void boneThrow(Player *);
 	void walkAnim();
@@ -67,10 +71,31 @@ private:
 		sf::Sprite bone;
 		sf::Texture texture;
 		sf::Vector2f direction;
-		sf::Vector2f position;
 		float velocity = 250.f;
 		sf::Clock deleteTimer;
 	}bone;
 	std::vector<Bone> bones;
+};
+
+class Spider :public Enemy {
+public:
+	Spider(std::string name = "Spider", int hp = 15, float attack = 2.f, float walkspeed = 200.f, float attackspeed = 2.f);
+	void webShot(Player *);
+	void Bite(Player *);
+	void Update(Player *, float);
+	void walkAnim();
+	void Draw(sf::RenderWindow &);
+private:
+	struct Web {
+		sf::Sprite web;
+		sf::Texture texture;
+		sf::Vector2f direction;
+		float velocity = 250.f;
+		sf::Clock deleteTimer;
+	}web;
+	std::vector<Web> webs;
+	sf::Clock attackTimer;
+	sf::Clock animationTimer;
+	sf::IntRect rectSourceSprite;
 };
 
