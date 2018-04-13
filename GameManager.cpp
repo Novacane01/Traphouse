@@ -1,6 +1,5 @@
-#include "stdafx.h"
 #include "GameManager.h"
-
+#include "linkedMap.h"
 
 //Game Manager Constructor
 GameManager::GameManager(int width, int length){
@@ -20,6 +19,12 @@ void GameManager::setWindowWidth(int value) {
 
 //Starts The Game
 void GameManager::Start() {
+	linkedMap Map;
+
+	int roomsAdded = 10;
+	Map.addRooms(12, 0, Map.head);
+	Map.current = Map.head;
+
 	//Creates Window with size WINDOW_WITDTH x WINDOW_LENGTH
 	sf::RenderWindow window(sf::VideoMode(WINDOW_WIDTH, WINDOW_LENGTH), "Traphouse");
 
@@ -32,7 +37,6 @@ void GameManager::Start() {
 	//Creates player object
 	Player* player = createPlayer(window);
 	//Creates bounded Map rectangle object
-	Map *map = new Map;
 
 	std::vector<Enemy *> enemies;
 	/*Skeleton c;*/
@@ -92,16 +96,22 @@ void GameManager::Start() {
 			}
 		}
 		window.clear(); //Clears window
-		window.draw(map->map); //Draws map
 		for (unsigned i = 0; i < enemies.size();i++) {
 			enemies[i]->Update(player, deltaTime);
 			window.draw(enemies[i]->getEnemy());
 			if (enemies[i]->isDead()) {
 				enemies.erase(enemies.begin()+i);
+				Enemy::Spawn(player, WINDOW_WIDTH, WINDOW_LENGTH);
 			}
 		}
-		player->Update(window, deltaTime, map); //Updates player position
+		player->Update(window, deltaTime); //Updates player position
 		player->Draw(window); //Draws player to screen
+
+        /*
+                ADD SHIT HERE FOR DRAWING MAP
+         */
+        Map.printMap(Map.head, window);
+
 		for (unsigned i = 0;i < player->getWeapons().size();i++) {
 			player->getWeapons()[i].Update(window, player, deltaTime); //Updates weapons and bullets
 		}
@@ -122,7 +132,7 @@ Player* GameManager::createPlayer(sf::RenderWindow &window) {
 	textBox.setOutlineThickness(2);
 
 	sf::Font font; //Creates font object to load to text
-	if (!font.loadFromFile("Fonts\\light_pixel-7.ttf")) {
+	if (!font.loadFromFile("Fonts/light_pixel-7.ttf")) {
 		std::cout << "Could not load file" << std::endl;
 	}
 	sf::Text text; //Creates text object for name to be drawn to screen

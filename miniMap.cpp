@@ -1,5 +1,5 @@
 
-#include "Map.h"
+#include "miniMap.h"
 #include <iostream>
 #include <math.h>
 #include "SFML/Graphics.hpp"

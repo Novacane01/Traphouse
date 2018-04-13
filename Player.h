@@ -28,7 +28,7 @@ public:
 	 void MoveUp(float);
 	 void MoveDown(float);
 	 void MoveRight(float);
-	 void Update(sf::RenderWindow &window, float, Map *);
+	 void Update(sf::RenderWindow &window, float);
 	 bool isMovingLeft = false;
 	 bool isMovingRight = false;
 	 bool isMovingUp = false;

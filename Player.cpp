@@ -1,7 +1,7 @@
-#include "stdafx.h"
+
 #include "Player.h"
 #include "Pickup.h"
-#include "Map.h"
+#include "miniMap.h"
 
 //Player Constructor
 Player::Player(std::string name, int hp, float walkspeed){
@@ -10,7 +10,7 @@ Player::Player(std::string name, int hp, float walkspeed){
 	setWalkSpeed(walkspeed);
 	player.setOrigin(20,20);
 	player.setPosition(400, 400);
-	setTexture("Sprites\\PlayerAnims\\Walking\\Walking1.png");
+	setTexture("Sprites/PlayerAnims/Walking/Walking1.png");
 	weaponInventory.push_back(pickups.defaultPistol);
 	std::cout << "\'Pistol\' added to inventory" << std::endl;
 	weaponInventory.push_back(pickups.defaultKnife);
@@ -76,7 +76,7 @@ void Player::MoveRight(float dt) {
 
 
 //Updates player position and player rotation
-void Player::Update(sf::RenderWindow &window, float dt, Map *map) {
+void Player::Update(sf::RenderWindow &window, float dt) {
 	if (isMovingUp) {
 		MoveUp(dt);
 	}
@@ -89,7 +89,6 @@ void Player::Update(sf::RenderWindow &window, float dt, Map *map) {
 	if (isMovingLeft) {
 		MoveLeft(dt);
 	}
-	map->collisionTest(this);
 	//Rotates player based off of mouse position
 	sf::Vector2f playerPosition = player.getPosition();
 	float a = sf::Mouse::getPosition(window).x - playerPosition.x;

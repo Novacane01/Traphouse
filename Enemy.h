@@ -1,5 +1,5 @@
 #pragma once
-#include "SFML\Graphics.hpp"
+#include "SFML/Graphics.hpp"
 
 class Player;
 class Enemy
@@ -21,6 +21,7 @@ public:
  	sf::Sprite getEnemy() const;
 	bool isDead();
  	void Update(Player *,float);
+	static void Spawn(Player *, int, int);
 	void setDirection(sf::Vector2f &);
 	~Enemy();
 	
