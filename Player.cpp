@@ -4,9 +4,9 @@
 #include "Map.h"
 
 //Player Constructor
-Player::Player(std::string name, float hp, float walkspeed, float maxStamina){
+Player::Player(std::string name, float hp, float walkspeed, float maxStamina):maxHp(hp){
 	setName(name);
-	setHp(hp);
+	setCurrentHp(maxHp);
 	setMaxStamina(maxStamina);
 	setCurrentStamina(this->maxStamina);
 	setWalkSpeed(walkspeed);
@@ -71,13 +71,18 @@ float Player::getMaxStamina() const {
 }
 
 //Sets player HP
-void Player::setHp(float value){
-	hp = value;
+void Player::setCurrentHp(float value){
+	currentHp = value;
 }
 
-//Returns player HP
-float Player::getHp() const{
-	return hp;
+//Returns player's current HP
+float Player::getCurrentHp() const{
+	return currentHp;
+}
+
+//Returns player's max HP
+float Player::getMaxHp() const {
+	return maxHp;
 }
 
 //Sets player walkspeed
@@ -141,9 +146,9 @@ bool Player::isDead() const{
 
 //Displays player info to screen
 void Player::displayPlayerInfo(sf::RenderWindow &window) {
-	healthBar.setSize(sf::Vector2f(hp*2.5f, 5));
+	healthBar.setSize(sf::Vector2f(currentHp*2.5f, 5));
 	staminaBar.setSize(sf::Vector2f(currentStamina/2.f, 5));
-	hpNum.setString(std::to_string((int)hp) + "/100");
+	hpNum.setString(std::to_string((int)currentHp) + "/" + std::to_string((int)maxHp));
 	window.draw(staminaBar);
 	window.draw(healthBar);
 	window.draw(playerName);
@@ -164,7 +169,7 @@ void Player::Update(sf::RenderWindow &window, float dt, Map *map) {
 	else if (currentStamina < 500.f) {
 		currentStamina += .5f;
 	}
-	if (hp <= 0) {
+	if (currentHp <= 0) {
 		bIsDead = true;
 	}
 	if (isMovingUp) {

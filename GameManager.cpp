@@ -40,7 +40,7 @@ void GameManager::Start() {
 	/*Skeleton c;*/
 	Enemy::Spawn(new Skeleton());
 
-
+	std::cout << typeid(player).name() << std::endl;
 	//Main loop
 	while (window.isOpen()) {
 		float deltaTime = FPSclock.restart().asSeconds();

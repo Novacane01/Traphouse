@@ -139,7 +139,7 @@ Skeleton::Skeleton():Enemy("Skeleton",100,10.f,100.f, 2.f) {
 }
 
 void Skeleton::boneWhack(Player *player) {
-	player->setHp(player->getHp() - getAttack());
+	player->setCurrentHp(player->getCurrentHp() - getAttack());
 }
 
 //Throws a bone at player
@@ -178,7 +178,7 @@ void Skeleton::Update(Player *player, float dt) {
 		bones[i].bone.rotate(180*dt);
 		if (bones[i].bone.getGlobalBounds().intersects(player->getPlayer().getGlobalBounds())) {
 			std::cout << player->getName() << " took " << getAttack() << " damage!" << std::endl;
-			player->setHp(player->getHp() - getAttack());
+			player->setCurrentHp(player->getCurrentHp() - getAttack());
 			bones.erase(bones.begin() + i);
 		}
 	}

@@ -6,14 +6,14 @@
 #include <cmath>
 
 //Weapon(Melee) Constructor
-Weapon::Weapon(std::string meleeName, float damage, int range, float attackspeed, float dropChance):name(meleeName),range(range),dropChance(dropChance) {
+Weapon::Weapon(std::string type, std::string meleeName, float damage, int range, float attackspeed, float dropChance):name(meleeName),range(range),dropChance(dropChance) {
 	setDamage(damage);
 	setAttackSpeed(attackspeed);
 }
 
 //Weapon(Ranged) Construtor
-Weapon::Weapon(std::string Name, int MaxAmmo, int currentMax, int currentClip, int maxClip, float Damage,
-float attackSpeed, float reloadTime, float Deviation, float DropChance):name(Name),maxAmmo(MaxAmmo),deviation(Deviation),dropChance(DropChance){
+Weapon::Weapon(std::string weaponType, std::string Name, int MaxAmmo, int currentMax, int currentClip, int maxClip, float Damage,
+float attackSpeed, float reloadTime, float Deviation, float DropChance):type(weaponType),name(Name),maxAmmo(MaxAmmo),deviation(Deviation),dropChance(DropChance){
     setCurrentClip(currentClip);
     setCurrentMax(currentMax);
     setDamage(Damage);
@@ -27,7 +27,7 @@ float attackSpeed, float reloadTime, float Deviation, float DropChance):name(Nam
 void Weapon::Shoot(Player *player,sf::RenderWindow &window) {
 	std::cout << currentClip;
 	if (player->getCurrentWeapon().getCurrentClip() > 0&&!bIsReloading) {
-		if (player->getCurrentWeapon().getName() == "KSG") {
+		if (player->getCurrentWeapon().getType() == "Shotgun") {
 			for (int i = 0;i < 12;i++) {
 				bullets.push_back(createBullet(player, window));
 			}
@@ -95,7 +95,7 @@ void Weapon::canReload(Player *player) {
 	if (player->getCurrentWeapon().bIsReloading&&player->getCurrentWeapon().bCanReload) {
 		reloadTimer.restart();
 		bCanReload = false;
-		if (name == "KSG") {
+		if (type == "Shotgun") {
 			for (int i = 0; i < maxClip - currentClip;i++) {
 				reloadTime += .5f;
 			}
@@ -106,6 +106,9 @@ void Weapon::canReload(Player *player) {
 			Reload(player);
 			bCanReload = true;
 			bIsReloading = false;
+			if (type == "Shotgun") {
+				reloadTime = 0.f;
+			}
 		}
 	}
 }
@@ -166,6 +169,11 @@ void Weapon::setDamage(float damage) {
 void Weapon::setAttackSpeed(float attackSpeed) {
     this->attackSpeed = attackSpeed;
 	
+}
+
+//Returns weapon type
+std::string Weapon::getType() const{
+	return type;
 }
 
 //Returns weapon name

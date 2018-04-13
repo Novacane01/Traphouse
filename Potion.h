@@ -22,13 +22,13 @@ public:
 class SpeedPotion:public Potion{
 public:
     SpeedPotion():Potion("Speed Potion", 0.1, 20){}
-    void Speed(Player *player);
+    void boostSpeed(Player *player);
 };
 
 class StaminaPotion:public Potion{
 public:
     StaminaPotion():Potion("Stamina Potion", 0.1, 20){}
-    void Stamina(Player *player);
+    void increaseStamina(Player *player);
 };
 
 class AttackPotion:public Potion{

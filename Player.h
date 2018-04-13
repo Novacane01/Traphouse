@@ -15,13 +15,14 @@ public:
 	//Player
 	 Player(std::string, float health = 100.f, float walkspeed= 200.f, float stamina = 500.f);
 	 void setName(std::string);
-	 void setHp(float);
+	 void setCurrentHp(float);
 	 void setMaxStamina(float);
 	 void setCurrentStamina(float);
 	 void setWalkSpeed(float);
 	 const std::string getName() const;
 	 float getWalkspeed() const;
-	 float getHp() const;
+	 float getMaxHp() const;
+	 float getCurrentHp() const;
 	 float getMaxStamina() const;
 	 float getCurrentStamina() const;
 	 void setTexture(std::string);
@@ -64,7 +65,8 @@ private:
 	std::string name;
 	std::vector<Weapon> weaponInventory;
 	std::vector<Potion> potionInventory;
-	float hp = 0.f;
+	const float maxHp = 0.f;
+	float currentHp = 0.f;
 	float walkspeed = 0.f;
 	float maxStamina = 0.f;
 	float currentStamina = 0.f;

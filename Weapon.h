@@ -21,8 +21,8 @@ public:
 	Weapon& operator= (const Weapon& x) {
 		return *this;
 	}
-	Weapon(std::string, float, int, float, float);
-	Weapon(std::string, int maxAmmo, int currentMax, int currentClip, int maxClip, float damage, float attackSpeed,
+	Weapon(std::string type,std::string name, float, int, float, float);
+	Weapon(std::string type, std::string name, int maxAmmo, int currentMax, int currentClip, int maxClip, float damage, float attackSpeed,
 		float reloadTime,float deviation, float dropChance);
 	void Update(sf::RenderWindow &, Player *, float);
 	void Draw(sf::RenderWindow &);
@@ -35,6 +35,7 @@ public:
 	void setReloadTime(float);
 	Bullet createBullet(Player *, sf::RenderWindow &window);
 	//Getters
+	std::string getType() const;
 	std::string getName() const;
 	int getMaxAmmo() const;
 	int getCurrentMax() const;
@@ -55,6 +56,7 @@ public:
 	bool bCanReload = true;
 private:
 	//Weapon Properties
+	const std::string type;
 	const std::string name;
 	const int maxAmmo = 0;
 	const int range = 0;
