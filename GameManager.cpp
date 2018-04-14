@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "GameManager.h"
+#include "Chest.h"
 
 unsigned WINDOW_LENGTH, WINDOW_WIDTH;
 //Game Manager Constructor
@@ -36,8 +37,7 @@ void GameManager::Start() {
 	//Creates bounded Map rectangle object
 	Map *map = new Map;
 
-//	std::vector<Enemy *> enemies;
-	/*Skeleton c;*/
+	//Skeleton
 	//Enemy::Spawn(new Skeleton());
 	Enemy::Spawn(new Spider());
 
@@ -79,7 +79,7 @@ void GameManager::Start() {
 				if (event.key.code == sf::Keyboard::X) {
 					player->getCurrentPotion()->Use(player);
 					std::cout << player->getCurrentPotion()->getName() << " used" << std::endl;
-					player->getPotions()->erase(player->getPotions()->begin());
+					player->getPotions().erase(player->getPotions().begin());
 				}
 
 			}
@@ -100,7 +100,7 @@ void GameManager::Start() {
 					player->bIsSprinting = false;
 				}
 			}
-			else if (event.type == sf::Event::MouseWheelScrolled) {
+			else if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Right)) {
 				player->switchWeapons();
 			}
 		}

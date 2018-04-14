@@ -3,6 +3,7 @@
 #include "Map.h"
 #include "Enemy.h"
 #include "Player.h"
+#include <random>
 #include <iostream>
 #include <string>
 #include <vector>

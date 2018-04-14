@@ -1,10 +1,10 @@
 #include "stdafx.h"
 #include "Player.h"
-#include "Map.h"
+#include "Chest.h"
 
 //Player Constructor
 Player::Player(std::string name, float hp, float walkspeed, float maxStamina):maxHp(hp),defaultWalkspeed(walkspeed){
-	Weapon weapons;
+	//Chest *chest = new Chest();
 	setName(name);
 	setCurrentHp(maxHp);
 	setMaxStamina(maxStamina);
@@ -13,13 +13,14 @@ Player::Player(std::string name, float hp, float walkspeed, float maxStamina):ma
 	player.setOrigin(20,20);
 	player.setPosition(WINDOW_WIDTH/2.f, WINDOW_LENGTH/2.f);
 	setTexture("Sprites\\PlayerAnims\\Walking\\Walking1.png");
-	weaponInventory.push_back(*weapons.defaultPistol);
+	weaponInventory.push_back(*Weapon::weaponList["defaultPistol"]);
 	std::cout << "\'Pistol\' added to inventory" << std::endl;
-	weaponInventory.push_back(*weapons.shotgun);
+	//chest->Open(this);
+	weaponInventory.push_back(*Weapon::weaponList["shotgun"]);
 	std::cout << "\'Shotgun\' added to inventory" << std::endl;
-	potionInventory.push_back(new SpeedPotion());
-	potionInventory.push_back(new AttackPotion());
-	std::cout << "\'Health Potion' added to inventory" << std::endl;
+	//potionInventory.push_back(new TimePotion());
+	//potionInventory.push_back(new AttackPotion());
+	//std::cout << "\'Health Potion' added to inventory" << std::endl;
 	//weaponInventory.push_back(pickups.assaultRifle);
 	//weaponInventory.push_back(pickups.boltSniper);
 	//std::cout << "\'Minigun\' added to inventory" << std::endl;
@@ -184,6 +185,21 @@ void Player::Update(sf::RenderWindow &window, float dt) {
 					i++;
 				}
 			}
+			else if (disables[i].first == "Poison") {
+				poisoned = true;
+				disables[i].second -= dTime;
+				if (poisonTimer.getElapsedTime().asSeconds() >= 1.5f) {
+					currentHp--;
+					poisonTimer.restart();
+				}
+				if (disables[i].second <= 0) {
+					disables.erase(disables.begin() + i--);
+					poisoned = false;
+				}
+				else {
+					i++;
+				}
+			}
 		}
 	}
 	if (buffs.size() == 0) {
@@ -221,6 +237,17 @@ void Player::Update(sf::RenderWindow &window, float dt) {
 				if (buffs[i].second <= 0) {
 					buffs.erase(buffs.begin() + i--);
 					triggerhappy = false;
+				}
+				else {
+					i++;
+				}
+			}
+			else if (buffs[i].first == "Time") {
+				stopwatch = true;
+				buffs[i].second -= bTime;
+				if (buffs[i].second <= 0) {
+					buffs.erase(buffs.begin() + i--);
+					stopwatch = false;
 				}
 				else {
 					i++;

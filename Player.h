@@ -44,8 +44,9 @@ public:
 	 bool bCanSprint;
 	 //Disables
 	 bool slowed, stunned, poisoned;
+	 sf::Clock poisonTimer;
 	 //Buffs
-	 bool empowered, triggerhappy, energized; //Attack buff, Speed buff, Stamina buff (respectively)
+	 bool empowered, triggerhappy, energized, stopwatch/*<-Subject to change*/; //Attack buff, Speed buff, Stamina buff, Time buff (respectively)
 
 	 sf::Clock disableTimer;
 	 std::vector<std::pair<std::string, float>> disables;

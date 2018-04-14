@@ -1,11 +1,11 @@
 #pragma once
-#include "Weapon.h"
-
+#include <string>
 //Pickup class
 class Pickup
 {
 public:
 	Pickup();
+	std::string name;
 private:
 	
 };

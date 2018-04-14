@@ -1,9 +1,10 @@
 #pragma once
 #include "SFML/Graphics.hpp"
+#include "SFML\Audio.hpp"
 #include "Enemy.h"
-#include "Pickup.h"
 #include <string>
 #include <cmath>
+#include <thread>
 
 class Player;
 
@@ -26,7 +27,7 @@ public:
 	Weapon();
 	Weapon(std::string type,std::string name, float, int, float, float);
 	Weapon(std::string type, std::string name, int maxAmmo, int currentMax, int currentClip, int maxClip, float damage, float attackSpeed,
-		float reloadTime,float deviation, float dropChance);
+		float reloadTime,float deviation, float dropChance, std::string shootFX);
 	void Update(sf::RenderWindow &, Player *, float);
 	void Draw(sf::RenderWindow &);
 	//Setters
@@ -53,24 +54,19 @@ public:
 	void Reload(Player *);
 	void canReload(Player *);
 	void setUI();
+	//Audio
+	void playAudio();
 	~Weapon();
 
+	//Audio
+	void setAudio(sf::Sound &, std::string);
 	bool bIsReloading;
 	bool bCanReload = true;
 
-	//Guns
-	Weapon * defaultKnife;
-	Weapon * defaultPistol;
-	Weapon * heavyPistol;
-	Weapon * boltSniper;
-	Weapon * semiAuto;
-	Weapon * shotgun;
-	Weapon * assaultRifle;
-	Weapon * minigun;
-	Weapon * semiSniper;
-	Weapon * submachineGun;
+	static std::map<std::string,Weapon *> weaponList;
 
 private:
+	static bool gunsLoaded;
 	//Weapon Properties
 	const std::string type;
 	const std::string name;
@@ -84,6 +80,8 @@ private:
 	float attackSpeed = 0.f;
 	const float dropChance = 0;
 	float reloadTime = 0.f;
+	sf::Sound sound;
+	sf::SoundBuffer buffer;
 	//
 	std::vector<Bullet> bullets;
 	sf::Sprite weapon;

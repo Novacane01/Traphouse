@@ -1,7 +1,6 @@
 #pragma once
 #include <string>
-#include "Player.h"
-
+#include "SFML/Graphics.hpp"
 class Player;
 
 class Potion{
@@ -50,5 +49,5 @@ public:
 class TimePotion:public Potion{
 public:
     TimePotion():Potion("Time Potion", 0.1, 20){}
-    void Use();
+    void Use(Player *);
 };
