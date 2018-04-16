@@ -1,4 +1,4 @@
-
+//#include "stdafx.h"
 #include "Potion.h"
 #include "Player.h"
 
@@ -6,17 +6,17 @@ Potion::Potion(std::string name, double dropChance, double duration) :name(name)
 duration(duration) {};
 
 void HealthPotion::Heal(Player *player) {
-    player->setHp(100);
+    player->setCurrentHp(player->getMaxHp());
 }
 
-void SpeedPotion::Speed(Player *player) {
+void SpeedPotion::boostSpeed(Player *player) {
     player->setWalkSpeed(1.5f * player->getWalkspeed());
     for(Weapon i:player->weaponInventory){
         i.setAttackSpeed(1.5f * i.getAttackSpeed());
     }
 }
 
-void StaminaPotion::Stamina(Player *player) {
+void StaminaPotion::increaseStamina(Player *player) {
 
 }
 

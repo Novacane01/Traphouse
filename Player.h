@@ -5,7 +5,6 @@
 #include "Potion.h"
 #include <iostream>
 
-class Map;
 //Player class
 class Player{
 public:
@@ -13,15 +12,21 @@ public:
 	friend class AttackPotion;
 
 	//Player
-	 Player(std::string, int health = 100, float = 200.f);
+	 Player(std::string, float health = 100.f, float walkspeed= 200.f, float stamina = 500.f);
 	 void setName(std::string);
-	 void setHp(int);
+	 void setCurrentHp(float);
+	 void setMaxStamina(float);
+	 void setCurrentStamina(float);
 	 void setWalkSpeed(float);
-	 std::string getName() const;
+	 const std::string getName() const;
 	 float getWalkspeed() const;
-	 int getHp() const;
+	 float getMaxHp() const;
+	 float getCurrentHp() const;
+	 float getMaxStamina() const;
+	 float getCurrentStamina() const;
 	 void setTexture(std::string);
 	 sf::Sprite& getPlayer();
+	 bool isDead() const;
 
 	 //Moving
 	 void MoveLeft(float);
@@ -34,6 +39,9 @@ public:
 	 bool isMovingUp = false;
 	 bool isMovingDown = false;
 	 void Draw(sf::RenderWindow &);
+	 bool bIsSprinting;
+	 bool canSprint;
+
 	 //Raycasting
 	 sf::RectangleShape rayUp;
 	 sf::RectangleShape rayDown;
@@ -45,6 +53,10 @@ public:
 	 Weapon& getCurrentWeapon();
 	 void switchWeapons();
 	 void setWeapon(Weapon &);
+
+	 //UI
+	 void setUI();
+	 void displayPlayerInfo(sf::RenderWindow &);
 	 ~Player();
 private:
 	sf::Sprite player;
@@ -52,10 +64,20 @@ private:
 	std::string name;
 	std::vector<Weapon> weaponInventory;
 	std::vector<Potion> potionInventory;
-	int hp = 0;
-	float walkspeed = 0;
+	const float maxHp = 0.f;
+	float currentHp = 0.f;
+	float walkspeed = 0.f;
+	float maxStamina = 0.f;
+	float currentStamina = 0.f;
 	bool invulnerable;
+	bool bIsDead;
 
+private:
+	sf::RectangleShape healthBar;
+	sf::RectangleShape staminaBar;
+	sf::Text playerName;
+	sf::Text hpNum;
+	sf::Font font;
 public:
 	Pickup pickups;
 };

@@ -1,10 +1,15 @@
+//#include "stdafx.h"
 #include "GameManager.h"
-#include "linkedMap.h"
+#include "LinkedMap.h"
 
+unsigned WINDOW_LENGTH, WINDOW_WIDTH;
 //Game Manager Constructor
 GameManager::GameManager(int width, int length){
 	setWindowLength(length);
 	setWindowWidth(width);
+	if (!font.loadFromFile("Fonts/light_pixel-7.ttf")) {
+		std::cout << "Could not load file" << std::endl;
+	}
 }
 
 //Sets window length
@@ -19,104 +24,134 @@ void GameManager::setWindowWidth(int value) {
 
 //Starts The Game
 void GameManager::Start() {
-	linkedMap Map;
 
-	int roomsAdded = 10;
-	Map.addRooms(12, 0, Map.head);
-	Map.current = Map.head;
+    Floor *floor = new Floor;
+    LinkedMap Map;
+
+    Map.addRooms(30, Map.head);
+
+    Map.printRoomNames(Map.head);
+
 
 	//Creates Window with size WINDOW_WITDTH x WINDOW_LENGTH
-	sf::RenderWindow window(sf::VideoMode(WINDOW_WIDTH, WINDOW_LENGTH), "Traphouse");
+	static sf::RenderWindow window(sf::VideoMode(WINDOW_WIDTH, WINDOW_LENGTH), "Traphouse");
 
 	window.setKeyRepeatEnabled(false); //Disables repeated keypresses
 	window.setVerticalSyncEnabled(false); //Limits refresh rate to monitor
-
 	//Initializes clock to record frames per second
 	sf::Clock FPSclock;
+	sf::Clock clickInterval;
 
+
+	sf::View view1(sf::FloatRect(-2000,-2000,4000,4000));
+    window.setView(view1);
 	//Creates player object
 	Player* player = createPlayer(window);
 	//Creates bounded Map rectangle object
 
-	std::vector<Enemy *> enemies;
+
+//	std::vector<Enemy *> enemies;
 	/*Skeleton c;*/
-	enemies.push_back(new Skeleton());
+	Enemy::Spawn(new Skeleton());
 
-
+	std::cout << typeid(player).name() << std::endl;
 	//Main loop
 	while (window.isOpen()) {
 		float deltaTime = FPSclock.restart().asSeconds();
-
 		//Records window events such as mouse movement, mouse clicks, and key strokes
 		sf::Event event;
-		while (window.pollEvent(event)) {
-			if (event.type == event.Closed) {
-				window.close();
-			}
-			if (event.type == sf::Event::KeyPressed) {
-				if (event.key.code == sf::Keyboard::W) {
-					player->isMovingUp = true;
-				}
-				if (event.key.code == sf::Keyboard::A) {
-					player->isMovingLeft = true;
-				
-				}
-				if (event.key.code == sf::Keyboard::S) {
-					player->isMovingDown = true;
-					
-				}
-				if (event.key.code == sf::Keyboard::D) {
-					player->isMovingRight = true;
-					
-				}
 
-			}
-			else if (event.type == sf::Event::KeyReleased) {
-				if (event.key.code == sf::Keyboard::W) {
-					player->isMovingUp = false;
-				}
-				if (event.key.code == sf::Keyboard::A) {
-					player->isMovingLeft = false;
-				}
-				if (event.key.code == sf::Keyboard::S) {
-					player->isMovingDown = false;
-				}
-				if (event.key.code == sf::Keyboard::D) {
-					player->isMovingRight = false;
-				}
-			}
-			else if (event.type == sf::Event::MouseWheelScrolled) {
-				player->switchWeapons();
-			}
-			else if (event.type == sf::Event::MouseButtonPressed) {
-				if (event.mouseButton.button == sf::Mouse::Left) {
-					std::cout << "Left mouse clicked" << std::endl;
-					player->getCurrentWeapon().Shoot(player,window);
-				}
+
+		while (window.pollEvent(event)) {
+            if (event.type == event.Closed) {
+                window.close();
+            }
+            if (event.type == sf::Event::KeyPressed) {
+                if (event.key.code == sf::Keyboard::W) {
+                    player->isMovingUp = true;
+                }
+                if (event.key.code == sf::Keyboard::A) {
+                    player->isMovingLeft = true;
+
+                }
+                if (event.key.code == sf::Keyboard::S) {
+                    player->isMovingDown = true;
+
+                }
+                if (event.key.code == sf::Keyboard::D) {
+                    player->isMovingRight = true;
+
+                }
+                if (event.key.code == sf::Keyboard::R && !player->getCurrentWeapon().bIsReloading) {
+                    player->getCurrentWeapon().bIsReloading = true;
+                }
+                if (event.key.code == sf::Keyboard::LShift) {
+                    player->bIsSprinting = true;
+                }
+                if (event.key.code == sf::Keyboard::Escape) {
+                    Pause(window);
+                }
+                if (event.key.code == sf::Keyboard::M) {
+                    player->switchWeapons();
+                }
+
+            } else if (event.type == sf::Event::KeyReleased) {
+                if (event.key.code == sf::Keyboard::W) {
+                    player->isMovingUp = false;
+                }
+                if (event.key.code == sf::Keyboard::A) {
+                    player->isMovingLeft = false;
+                }
+                if (event.key.code == sf::Keyboard::S) {
+                    player->isMovingDown = false;
+                }
+                if (event.key.code == sf::Keyboard::D) {
+                    player->isMovingRight = false;
+                }
+                if (event.key.code == sf::Keyboard::LShift) {
+                    player->bIsSprinting = false;
+                }
+            }
+            else if(sf::Mouse::isButtonPressed(sf::Mouse::Button::Right)){
+                player->switchWeapons();
+            }
+//			else if (event.type == sf::Event::MouseWheelScrolled) {
+//				player->switchWeapons();
+//			}
+        }
+		if (clickInterval.getElapsedTime().asSeconds() > player->getCurrentWeapon().getAttackSpeed()) {
+			if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Left)) {
+				player->getCurrentWeapon().Shoot(player, window);
+				clickInterval.restart();
 			}
 		}
 		window.clear(); //Clears window
-		for (unsigned i = 0; i < enemies.size();i++) {
-			enemies[i]->Update(player, deltaTime);
-			window.draw(enemies[i]->getEnemy());
-			if (enemies[i]->isDead()) {
-				enemies.erase(enemies.begin()+i);
-				Enemy::Spawn(player, WINDOW_WIDTH, WINDOW_LENGTH);
+
+        floor->Draw(window);//Draws floor texture
+
+        window.draw(Map.head->floor); //draws first room
+        Map.displayMap(Map.head, window); //Draws map
+
+
+		//Draws Enemies to screen
+		for (unsigned i = 0; i < Enemy::getEnemies().size();i++) {
+            const std::vector<Enemy *> &g = Enemy::enemies;
+			Enemy::getEnemies()[i]->Update(player, deltaTime);
+			Enemy::getEnemies()[i]->Draw(window);
+			if (Enemy::getEnemies()[i]->isDead()) {
+				Enemy::Destroy(Enemy::getEnemies().begin()+i);
 			}
 		}
 		player->Update(window, deltaTime); //Updates player position
 		player->Draw(window); //Draws player to screen
-
-        /*
-                ADD SHIT HERE FOR DRAWING MAP
-         */
-        Map.printMap(Map.head, window);
-
 		for (unsigned i = 0;i < player->getWeapons().size();i++) {
 			player->getWeapons()[i].Update(window, player, deltaTime); //Updates weapons and bullets
 		}
+		player->getCurrentWeapon().displayWeaponInfo(window);
 		window.display(); //Displays all drawn objects
-
+		if (player->isDead()) {
+			GameOver();
+		}
 	}
 }
 
@@ -131,10 +166,6 @@ Player* GameManager::createPlayer(sf::RenderWindow &window) {
 	textBox.setOutlineColor(sf::Color::Red);
 	textBox.setOutlineThickness(2);
 
-	sf::Font font; //Creates font object to load to text
-	if (!font.loadFromFile("Fonts/light_pixel-7.ttf")) {
-		std::cout << "Could not load file" << std::endl;
-	}
 	sf::Text text; //Creates text object for name to be drawn to screen
 	text.setFont(font);
 	text.setPosition(textBox.getPosition().x + textBox.getSize().x / 2.f, textBox.getPosition().y + textBox.getSize().y / 5.f);
@@ -188,4 +219,24 @@ Player* GameManager::createPlayer(sf::RenderWindow &window) {
 //Game Manager Destructor
 GameManager::~GameManager() {
 
+}
+
+void GameManager::GameOver() {
+	std::cout << "You have died" << std::endl;
+	Enemy::getEnemies().clear();
+	Start();
+}
+
+void GameManager::Pause(sf::RenderWindow &window) {
+	sf::Event event;
+	sf::Text resumeButton;
+	resumeButton.setFont(font);
+	resumeButton.setCharacterSize(12);
+	resumeButton.setPosition((float)WINDOW_LENGTH, (float)WINDOW_WIDTH);
+
+    while (window.isOpen()) {
+		while (window.pollEvent(event)) {
+
+		}
+	}
 }
