@@ -1,10 +1,29 @@
-//#include "stdafx.h"
+#include "stdafx.h"
 #include "GameManager.h"
 #include "Player.h"
 #include "Weapon.h"
 #include <exception>
 #include <cmath>
 
+std::map<std::string,Weapon *> Weapon::weaponList;
+bool Weapon::gunsLoaded;
+
+//Base Constructor
+Weapon::Weapon() {
+	if (!gunsLoaded) {
+		weaponList["defaultKnife"] = new Weapon("Melee", "Knife", 100000.f, 2, .5f, 0.f);
+		weaponList["defaultPistol"]= new Weapon("Pistol", "M1911", 88, 88, 8, 8, 10.f, 0.25f, 1.f, 2.5f, 0.f, "SFX\\Guns\\shotgun.wav");
+		weaponList["heavyPistol"] = new Weapon("Heavy Pistol", "Desert Eagle", 35, 35, 7, 7, 50.f, .5f, 2.f, 2.f, 0.3f, "SFX\\Guns\\shotgun.wav");
+		weaponList["boltSniper"] = new Weapon("Bolt Sniper", "L96A1", 15, 15, 5, 5, 100.f, 2.f, 4.f, 0.f, 0.04f, "SFX\\Guns\\shotgun.wav");
+		weaponList["semiAuto"]= new Weapon("SemiAuto", "M14", 60, 60, 10, 10, 25.f, .4f, 2.f, 1.f, 0.1f, "SFX\\Guns\\shotgun.wav");
+		weaponList["shotgun"] = new Weapon("Shotgun", "KSG", 30, 30, 6, 6, 20.f, 1.f, 0.f, 5.f, 0.1f, "SFX\\Guns\\shotgun.wav");
+		weaponList["assaultRifle"] = new Weapon("Assault Rifle", "AK47", 90, 90, 30, 30, 30.f, .1f, 2.f, 5.f, .01f, "SFX\\Guns\\shotgun.wav");
+		weaponList["minigun"]= new Weapon("Minigun", "Minigun", 180, 180, 180, 180, 20.f, .05f, 5.f, 7.5f, .06f, "SFX\\Guns\\shotgun.wav");
+		weaponList["semiSninper"] = new Weapon("Semi Sniper", "Barrett .50 Cal", 30, 30, 10, 10, 80.f, .5f, 4.f, 0.f, .01f, "SFX\\Guns\\shotgun.wav");
+		weaponList["submachine"] = new Weapon("Submachine Gun", "MP40", 96, 96, 32, 32, 20.f, .4f, 2.f, 2.5f, .2f, "SFX\\Guns\\shotgun.wav");
+		gunsLoaded = true;
+	}
+}
 //Weapon(Melee) Constructor
 Weapon::Weapon(std::string type, std::string meleeName, float damage, int range, float attackspeed, float dropChance):name(meleeName),maxAmmo(0),range(range),dropChance(dropChance) {
 	setDamage(damage);
@@ -13,19 +32,19 @@ Weapon::Weapon(std::string type, std::string meleeName, float damage, int range,
 
 //Weapon(Ranged) Construtor
 Weapon::Weapon(std::string weaponType, std::string Name, int MaxAmmo, int currentMax, int currentClip, int maxClip, float Damage,
-float attackSpeed, float reloadTime, float Deviation, float DropChance):type(weaponType),name(Name),maxAmmo(MaxAmmo),deviation(Deviation),dropChance(DropChance){
+float attackSpeed, float reloadTime, float Deviation, float DropChance, std::string soundFX):type(weaponType),name(Name),maxAmmo(MaxAmmo),deviation(Deviation),dropChance(DropChance){
     setCurrentClip(currentClip);
     setCurrentMax(currentMax);
     setDamage(Damage);
     setAttackSpeed(attackSpeed);
 	setMaxClip(maxClip);
 	setReloadTime(reloadTime);
+	setAudio(sound, soundFX);
 	setUI();
 }
 
 //Shoots bullet
 void Weapon::Shoot(Player *player,sf::RenderWindow &window) {
-	//std::cout << currentClip;
 	if (player->getCurrentWeapon().getCurrentClip() > 0&&!bIsReloading) {
 		if (player->getCurrentWeapon().getType() == "Shotgun") {
 			for (int i = 0;i < 12;i++) {
@@ -37,16 +56,23 @@ void Weapon::Shoot(Player *player,sf::RenderWindow &window) {
 		}
 		//Subtracting from current ammo
 		player->getCurrentWeapon().setCurrentClip(player->getCurrentWeapon().getCurrentClip() - 1);
+		std::thread(&Weapon::playAudio,this).detach();
 	}
 	else if (player->getCurrentWeapon().getCurrentClip()==0) {
 		bIsReloading = true;
 	}
 }
 
+void Weapon::playAudio() {
+	sound.setPlayingOffset(sf::seconds(.3f));
+	sound.play();
+}
+
 //Creates bullet
 Weapon::Bullet Weapon::createBullet(Player* player, sf::RenderWindow &window) {
 	//Instantiating bullet
 	Bullet b;
+	b.damage = (player->empowered)?damage*1.5f:damage;
 	b.bullet.setRadius(2.5f);
 	b.bullet.setPosition(player->getPlayer().getPosition());
 	//Setting accuracy
@@ -67,13 +93,13 @@ Weapon::Bullet Weapon::createBullet(Player* player, sf::RenderWindow &window) {
 void Weapon::Reload(Player *player) {
 	int amountToReload = player->getCurrentWeapon().getMaxClip() - player->getCurrentWeapon().getCurrentClip();
 	if (player->getCurrentWeapon().getCurrentClip() == player->getCurrentWeapon().getMaxClip()) {
-		//std::cout << "Clip Full" << std::endl;
+		std::cout << "Clip Full" << std::endl;
 	}
 	else if(player->getCurrentWeapon().getCurrentMax()-player->getCurrentWeapon().getMaxClip()>=0) {
 
 		player->getCurrentWeapon().setCurrentMax(player->getCurrentWeapon().getCurrentMax() - amountToReload);
 		player->getCurrentWeapon().setCurrentClip(player->getCurrentWeapon().getMaxClip());
-		//std::cout << "Reloading" << std::endl;
+		std::cout << "Reloading" << std::endl;
 	}
 	else if((player->getCurrentWeapon().getCurrentMax() - player->getCurrentWeapon().getMaxClip()<0)){
 		if (player->getCurrentWeapon().getCurrentMax() - amountToReload > 0) {
@@ -86,7 +112,7 @@ void Weapon::Reload(Player *player) {
 		}
 	}
 	else {
-		//std::cout << "Out of ammo" << std::endl;
+		std::cout << "Out of ammo" << std::endl;
 	}
 }
 
@@ -102,7 +128,7 @@ void Weapon::canReload(Player *player) {
 		}
 	}
 	if (player->getCurrentWeapon().bIsReloading) {
-		if (player->getCurrentWeapon().reloadTimer.getElapsedTime().asSeconds() >= player->getCurrentWeapon().reloadTime) {
+		if (player->getCurrentWeapon().reloadTimer.getElapsedTime().asSeconds() >= ((player->triggerhappy)?player->getCurrentWeapon().reloadTime/2:player->getCurrentWeapon().reloadTime)) {
 			Reload(player);
 			bCanReload = true;
 			bIsReloading = false;
@@ -110,6 +136,13 @@ void Weapon::canReload(Player *player) {
 				reloadTime = 0.f;
 			}
 		}
+	}
+}
+
+//Sets weapon firing audio
+void Weapon::setAudio(sf::Sound &sound, std::string soundfile) {
+	if (buffer.loadFromFile("C:\\Users\\Novacane\\Documents\\Coding\\Semester Project\\TrapHouse\\TrapHouse\\SFX\\Guns\\shotgun.wav")) {
+		sound.setBuffer(buffer);
 	}
 }
 
@@ -128,7 +161,7 @@ void Weapon::Update(sf::RenderWindow &window, Player *player,float dt){
 	for (unsigned i = 0;i < bullets.size();i++) {
 		bullets[i].bullet.move(bullets[i].direction.x*dt*bullets[i].velocity, bullets[i].direction.y*dt*bullets[i].velocity);
 		if (bullets[i].deleteTime.getElapsedTime().asSeconds() > 3) {
-			//std::cout << "Deleting bullet" << std::endl;
+			std::cout << "Deleting bullet" << std::endl;
 			bullets.erase(bullets.begin() + i);
 		}
 	}
@@ -213,7 +246,7 @@ float Weapon::getDropChance() const {
 
 //Sets ammo UI
 void Weapon::setUI() {
-	if (!font.loadFromFile("Fonts/light_pixel-7.ttf")) {
+	if (!font.loadFromFile("Fonts\\light_pixel-7.ttf")) {
 		std::cout << "Could not open font" << std::endl;
 	}
 	ammoCount.setCharacterSize(20);

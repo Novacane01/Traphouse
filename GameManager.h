@@ -1,8 +1,9 @@
 #pragma once
 #include "SFML/Graphics.hpp"
-#include "Player.h"
-#include "Floor.h"
+#include "Map.h"
 #include "Enemy.h"
+#include "Player.h"
+#include <random>
 #include <iostream>
 #include <string>
 #include <vector>
@@ -13,10 +14,8 @@ class GameManager
 {
 public:
 	GameManager(int, int);
-	void setWindowLength(int);
 	void setWindowWidth(int);
-	static unsigned getWindowWidth();
-	static unsigned getWindowLength();
+	void setWindowLength(int);
 	void Start();
 	Player* createPlayer(sf::RenderWindow &);
 	void GameOver();
@@ -26,4 +25,15 @@ public:
 private:
 	sf::Font font;
 	sf::View view;
+
+	Weapon defaultKnife;
+	Weapon defaultPistol;
+	Weapon heavyPistol;
+	Weapon boltSniper;
+	Weapon semiAuto;
+	Weapon shotgun;
+	Weapon assaultRifle;
+	Weapon minigun;
+	Weapon semiSniper;
+	Weapon submachine;
 };

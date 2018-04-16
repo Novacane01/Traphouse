@@ -1,4 +1,4 @@
-//#include "stdafx.h"
+#include "stdafx.h"
 #include "Enemy.h"
 #include "Player.h"
 #include "Collision.h"
@@ -20,8 +20,8 @@ void Enemy::isHit(Player * player) {
 	for (unsigned i = 0; i < player->getWeapons().size();i++) {
 		for (unsigned j = 0;j < player->getWeapons()[i].bullets.size();j++) {
 			if (enemy.getGlobalBounds().intersects(player->getWeapons()[i].bullets[j].bullet.getGlobalBounds())) {
-				std::cout << "Hit: " << player->getWeapons()[i].getDamage() << " damage" << std::endl;
-				setHp(getHp() - (int)player->getWeapons()[i].getDamage());
+				std::cout << "Hit: " << player->getWeapons()[i].bullets[j].damage << " damage" << std::endl;
+				setHp(getHp() - (int)player->getWeapons()[i].bullets[j].damage);
 				player->getWeapons()[i].bullets.erase(player->getWeapons()[i].bullets.begin() + j);
 				if (hp <= 0) {
 					bIsDead = true;
@@ -31,13 +31,18 @@ void Enemy::isHit(Player * player) {
 	}
 }
 
-//Sets Direction of Enemy
-void Enemy::setDirection(sf::Vector2f &dVector) {
+//Sets enemy direction
+void Enemy::setDirection(sf::Vector2f direction) {
+	this->direction = direction;
+}
+
+//Returns unit direction vector
+sf::Vector2f Enemy::getUDirection(sf::Vector2f &dVector) {
 	sf::Vector2f uVector;
 	float mag = sqrt(pow(dVector.x, 2) + pow(dVector.y, 2));
 	uVector.x = dVector.x / mag;
 	uVector.y = dVector.y / mag;
-	direction = uVector;
+	return uVector;
 }
 
 //Returns direction of enemy
@@ -129,15 +134,14 @@ Enemy::~Enemy() {
 
 
 //Skeleton Class
-Skeleton::Skeleton():Enemy("Skeleton",100,10.f,100.f, 2.f) {
+Skeleton::Skeleton(std::string name, int hp, float attack, float walkspeed, float attackspeed):Enemy(name,hp,attack,walkspeed,attackspeed) {
 	rectSourceSprite = sf::IntRect(0,0,64,67);
 	setTexture(enemy,texture,"Sprites/EnemyAnims/Skeleton/SkeletonWalk.png");
 	setTexture(bone.bone, bone.texture, "Sprites/EnemyAnims/Skeleton/rib.png");
 	enemy.setTextureRect(rectSourceSprite);
-	
-	//64x62 pixels
 }
 
+//Whacks player with a Bone
 void Skeleton::boneWhack(Player *player) {
 	player->setCurrentHp(player->getCurrentHp() - getAttack());
 }
@@ -149,10 +153,8 @@ void Skeleton::boneThrow(Player *player) {
 	bone.deleteTimer.restart();
 	bone.bone.setPosition(enemy.getPosition());
 	bone.bone.setOrigin(20,20);
-	float dirX= player->getPlayer().getPosition().x - enemy.getPosition().x;
-	float dirY = player->getPlayer().getPosition().y - enemy.getPosition().y;
-	bone.direction.x = dirX / sqrt(pow(dirX, 2) + pow(dirY, 2));
-	bone.direction.y = dirY / sqrt(pow(dirX, 2) + pow(dirY, 2));
+	bone.direction = player->getPlayer().getPosition() - enemy.getPosition();
+	bone.direction = getUDirection(bone.direction);
 	bones.push_back(bone);
 }
 
@@ -186,19 +188,19 @@ void Skeleton::Update(Player *player, float dt) {
 	//Moves enemy in respect to player position
 	if (Collision::PixelPerfectTest(enemy,player->getPlayer())){
 		enemy.move(0, 0);
-		if (attackTimer.getElapsedTime().asSeconds() > getAttackSpeed()) {
+		if (attackTimer.getElapsedTime().asSeconds() > ((player->stopwatch)?getAttackSpeed()*2:getAttackSpeed())) {
 			boneWhack(player);
 			attackTimer.restart();
 		}
 	}
-	else if (attackTimer.getElapsedTime().asSeconds()>getAttackSpeed()) {
+	else if (attackTimer.getElapsedTime().asSeconds()>((player->stopwatch) ? getAttackSpeed() * 2 : getAttackSpeed())) {
 		boneThrow(player);
 		attackTimer.restart();
 	}
 	else {
 		sf::Vector2f dir = player->getPlayer().getPosition() - enemy.getPosition();
-		setDirection(dir);
-		enemy.move(getDirection().x*dt*getWalkspeed(), getDirection().y*dt*getWalkspeed());
+		setDirection(getUDirection(dir));
+		enemy.move(getDirection().x*dt*((player->stopwatch)?getWalkspeed()/2:getWalkspeed()), getDirection().y*dt*((player->stopwatch) ? getWalkspeed() / 2 : getWalkspeed()));
 		walkAnim();
 	}
 	//Rotates enemy based off of player position
@@ -209,6 +211,7 @@ void Skeleton::Update(Player *player, float dt) {
 	enemy.setRotation(angle);
 }
 
+//Draws skeleton to window
 void Skeleton::Draw(sf::RenderWindow &window) {
 	window.draw(enemy);
 	for (unsigned i = 0; i < bones.size();i++) {
@@ -217,5 +220,78 @@ void Skeleton::Draw(sf::RenderWindow &window) {
 			std::cout << "Deleting Bone" << std::endl;
 			bones.erase(bones.begin() + i);
 		}
+	}
+}
+
+//Spider Class
+Spider::Spider(std::string name, int hp, float attack, float walkspeed, float attackspeed):Enemy(name,hp,attack,walkspeed,attackspeed) {
+	//rectSourceSprite = sf::IntRect(0, 0, 64, 67);
+	setTexture(enemy, texture, "Sprites\\EnemyAnims\\Spider\\BlackWidow3.png");
+	setTexture(web.web, web.texture, "Sprites\\EnemyAnims\\Skeleton\\rib.png");
+	//enemy.setTextureRect(rectSourceSprite);
+}
+
+//Shoots web at player that slows
+void Spider::webShot(Player *player) {
+	Web w = web;
+	web.direction = player->getPlayer().getPosition() - enemy.getPosition();
+	web.direction = getUDirection(web.direction);
+	web.web.setPosition(enemy.getPosition());
+	webs.push_back(web);
+}
+
+//Damages and poisons player
+void Spider::Bite(Player *player) {
+	player->setCurrentHp(player->getCurrentHp() - getAttack());
+	player->disables.push_back(std::pair<std::string, float>("Poison", 6.f));
+	player->poisonTimer.restart();
+}
+
+//Updates spider's position
+void Spider::Update(Player *player, float dt) {
+	mode = (player->slowed)?Spider::behaviour::AGGRESSIVE:Spider::behaviour::PASSIVE;
+
+	sf::Vector2f newDir = player->getPlayer().getPosition() - enemy.getPosition();
+	setDirection(getUDirection(newDir));
+	if (mode == Spider::behaviour::AGGRESSIVE) {
+		if (Collision::PixelPerfectTest(enemy, player->getPlayer())) {
+			enemy.move(0, 0);
+			if (attackTimer.getElapsedTime().asSeconds() >((player->stopwatch) ? getAttackSpeed() * 2 : getAttackSpeed())) {
+				Bite(player);
+				attackTimer.restart();
+			}
+		}
+		else {
+			enemy.move(getDirection().x*dt*((player->stopwatch) ? getWalkspeed() / 2 : getWalkspeed()), getDirection().y*dt*((player->stopwatch) ? getWalkspeed() / 2 : getWalkspeed()));
+		}
+	}
+	else if (mode == Spider::behaviour::PASSIVE) {
+		if (attackTimer.getElapsedTime().asSeconds() >((player->stopwatch) ? getAttackSpeed() * 2 : getAttackSpeed())) {
+			webShot(player);
+			attackTimer.restart();
+		}
+	}
+	for (unsigned i = 0;i < webs.size();i++) {
+		webs[i].web.move(webs[i].direction.x*dt*webs[i].velocity, webs[i].direction.y*dt*webs[i].velocity);
+		if (webs[i].web.getGlobalBounds().intersects(player->getPlayer().getGlobalBounds())) {
+			//for(unsigned i = 0; i<player->disables.size();)
+			player->disables.insert(player->disables.begin(),std::pair<std::string, float>("Slow", 3.f));
+			webs.erase(webs.begin() + i);
+		}
+	}
+	isHit(player);
+	//Rotates enemy based off of player position
+	sf::Vector2f playerPosition = player->getPlayer().getPosition();
+	float a = enemy.getPosition().x - playerPosition.x;
+	float b = enemy.getPosition().y - playerPosition.y;
+	float angle = -atan2(a, b) * 180 / 3.14f;
+	enemy.setRotation(angle);
+}
+
+//Draws spider to window
+void Spider::Draw(sf::RenderWindow &window) {
+	window.draw(enemy);
+	for (unsigned i = 0; i < webs.size();i++) {
+		window.draw(webs[i].web);
 	}
 }
