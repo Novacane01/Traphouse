@@ -1,4 +1,4 @@
-#include "stdafx.h"
+//#include "stdafx.h"
 #include "Player.h"
 #include "Chest.h"
 
@@ -144,6 +144,12 @@ bool Player::isDead() const{
 
 //Displays player info to screen
 void Player::displayPlayerInfo(sf::RenderWindow &window) {
+	if (poisoned) {
+		healthBar.setFillColor(sf::Color::Magenta);
+	}
+	if (!poisoned&&healthBar.getFillColor() == sf::Color::Magenta) {
+		healthBar.setFillColor(sf::Color::Red);
+	}
 	healthBar.setSize(sf::Vector2f(currentHp*2.5f, 5));
 	staminaBar.setSize(sf::Vector2f(currentStamina/2.f, 5));
 	hpNum.setString(std::to_string((int)currentHp) + "/" + std::to_string((int)maxHp));

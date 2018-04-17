@@ -1,4 +1,4 @@
-#include "stdafx.h"
+//#include "stdafx.h"
 #include "Enemy.h"
 #include "Player.h"
 #include "Collision.h"
@@ -20,6 +20,7 @@ void Enemy::isHit(Player * player) {
 	for (unsigned i = 0; i < player->getWeapons().size();i++) {
 		for (unsigned j = 0;j < player->getWeapons()[i].bullets.size();j++) {
 			if (enemy.getGlobalBounds().intersects(player->getWeapons()[i].bullets[j].bullet.getGlobalBounds())) {
+				enemy.setColor(sf::Color::Red);
 				std::cout << "Hit: " << player->getWeapons()[i].bullets[j].damage << " damage" << std::endl;
 				setHp(getHp() - (int)player->getWeapons()[i].bullets[j].damage);
 				player->getWeapons()[i].bullets.erase(player->getWeapons()[i].bullets.begin() + j);
@@ -135,10 +136,12 @@ Enemy::~Enemy() {
 
 //Skeleton Class
 Skeleton::Skeleton(std::string name, int hp, float attack, float walkspeed, float attackspeed):Enemy(name,hp,attack,walkspeed,attackspeed) {
-	rectSourceSprite = sf::IntRect(0,0,64,67);
-	setTexture(enemy,texture,"Sprites\\EnemyAnims\\Skeleton\\SkeletonWalk.png");
-	setTexture(bone.bone, bone.texture, "Sprites\\EnemyAnims\\Skeleton\\rib.png");
-	enemy.setTextureRect(rectSourceSprite);
+	WalkRect = sf::IntRect(0,0,64,67);
+	AttackRect = sf::IntRect(0, 0, 110, 63);
+	walkTexture.loadFromFile("Sprites\\EnemyAnims\\Skeleton\\SkeletonWalk.png");
+	attackTexture.loadFromFile("Sprites\\EnemyAnims\\Skeleton\\SkeletonMelee.png");
+	bone.texture.loadFromFile("Sprites\\EnemyAnims\\Skeleton\\rib.png");
+	bone.bone.setTexture(bone.texture);
 }
 
 //Whacks player with a Bone
@@ -159,19 +162,47 @@ void Skeleton::boneThrow(Player *player) {
 }
 
 //Skeleton walking animation
-void Skeleton::walkAnim() {
-	if (animationTimer.getElapsedTime().asSeconds() > 0.05f) {
-		if (rectSourceSprite.left >= 909) {
-			rectSourceSprite.left = 0;
+void Skeleton::walkAnim(Player *player) {
+	//Attacking
+	if (animationTimer.getElapsedTime().asSeconds() > 0.07f) {
+		if (state == animationState::RANGED || state == animationState::MELEE) {
+			if (AttackRect.left >= 1950&&state==animationState::MELEE) {
+				AttackRect.left = 0;
+				boneWhack(player);
+				state = animationState::IDLE;
+				attackTimer.restart();
+			}
+			else if (AttackRect.left>=1700 && state == animationState::RANGED) {
+				AttackRect.left = 0;
+				boneThrow(player);
+				state = animationState::IDLE;
+				attackTimer.restart();
+			}
+			else {
+				enemy.setTexture(attackTexture);
+				enemy.setTextureRect(AttackRect);
+				AttackRect.left += 150;
+			}
 		}
-		else {
-			enemy.setTextureRect(rectSourceSprite);
-			rectSourceSprite.left += 65;
+		else if (state == animationState::IDLE) {
+			if (WalkRect.left >= 909) {
+				WalkRect.left = 0;
+			}
+			else {
+				enemy.setTexture(walkTexture);
+				enemy.setTextureRect(WalkRect);
+				WalkRect.left += 65;
+			}
+			AttackRect.left = 0;
+		}
+		if (enemy.getColor() != sf::Color::White) {
+			enemy.setColor(sf::Color::White);
 		}
 		animationTimer.restart();
-		//std::cout << "Animating" << std::endl;
 	}
 }
+
+//1950
 
 //Updates skeleton and bone positions
 void Skeleton::Update(Player *player, float dt) {
@@ -186,22 +217,19 @@ void Skeleton::Update(Player *player, float dt) {
 	}
 	isHit(player);
 	//Moves enemy in respect to player position
-	if (Collision::PixelPerfectTest(enemy,player->getPlayer())){
+	if (Collision::BoundingBoxTest(enemy,player->getPlayer())){
 		enemy.move(0, 0);
-		if (attackTimer.getElapsedTime().asSeconds() > ((player->stopwatch)?getAttackSpeed()*2:getAttackSpeed())) {
-			boneWhack(player);
-			attackTimer.restart();
+		if (attackTimer.getElapsedTime().asSeconds() > ((player->stopwatch)?getAttackSpeed()*2:getAttackSpeed())/2) {
+			state = animationState::MELEE;
 		}
 	}
 	else if (attackTimer.getElapsedTime().asSeconds()>((player->stopwatch) ? getAttackSpeed() * 2 : getAttackSpeed())) {
-		boneThrow(player);
-		attackTimer.restart();
+		state = animationState::RANGED;
 	}
 	else {
 		sf::Vector2f dir = player->getPlayer().getPosition() - enemy.getPosition();
 		setDirection(getUDirection(dir));
 		enemy.move(getDirection().x*dt*((player->stopwatch)?getWalkspeed()/2:getWalkspeed()), getDirection().y*dt*((player->stopwatch) ? getWalkspeed() / 2 : getWalkspeed()));
-		walkAnim();
 	}
 	//Rotates enemy based off of player position
 	sf::Vector2f playerPosition = player->getPlayer().getPosition();
@@ -209,6 +237,7 @@ void Skeleton::Update(Player *player, float dt) {
 	float b = enemy.getPosition().y - playerPosition.y;
 	float angle = -atan2(a, b) * 180 / 3.14f;
 	enemy.setRotation(angle);
+	walkAnim(player);
 }
 
 //Draws skeleton to window
@@ -226,7 +255,7 @@ void Skeleton::Draw(sf::RenderWindow &window) {
 //Spider Class
 Spider::Spider(std::string name, int hp, float attack, float walkspeed, float attackspeed):Enemy(name,hp,attack,walkspeed,attackspeed) {
 	//rectSourceSprite = sf::IntRect(0, 0, 64, 67);
-	setTexture(enemy, texture, "Sprites\\EnemyAnims\\Spider\\BlackWidow3.png");
+	setTexture(enemy, walkTexture, "Sprites\\EnemyAnims\\Spider\\BlackWidow3.png");
 	setTexture(web.web, web.texture, "Sprites\\EnemyAnims\\Skeleton\\rib.png");
 	//enemy.setTextureRect(rectSourceSprite);
 }
@@ -249,6 +278,9 @@ void Spider::Bite(Player *player) {
 
 //Updates spider's position
 void Spider::Update(Player *player, float dt) {
+	if (enemy.getColor() == sf::Color::Red) {
+		enemy.setColor(sf::Color::White);
+	}
 	mode = (player->slowed)?Spider::behaviour::AGGRESSIVE:Spider::behaviour::PASSIVE;
 
 	sf::Vector2f newDir = player->getPlayer().getPosition() - enemy.getPosition();

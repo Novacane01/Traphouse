@@ -1,4 +1,4 @@
-#include "stdafx.h"
+//#include "stdafx.h"
 #include "GameManager.h"
 #include "Player.h"
 #include "Weapon.h"
@@ -39,7 +39,7 @@ float attackSpeed, float reloadTime, float Deviation, float DropChance, std::str
     setAttackSpeed(attackSpeed);
 	setMaxClip(maxClip);
 	setReloadTime(reloadTime);
-	setAudio(sound, soundFX);
+	loadBuffer(FXgunshot, soundFX);
 	setUI();
 }
 
@@ -56,16 +56,18 @@ void Weapon::Shoot(Player *player,sf::RenderWindow &window) {
 		}
 		//Subtracting from current ammo
 		player->getCurrentWeapon().setCurrentClip(player->getCurrentWeapon().getCurrentClip() - 1);
-		std::thread(&Weapon::playAudio,this).detach();
+		std::thread(&Weapon::playAudio, this,&FXgunshot).detach();
 	}
 	else if (player->getCurrentWeapon().getCurrentClip()==0) {
 		bIsReloading = true;
 	}
 }
 
-void Weapon::playAudio() {
-	sound.setPlayingOffset(sf::seconds(.3f));
-	sound.play();
+//Plays Audio
+void Weapon::playAudio(sf::SoundBuffer *buffer) {
+	sf::Sound *s = new sf::Sound(*buffer);
+	s->setPlayingOffset(sf::seconds(0.2f));
+	s->play();
 }
 
 //Creates bullet
@@ -140,9 +142,9 @@ void Weapon::canReload(Player *player) {
 }
 
 //Sets weapon firing audio
-void Weapon::setAudio(sf::Sound &sound, std::string soundfile) {
-	if (buffer.loadFromFile("C:\\Users\\Novacane\\Documents\\Coding\\Semester Project\\TrapHouse\\TrapHouse\\SFX\\Guns\\shotgun.wav")) {
-		sound.setBuffer(buffer);
+void Weapon::loadBuffer(sf::SoundBuffer &buffer, std::string soundfile) {
+	if (!buffer.loadFromFile("C:\\Users\\Novacane\\Documents\\Coding\\Semester Project\\TrapHouse\\TrapHouse\\SFX\\Guns\\shotgun.wav")) {
+		std::cout << "Could not load sound from file" << std::endl;
 	}
 }
 

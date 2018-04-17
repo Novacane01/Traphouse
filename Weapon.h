@@ -55,11 +55,11 @@ public:
 	void canReload(Player *);
 	void setUI();
 	//Audio
-	void playAudio();
+	void playAudio(sf::SoundBuffer *);
 	~Weapon();
 
 	//Audio
-	void setAudio(sf::Sound &, std::string);
+	void loadBuffer(sf::SoundBuffer &, std::string);
 	bool bIsReloading;
 	bool bCanReload = true;
 
@@ -80,8 +80,8 @@ private:
 	float attackSpeed = 0.f;
 	const float dropChance = 0;
 	float reloadTime = 0.f;
-	sf::Sound sound;
-	sf::SoundBuffer buffer;
+	sf::SoundBuffer FXgunshot;
+	sf::SoundBuffer FXreload;
 	//
 	std::vector<Bullet> bullets;
 	sf::Sprite weapon;
