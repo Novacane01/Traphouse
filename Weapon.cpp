@@ -1,4 +1,4 @@
-#include "stdafx.h"
+
 #include "GameManager.h"
 #include "Player.h"
 #include "Weapon.h"
@@ -141,7 +141,7 @@ void Weapon::canReload(Player *player) {
 
 //Sets weapon firing audio
 void Weapon::setAudio(sf::Sound &sound, std::string soundfile) {
-	if (buffer.loadFromFile("C:\\Users\\Novacane\\Documents\\Coding\\Semester Project\\TrapHouse\\TrapHouse\\SFX\\Guns\\shotgun.wav")) {
+	if (buffer.loadFromFile("SFX/Guns/shotgun.wav")) {
 		sound.setBuffer(buffer);
 	}
 }
@@ -246,7 +246,7 @@ float Weapon::getDropChance() const {
 
 //Sets ammo UI
 void Weapon::setUI() {
-	if (!font.loadFromFile("Fonts\\light_pixel-7.ttf")) {
+	if (!font.loadFromFile("Fonts/light_pixel-7.ttf")) {
 		std::cout << "Could not open font" << std::endl;
 	}
 	ammoCount.setCharacterSize(20);

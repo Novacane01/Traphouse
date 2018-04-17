@@ -1,6 +1,6 @@
 #pragma once
 #include "SFML/Graphics.hpp"
-#include "Map.h"
+#include "Floor.h"
 #include "Enemy.h"
 #include "Player.h"
 #include <random>

@@ -1,4 +1,4 @@
-//#include "stdafx.h"
+
 #include "Floor.h"
 #include <iostream>
 #include <math.h>

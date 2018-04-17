@@ -1,13 +1,14 @@
-#include "stdafx.h"
+
 #include "GameManager.h"
 #include "Chest.h"
+#include "LinkedMap.h"
 
 unsigned WINDOW_LENGTH, WINDOW_WIDTH;
 //Game Manager Constructor
 GameManager::GameManager(int width, int length) {
 	setWindowLength(length);
 	setWindowWidth(width);
-	if (!font.loadFromFile("Fonts\\light_pixel-7.ttf")) {
+	if (!font.loadFromFile("Fonts/light_pixel-7.ttf")) {
 		std::cout << "Could not load file" << std::endl;
 	}
 }
@@ -34,8 +35,18 @@ void GameManager::Start() {
 
 	//Creates player object
 	Player* player = createPlayer(window);
-	//Creates bounded Map rectangle object
-	Map *map = new Map;
+	//Creates bounded Floor rectangle object
+	Floor *floor = new Floor;
+
+	LinkedMap Map;
+
+	sf::View view1(sf::FloatRect(-5000,-5000,10000,10000));
+
+	window.setView(view1);
+
+	Map.addRooms(3, Map.head);
+
+	Map.printRoomNames(Map.head);
 
 	//Skeleton
 	//Enemy::Spawn(new Skeleton());
@@ -111,7 +122,11 @@ void GameManager::Start() {
 			}
 		}
 		window.clear(); //Clears window
-		map->Draw(window); //Draws map
+
+		floor->Draw(window); //Draws floor
+
+		window.draw(Map.head->floor);
+		Map.displayMap(Map.head, window);
 
 		//Draws Enemmies to screen
 		for (unsigned i = 0; i < Enemy::getEnemies().size();i++) {

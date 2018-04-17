@@ -1,4 +1,4 @@
-#include "stdafx.h"
+
 #include "Enemy.h"
 #include "Player.h"
 #include "Collision.h"
@@ -226,8 +226,8 @@ void Skeleton::Draw(sf::RenderWindow &window) {
 //Spider Class
 Spider::Spider(std::string name, int hp, float attack, float walkspeed, float attackspeed):Enemy(name,hp,attack,walkspeed,attackspeed) {
 	//rectSourceSprite = sf::IntRect(0, 0, 64, 67);
-	setTexture(enemy, texture, "Sprites\\EnemyAnims\\Spider\\BlackWidow3.png");
-	setTexture(web.web, web.texture, "Sprites\\EnemyAnims\\Skeleton\\rib.png");
+	setTexture(enemy, texture, "Sprites/EnemyAnims/Spider/BlackWidow3.png");
+	setTexture(web.web, web.texture, "Sprites/EnemyAnims/Skeleton/rib.png");
 	//enemy.setTextureRect(rectSourceSprite);
 }
 

@@ -64,41 +64,32 @@ bool LinkedMap::doesIntersect(LinkedMap::room* current){
 bool LinkedMap::isRoomUp(LinkedMap::room* current){
     bool bIsRoomUp = false;
 
-    if(current->neighbor2!= nullptr){
+    if(doesIntersect(current))
+    {
+        bIsRoomUp = true;
+        return bIsRoomUp;
+    }
 
-        if(doesIntersect(current))
-        {
-           bIsRoomUp = true;
-            return bIsRoomUp;
-        }
-
-        if(current->neighbor2->neighbors>0){
-            return isRoomUp(current->neighbor2);
-
-        }
+    if(current->neighbor2 != nullptr){
+            if(isRoomUp(current->neighbor2)){
+                return true;
+            };
     }
     if(current->neighbor3!= nullptr){
-        if(doesIntersect(current))
-        {
-            bIsRoomUp = true;
-            return bIsRoomUp;
-        }
 
-        if(current->neighbor3->neighbors>0){
-            return isRoomUp(current->neighbor3);
-        }
+            if(isRoomUp(current->neighbor3)) {
+                return true;
+            }
+
     }
     if(current->neighbor1!= nullptr){
-        if(doesIntersect(current))
-        {
-            bIsRoomUp = true;
-            return bIsRoomUp;
-        }
 
-        if(current->neighbor1->neighbors>0){
-            return isRoomUp(current->neighbor1);
-        }
+            if(isRoomUp(current->neighbor1)) {
+                return isRoomUp(current->neighbor1);
+            }
+
     }
+
     return bIsRoomUp;
 }
 
@@ -328,7 +319,7 @@ LinkedMap::room* LinkedMap::createLeftRoom(LinkedMap::room* current){
 void LinkedMap::addRooms(int rooms, room* current){
 
 
-    if(rooms == 0 || rooms == 1 ){
+    if(rooms == 0){
         return;
     }
     bool bIsRoomUp = false;
@@ -343,7 +334,7 @@ void LinkedMap::addRooms(int rooms, room* current){
 
     temp = createDownRoom(current);
 
-    bIsRoomDown = isRoomDown(head);
+    bIsRoomDown = isRoomUp(head);
 
     if(bIsRoomDown){
         tempNeighbors--;
@@ -351,7 +342,7 @@ void LinkedMap::addRooms(int rooms, room* current){
 
     temp = createRightRoom(current);
 
-    bIsRoomRight = isRoomRight(head);
+    bIsRoomRight = isRoomUp(head);
 
     if(bIsRoomRight){
         tempNeighbors--;
@@ -359,7 +350,7 @@ void LinkedMap::addRooms(int rooms, room* current){
 
     temp = createLeftRoom(current);
 
-    bIsRoomLeft = isRoomLeft(head);
+    bIsRoomLeft = isRoomUp(head);
 
     if(bIsRoomLeft){
         tempNeighbors--;
@@ -573,7 +564,7 @@ void LinkedMap::addRooms(int rooms, room* current){
             current->neighbor1 = createDownRoom(current);
 
             if(rooms > 0) {
-                int roomsAdded = rand() % rooms;
+                roomsAdded = rand() % rooms;
                 addRooms(roomsAdded, current->neighbor1);
                 rooms -= roomsAdded;
             }
@@ -606,7 +597,7 @@ void LinkedMap::addRooms(int rooms, room* current){
             current->neighbor1 = createUpRoom(current);
 
             if(rooms > 0) {
-                int roomsAdded = rand() % rooms;
+                roomsAdded = rand() % rooms;
                 addRooms(roomsAdded, current->neighbor1);
                 rooms -= roomsAdded;
             }

@@ -1,6 +1,6 @@
 #pragma once
 #include "SFML/Graphics.hpp"
-#include "SFML\Audio.hpp"
+#include "SFML/Audio.hpp"
 #include "Enemy.h"
 #include <string>
 #include <cmath>
