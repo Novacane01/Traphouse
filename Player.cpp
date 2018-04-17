@@ -1,4 +1,4 @@
-
+//#include "stdafx.h"
 #include "Player.h"
 #include "Chest.h"
 
@@ -12,7 +12,7 @@ Player::Player(std::string name, float hp, float walkspeed, float maxStamina):ma
 	setCurrentWalkSpeed(walkspeed);
 	player.setOrigin(20,20);
 	player.setPosition(WINDOW_WIDTH/2.f, WINDOW_LENGTH/2.f);
-	setTexture("Sprites/PlayerAnims/Walking/Walking1.png");
+	setTexture("Sprites\\PlayerAnims\\Walking\\Walking1.png");
 	weaponInventory.push_back(*Weapon::weaponList["defaultPistol"]);
 	std::cout << "\'Pistol\' added to inventory" << std::endl;
 	//chest->Open(this);
@@ -31,7 +31,7 @@ Player::Player(std::string name, float hp, float walkspeed, float maxStamina):ma
 
 //Sets UI
 void Player::setUI() {
-	font.loadFromFile("Fonts/light_pixel-7.ttf");
+	font.loadFromFile("Fonts\\light_pixel-7.ttf");
 	healthBar.setPosition(20, 55);
 	healthBar.setFillColor(sf::Color::Red);
 	staminaBar.setFillColor(sf::Color::Green);
@@ -144,6 +144,12 @@ bool Player::isDead() const{
 
 //Displays player info to screen
 void Player::displayPlayerInfo(sf::RenderWindow &window) {
+	if (poisoned) {
+		healthBar.setFillColor(sf::Color::Magenta);
+	}
+	if (!poisoned&&healthBar.getFillColor() == sf::Color::Magenta) {
+		healthBar.setFillColor(sf::Color::Red);
+	}
 	healthBar.setSize(sf::Vector2f(currentHp*2.5f, 5));
 	staminaBar.setSize(sf::Vector2f(currentStamina/2.f, 5));
 	hpNum.setString(std::to_string((int)currentHp) + "/" + std::to_string((int)maxHp));

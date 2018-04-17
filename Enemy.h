@@ -5,7 +5,7 @@ class Player;
 class Enemy
 {
 public:
-	enum class animationState { MELEE, RANGED, IDLE, DEAD };
+	enum class animationState { IDLE, MELEE, RANGED, DEAD } state;
 	enum class behaviour { AGGRESSIVE, PASSIVE }mode;
 
 	Enemy& operator= (const Enemy&) {
@@ -51,9 +51,12 @@ private:
 	float attackSpeed = 0.f;
 	sf::Vector2f spawnlocation;
 
+	int colour;
+
 protected:
 	sf::Sprite enemy;
-	sf::Texture texture;
+	sf::Texture attackTexture;
+	sf::Texture	walkTexture;
 };
 
 class Skeleton:public Enemy {
@@ -61,13 +64,14 @@ public:
 	Skeleton(std::string name = "Skeleton", int hp = 100, float attack = 10.f, float walkspeed = 100.f, float attackspeed = 2.f);
 	void boneWhack(Player *);
 	void boneThrow(Player *);
-	void walkAnim();
+	void walkAnim(Player *);
 	void Update(Player *, float);
 	void Draw(sf::RenderWindow &);
 private:
 	sf::Clock attackTimer;
 	sf::Clock animationTimer;
-	sf::IntRect rectSourceSprite;
+	sf::IntRect AttackRect;
+	sf::IntRect WalkRect;
 	struct Bone {
 		sf::Sprite bone;
 		sf::Texture texture;

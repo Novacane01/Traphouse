@@ -1,14 +1,14 @@
-
+//#include "stdafx.h"
 #include "GameManager.h"
+#include "LinkedMap.h"////////////////////////////////////
 #include "Chest.h"
-#include "LinkedMap.h"
 
 unsigned WINDOW_LENGTH, WINDOW_WIDTH;
 //Game Manager Constructor
 GameManager::GameManager(int width, int length) {
 	setWindowLength(length);
 	setWindowWidth(width);
-	if (!font.loadFromFile("Fonts/light_pixel-7.ttf")) {
+	if (!font.loadFromFile("Fonts\\light_pixel-7.ttf")) {
 		std::cout << "Could not load file" << std::endl;
 	}
 }
@@ -25,34 +25,30 @@ void GameManager::setWindowWidth(int value) {
 
 //Starts The Game
 void GameManager::Start() {
+	//LinkedMap lmap(12);
+	
 	//Creates Window with size WINDOW_WITDTH x WINDOW_LENGTH
 	static sf::RenderWindow window(sf::VideoMode(WINDOW_WIDTH, WINDOW_LENGTH), "Traphouse");
+	//window.setView(sf::View(sf::Vector2f(0, 0), sf::Vector2f(6000, 6000)));
+	//lmap.addRooms(12,lmap.head, window);
+	//lmap.printRoomNames(lmap.head);
 	window.setKeyRepeatEnabled(false); //Disables repeated keypresses
 	window.setVerticalSyncEnabled(false); //Limits refresh rate to monitor
+
 	//Initializes clock to record frames per second
 	sf::Clock FPSclock;
 	sf::Clock clickInterval;
 
 	//Creates player object
 	Player* player = createPlayer(window);
-	//Creates bounded Floor rectangle object
-	Floor *floor = new Floor;
 
-	LinkedMap Map;
+	//Creates bounded Map rectangle object
+	Map *map = new Map;
 
-	sf::View view1(sf::FloatRect(-5000,-5000,10000,10000));
+	//Spawning monsters
+	Enemy::Spawn(new Skeleton());
+	//Enemy::Spawn(new Spider());
 
-	window.setView(view1);
-
-	Map.addRooms(3, Map.head);
-
-	Map.printRoomNames(Map.head);
-
-	//Skeleton
-	//Enemy::Spawn(new Skeleton());
-	Enemy::Spawn(new Spider());
-
-	std::cout << typeid(player).name() << std::endl;
 	//Main loop
 	while (window.isOpen()) {
 		float deltaTime = FPSclock.restart().asSeconds();
@@ -88,11 +84,12 @@ void GameManager::Start() {
 					Pause(window);
 				}
 				if (event.key.code == sf::Keyboard::X) {
-					player->getCurrentPotion()->Use(player);
-					std::cout << player->getCurrentPotion()->getName() << " used" << std::endl;
-					player->getPotions().erase(player->getPotions().begin());
+					if (player->getPotions().size() > 0) {
+						player->getCurrentPotion()->Use(player);
+						std::cout << player->getCurrentPotion()->getName() << " used" << std::endl;
+						player->getPotions().erase(player->getPotions().begin());
+					}
 				}
-
 			}
 			else if (event.type == sf::Event::KeyReleased) {
 				if (event.key.code == sf::Keyboard::W) {
@@ -122,11 +119,7 @@ void GameManager::Start() {
 			}
 		}
 		window.clear(); //Clears window
-
-		floor->Draw(window); //Draws floor
-
-		window.draw(Map.head->floor);
-		Map.displayMap(Map.head, window);
+		map->Draw(window); //Draws map
 
 		//Draws Enemmies to screen
 		for (unsigned i = 0; i < Enemy::getEnemies().size();i++) {
@@ -142,6 +135,7 @@ void GameManager::Start() {
 			player->getWeapons()[i].Update(window, player, deltaTime); //Updates weapons and bullets
 		}
 		player->getCurrentWeapon().displayWeaponInfo(window);
+		//lmap.displayMap(lmap.head, window);
 		window.display(); //Displays all drawn objects
 		if (player->isDead()) {
 			GameOver();
