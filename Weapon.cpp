@@ -12,15 +12,15 @@ bool Weapon::gunsLoaded;
 Weapon::Weapon() {
 	if (!gunsLoaded) {
 		weaponList["defaultKnife"] = new Weapon("Melee", "Knife", 100000.f, 2, .5f, 0.f);
-		weaponList["defaultPistol"]= new Weapon("Pistol", "M1911", 88, 88, 8, 8, 10.f, 0.25f, 1.f, 2.5f, 0.f, "SFX\\Guns\\shotgun.wav");
-		weaponList["heavyPistol"] = new Weapon("Heavy Pistol", "Desert Eagle", 35, 35, 7, 7, 50.f, .5f, 2.f, 2.f, 0.3f, "SFX\\Guns\\shotgun.wav");
-		weaponList["boltSniper"] = new Weapon("Bolt Sniper", "L96A1", 15, 15, 5, 5, 100.f, 2.f, 4.f, 0.f, 0.04f, "SFX\\Guns\\shotgun.wav");
-		weaponList["semiAuto"]= new Weapon("SemiAuto", "M14", 60, 60, 10, 10, 25.f, .4f, 2.f, 1.f, 0.1f, "SFX\\Guns\\shotgun.wav");
-		weaponList["shotgun"] = new Weapon("Shotgun", "KSG", 30, 30, 6, 6, 20.f, 1.f, 0.f, 5.f, 0.1f, "SFX\\Guns\\shotgun.wav");
-		weaponList["assaultRifle"] = new Weapon("Assault Rifle", "AK47", 90, 90, 30, 30, 30.f, .1f, 2.f, 5.f, .01f, "SFX\\Guns\\shotgun.wav");
-		weaponList["minigun"]= new Weapon("Minigun", "Minigun", 180, 180, 180, 180, 20.f, .05f, 5.f, 7.5f, .06f, "SFX\\Guns\\shotgun.wav");
-		weaponList["semiSninper"] = new Weapon("Semi Sniper", "Barrett .50 Cal", 30, 30, 10, 10, 80.f, .5f, 4.f, 0.f, .01f, "SFX\\Guns\\shotgun.wav");
-		weaponList["submachine"] = new Weapon("Submachine Gun", "MP40", 96, 96, 32, 32, 20.f, .4f, 2.f, 2.5f, .2f, "SFX\\Guns\\shotgun.wav");
+		weaponList["defaultPistol"]= new Weapon("Pistol", "M1911", 88, 88, 8, 8, 10.f, 0.25f, 1.f, 2.5f, 0.f, "SFX/Guns/shotgun.wav");
+		weaponList["heavyPistol"] = new Weapon("Heavy Pistol", "Desert Eagle", 35, 35, 7, 7, 50.f, .5f, 2.f, 2.f, 0.3f, "SFX/Guns/shotgun.wav");
+		weaponList["boltSniper"] = new Weapon("Bolt Sniper", "L96A1", 15, 15, 5, 5, 100.f, 2.f, 4.f, 0.f, 0.04f, "SFX/Guns/shotgun.wav");
+		weaponList["semiAuto"]= new Weapon("SemiAuto", "M14", 60, 60, 10, 10, 25.f, .4f, 2.f, 1.f, 0.1f, "SFX/Guns/shotgun.wav");
+		weaponList["shotgun"] = new Weapon("Shotgun", "KSG", 30, 30, 6, 6, 20.f, 1.f, 0.f, 5.f, 0.1f, "SFX/Guns/shotgun.wav");
+		weaponList["assaultRifle"] = new Weapon("Assault Rifle", "AK47", 90, 90, 30, 30, 30.f, .1f, 2.f, 5.f, .01f, "SFX/Guns/shotgun.wav");
+		weaponList["minigun"]= new Weapon("Minigun", "Minigun", 180, 180, 180, 180, 20.f, .05f, 5.f, 7.5f, .06f, "SFX/Guns/shotgun.wav");
+		weaponList["semiSninper"] = new Weapon("Semi Sniper", "Barrett .50 Cal", 30, 30, 10, 10, 80.f, .5f, 4.f, 0.f, .01f, "SFX/Guns/shotgun.wav");
+		weaponList["submachine"] = new Weapon("Submachine Gun", "MP40", 96, 96, 32, 32, 20.f, .4f, 2.f, 2.5f, .2f, "SFX/Guns/shotgun.wav");
 		gunsLoaded = true;
 	}
 }
@@ -143,7 +143,7 @@ void Weapon::canReload(Player *player) {
 
 //Sets weapon firing audio
 void Weapon::loadBuffer(sf::SoundBuffer &buffer, std::string soundfile) {
-	if (!buffer.loadFromFile("C:\\Users\\Novacane\\Documents\\Coding\\Semester Project\\TrapHouse\\TrapHouse\\SFX\\Guns\\shotgun.wav")) {
+	if (!buffer.loadFromFile("SFX/Guns/shotgun.wav")) {
 		std::cout << "Could not load sound from file" << std::endl;
 	}
 }
@@ -248,7 +248,7 @@ float Weapon::getDropChance() const {
 
 //Sets ammo UI
 void Weapon::setUI() {
-	if (!font.loadFromFile("Fonts\\light_pixel-7.ttf")) {
+	if (!font.loadFromFile("Fonts/light_pixel-7.ttf")) {
 		std::cout << "Could not open font" << std::endl;
 	}
 	ammoCount.setCharacterSize(20);

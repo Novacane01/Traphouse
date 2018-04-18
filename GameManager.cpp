@@ -1,6 +1,5 @@
 //#include "stdafx.h"
 #include "GameManager.h"
-#include "LinkedMap.h"////////////////////////////////////
 #include "Chest.h"
 
 unsigned WINDOW_LENGTH, WINDOW_WIDTH;
@@ -8,7 +7,7 @@ unsigned WINDOW_LENGTH, WINDOW_WIDTH;
 GameManager::GameManager(int width, int length) {
 	setWindowLength(length);
 	setWindowWidth(width);
-	if (!font.loadFromFile("Fonts\\light_pixel-7.ttf")) {
+	if (!font.loadFromFile("Fonts/light_pixel-7.ttf")) {
 		std::cout << "Could not load file" << std::endl;
 	}
 }
@@ -25,31 +24,43 @@ void GameManager::setWindowWidth(int value) {
 
 //Starts The Game
 void GameManager::Start() {
-	//LinkedMap lmap(12);
+
 	
 	//Creates Window with size WINDOW_WITDTH x WINDOW_LENGTH
 	static sf::RenderWindow window(sf::VideoMode(WINDOW_WIDTH, WINDOW_LENGTH), "Traphouse");
-	//window.setView(sf::View(sf::Vector2f(0, 0), sf::Vector2f(6000, 6000)));
-	//lmap.addRooms(12,lmap.head, window);
-	//lmap.printRoomNames(lmap.head);
+
+
+    //creates randomized map
+    LinkedMap lmap(17);
+	lmap.addRooms(17,lmap.head, window);
+	lmap.printRoomNames(lmap.head);
+
 	window.setKeyRepeatEnabled(false); //Disables repeated keypresses
 	window.setVerticalSyncEnabled(false); //Limits refresh rate to monitor
 
-	//Initializes clock to record frames per second
+    //Initializes clock to record frames per second
 	sf::Clock FPSclock;
 	sf::Clock clickInterval;
+
 
 	//Creates player object
 	Player* player = createPlayer(window);
 
+    //sets center of window at 0,0
+    sf::View roomView;
+    roomView.setCenter(0,0);
+    window.setView(roomView);
+
 	//Creates bounded Map rectangle object
-	Map *map = new Map;
+	Floor *map = new Floor;
 
 	//Spawning monsters
-	Enemy::Spawn(new Skeleton());
+	//Enemy::Spawn(new Skeleton());
 	//Enemy::Spawn(new Spider());
 
-	//Main loop
+
+
+    //Main loop
 	while (window.isOpen()) {
 		float deltaTime = FPSclock.restart().asSeconds();
 		//Records window events such as mouse movement, mouse clicks, and key strokes
@@ -83,6 +94,9 @@ void GameManager::Start() {
 				if (event.key.code == sf::Keyboard::Escape) {
 					Pause(window);
 				}
+                if(event.key.code == sf::Keyboard::M){
+				    DisplayMap(window, player, &lmap);
+                }
 				if (event.key.code == sf::Keyboard::X) {
 					if (player->getPotions().size() > 0) {
 						player->getCurrentPotion()->Use(player);
@@ -135,13 +149,16 @@ void GameManager::Start() {
 			player->getWeapons()[i].Update(window, player, deltaTime); //Updates weapons and bullets
 		}
 		player->getCurrentWeapon().displayWeaponInfo(window);
-		//lmap.displayMap(lmap.head, window);
+		lmap.displayMap(lmap.head, window);
 		window.display(); //Displays all drawn objects
 		if (player->isDead()) {
 			GameOver();
 		}
 	}
 }
+
+
+
 
 Player* GameManager::createPlayer(sf::RenderWindow &window) {
 	window.setKeyRepeatEnabled(true);
@@ -215,15 +232,69 @@ void GameManager::GameOver() {
 	Start();
 }
 
+
 void GameManager::Pause(sf::RenderWindow &window) {
 	sf::Event event;
 	sf::Text resumeButton;
 	resumeButton.setFont(font);
-	resumeButton.setCharacterSize(12);
-	resumeButton.setPosition((float)WINDOW_LENGTH, (float)WINDOW_WIDTH);
+	resumeButton.setCharacterSize(48);
+	resumeButton.setString("Resume");
+	resumeButton.setOrigin(resumeButton.getGlobalBounds().width/2, resumeButton.getGlobalBounds().height/2);
+	resumeButton.setPosition(window.getView().getCenter().x,window.getView().getCenter().y);
 	while (window.isOpen()) {
+		if(resumeButton.getGlobalBounds().contains(window.mapPixelToCoords(sf::Mouse::getPosition(window)))) {
+	    	if(sf::Mouse::isButtonPressed(sf::Mouse::Button::Left)) {
+	            return;
+            }
+        }
 		while (window.pollEvent(event)) {
-
+			if(event.type == sf::Event::KeyPressed){
+				if(event.key.code == sf::Keyboard::Escape){
+					return;
+				}
+			}
+	    	if (event.type == event.Closed) {
+                window.close();
+            }
 		}
+		window.clear();
+		window.draw(resumeButton);
+        window.display();
 	}
+}
+
+void GameManager::DisplayMap(sf::RenderWindow &window, Player* player, LinkedMap* linkedMap){
+    sf::Event event;
+    sf::View mapView;
+    sf::View roomView;
+
+    roomView = window.getView();
+	//Shows entire map size
+	mapView.setSize(6000,6000);
+    //Centers view of map around player
+    mapView.setCenter(player->getPlayer().getPosition().x,player->getPlayer().getPosition().y);
+
+    window.setView(mapView);
+
+    while(window.isOpen())
+    {
+        while (window.pollEvent(event)) {
+            if(event.type == sf::Event::KeyPressed){
+                if(event.key.code == sf::Keyboard::M){
+                    window.setView(roomView);
+                    return;
+                }
+            }
+            if (event.type == event.Closed) {
+                window.close();
+            }
+        }
+        window.clear();
+        linkedMap->displayMap(linkedMap->head,window);
+        player->Draw(window);
+        window.display();
+
+    }
+
+
 }

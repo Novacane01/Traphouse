@@ -138,9 +138,9 @@ Enemy::~Enemy() {
 Skeleton::Skeleton(std::string name, int hp, float attack, float walkspeed, float attackspeed):Enemy(name,hp,attack,walkspeed,attackspeed) {
 	WalkRect = sf::IntRect(0,0,64,67);
 	AttackRect = sf::IntRect(0, 0, 110, 63);
-	walkTexture.loadFromFile("Sprites\\EnemyAnims\\Skeleton\\SkeletonWalk.png");
-	attackTexture.loadFromFile("Sprites\\EnemyAnims\\Skeleton\\SkeletonMelee.png");
-	bone.texture.loadFromFile("Sprites\\EnemyAnims\\Skeleton\\rib.png");
+	walkTexture.loadFromFile("Sprites/EnemyAnims/Skeleton/SkeletonWalk.png");
+	attackTexture.loadFromFile("Sprites/EnemyAnims/Skeleton/SkeletonMelee.png");
+	bone.texture.loadFromFile("Sprites/EnemyAnims/Skeleton/rib.png");
 	bone.bone.setTexture(bone.texture);
 }
 
@@ -255,8 +255,8 @@ void Skeleton::Draw(sf::RenderWindow &window) {
 //Spider Class
 Spider::Spider(std::string name, int hp, float attack, float walkspeed, float attackspeed):Enemy(name,hp,attack,walkspeed,attackspeed) {
 	//rectSourceSprite = sf::IntRect(0, 0, 64, 67);
-	setTexture(enemy, walkTexture, "Sprites\\EnemyAnims\\Spider\\BlackWidow3.png");
-	setTexture(web.web, web.texture, "Sprites\\EnemyAnims\\Skeleton\\rib.png");
+	setTexture(enemy, walkTexture, "Sprites/EnemyAnims/Spider/BlackWidow3.png");
+	setTexture(web.web, web.texture, "Sprites/EnemyAnims/Skeleton/rib.png");
 	//enemy.setTextureRect(rectSourceSprite);
 }
 

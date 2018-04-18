@@ -8,6 +8,9 @@
 
 class LinkedMap {
 public:
+	struct hallway{
+		sf::RectangleShape floor;
+	};
 	struct room {
 		std::string name;
 		bool bIsVisited;
@@ -19,22 +22,23 @@ public:
 		room* neighbor3;
 		room* previous;
 		sf::RectangleShape floor;
+		LinkedMap::hallway* hallway;
+
 	};
 
+
+	const int hallwayWidth = 40;
 	LinkedMap(int);
 	room* head;
 	bool doesIntersect(LinkedMap::room* current);
 	void addRooms(int rooms,room* current, sf::RenderWindow &);
 	void displayMap(room* current, sf::RenderWindow &window);
 	void printRoomNames(room* current);
+
 private:
 	std::vector<sf::RectangleShape> positions;
-	struct hallway {
-		room* entrace;
-		room* exit;
-		sf::RectangleShape floor;
-	};
-	room* temp;
+
+
 	int roomsToAdd;
 	int count = 0;
 

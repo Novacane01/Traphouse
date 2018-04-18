@@ -7,6 +7,7 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include "LinkedMap.h"
 
 extern unsigned WINDOW_LENGTH, WINDOW_WIDTH;
 
@@ -20,6 +21,7 @@ public:
 	Player* createPlayer(sf::RenderWindow &);
 	void GameOver();
 	void Pause(sf::RenderWindow &);
+	void DisplayMap(sf::RenderWindow &, Player *, LinkedMap*);
 	void Quit(sf::RenderWindow &);
 	~GameManager();
 private:
