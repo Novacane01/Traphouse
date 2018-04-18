@@ -27,7 +27,7 @@ public:
 	};
 
 
-	const int hallwayWidth = 40;
+	const int hallwayWidth = 150;
 	LinkedMap(int);
 	room* head;
 	bool doesIntersect(LinkedMap::room* current);

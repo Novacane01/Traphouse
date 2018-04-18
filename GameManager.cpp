@@ -1,7 +1,7 @@
 //#include "stdafx.h"
 #include "GameManager.h"
 #include "Chest.h"
-
+#include <unistd.h>
 unsigned WINDOW_LENGTH, WINDOW_WIDTH;
 //Game Manager Constructor
 GameManager::GameManager(int width, int length) {
@@ -66,6 +66,12 @@ void GameManager::Start() {
 		//Records window events such as mouse movement, mouse clicks, and key strokes
 		sf::Event event;
 		while (window.pollEvent(event)) {
+			if (clickInterval.getElapsedTime().asSeconds() > ((player->triggerhappy)?player->getCurrentWeapon().getAttackSpeed()/2.f:player->getCurrentWeapon().getAttackSpeed())) {
+				if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Left)) {
+					player->getCurrentWeapon().Shoot(player, window);
+					clickInterval.restart();
+				}
+			}
 			if (event.type == event.Closed) {
 				window.close();
 			}
@@ -126,12 +132,7 @@ void GameManager::Start() {
 				player->switchWeapons();
 			}
 		}
-		if (clickInterval.getElapsedTime().asSeconds() > ((player->triggerhappy)?player->getCurrentWeapon().getAttackSpeed()/2.f:player->getCurrentWeapon().getAttackSpeed())) {
-			if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Left)) {
-				player->getCurrentWeapon().Shoot(player, window);
-				clickInterval.restart();
-			}
-		}
+
 		window.clear(); //Clears window
 		map->Draw(window); //Draws map
 
@@ -232,7 +233,6 @@ void GameManager::GameOver() {
 	Start();
 }
 
-
 void GameManager::Pause(sf::RenderWindow &window) {
 	sf::Event event;
 	sf::Text resumeButton;
@@ -240,25 +240,57 @@ void GameManager::Pause(sf::RenderWindow &window) {
 	resumeButton.setCharacterSize(48);
 	resumeButton.setString("Resume");
 	resumeButton.setOrigin(resumeButton.getGlobalBounds().width/2, resumeButton.getGlobalBounds().height/2);
-	resumeButton.setPosition(window.getView().getCenter().x,window.getView().getCenter().y);
+	resumeButton.setPosition(window.getView().getCenter().x,window.getView().getCenter().y - 200);
+
+    //Adds quit button to menu screen
+    sf::Text exitButton;
+    exitButton.setFont(font);
+    exitButton.setCharacterSize(48);
+    exitButton.setString("Quit");
+    exitButton.setOrigin(exitButton.getGlobalBounds().width/2, exitButton.getGlobalBounds().height/2);
+    exitButton.setPosition(window.getView().getCenter().x,window.getView().getCenter().y);
+
 	while (window.isOpen()) {
-		if(resumeButton.getGlobalBounds().contains(window.mapPixelToCoords(sf::Mouse::getPosition(window)))) {
-	    	if(sf::Mouse::isButtonPressed(sf::Mouse::Button::Left)) {
-	            return;
+		//Activates buttons if pressed, respectively
+	    if(resumeButton.getGlobalBounds().contains(window.mapPixelToCoords(sf::Mouse::getPosition(window)))) {
+	        resumeButton.setCharacterSize(58);//enlarges text when mouse is hovering over
+            resumeButton.setOrigin(resumeButton.getGlobalBounds().width/2, resumeButton.getGlobalBounds().height/2);
+            resumeButton.setPosition(window.getView().getCenter().x,window.getView().getCenter().y - 200);
+            if(sf::Mouse::isButtonPressed(sf::Mouse::Button::Left)) {
+	    		return;
             }
+        } else{
+	        resumeButton.setCharacterSize(48);
+            resumeButton.setOrigin(resumeButton.getGlobalBounds().width/2, resumeButton.getGlobalBounds().height/2);
+	        resumeButton.setPosition(window.getView().getCenter().x,window.getView().getCenter().y - 200);
+	    }
+	    if(exitButton.getGlobalBounds().contains(window.mapPixelToCoords(sf::Mouse::getPosition(window)))) {
+            exitButton.setCharacterSize(58); //enlarges text when mouse is hovering over
+            exitButton.setOrigin(exitButton.getGlobalBounds().width/2, exitButton.getGlobalBounds().height/2);
+            exitButton.setPosition(window.getView().getCenter().x,window.getView().getCenter().y);
+            if(sf::Mouse::isButtonPressed(sf::Mouse::Button::Left)) {
+                window.close();
+            }
+        } else {
+            exitButton.setCharacterSize(48);
+            exitButton.setOrigin(exitButton.getGlobalBounds().width/2, exitButton.getGlobalBounds().height/2);
+            exitButton.setPosition(window.getView().getCenter().x,window.getView().getCenter().y);
         }
-		while (window.pollEvent(event)) {
+        while (window.pollEvent(event)) {
 			if(event.type == sf::Event::KeyPressed){
 				if(event.key.code == sf::Keyboard::Escape){
+					usleep(10000);
 					return;
 				}
 			}
 	    	if (event.type == event.Closed) {
+				usleep(10000);
                 window.close();
             }
 		}
 		window.clear();
 		window.draw(resumeButton);
+		window.draw(exitButton);
         window.display();
 	}
 }
@@ -267,19 +299,50 @@ void GameManager::DisplayMap(sf::RenderWindow &window, Player* player, LinkedMap
     sf::Event event;
     sf::View mapView;
     sf::View roomView;
+    bool windowMoving = false;
+    sf::Vector2f oldMousePos;
+    sf::Vector2f newMousePos;
+    sf::Vector2f diffPosition;
+
 
     roomView = window.getView();
-	//Shows entire map size
-	mapView.setSize(6000,6000);
+	//Shows large portion of map
+	mapView.setSize(10000,10000);
     //Centers view of map around player
     mapView.setCenter(player->getPlayer().getPosition().x,player->getPlayer().getPosition().y);
-
     window.setView(mapView);
 
     while(window.isOpen())
     {
-        while (window.pollEvent(event)) {
-            if(event.type == sf::Event::KeyPressed){
+
+    	while (window.pollEvent(event)) {
+
+        	/*
+        	 * Methods For changing window location by clicking and dragging mouse
+        	 */
+    	    if(event.type == sf::Event::MouseButtonPressed){
+				if(event.mouseButton.button == 0){
+					oldMousePos = window.mapPixelToCoords(sf::Vector2i(event.mouseButton.x, event.mouseButton.y));
+					windowMoving = true;
+				}
+			} else if(event.type == sf::Event::MouseButtonReleased){
+				if(event.mouseButton.button == 0){
+					windowMoving = false;
+				}
+
+			} else if(event.type == sf::Event::MouseMoved){
+				if(windowMoving){
+					newMousePos = window.mapPixelToCoords(sf::Vector2i(event.mouseMove.x, event.mouseMove.y));
+					diffPosition = oldMousePos - newMousePos;
+					mapView.setCenter(mapView.getCenter() + diffPosition);
+					window.setView(mapView);
+
+					//Sets old position = new position, based on new window, for the next time the mouse is moved
+					oldMousePos = window.mapPixelToCoords(sf::Vector2i(event.mouseMove.x, event.mouseMove.y));
+				}
+			}
+
+			if(event.type == sf::Event::KeyPressed){
                 if(event.key.code == sf::Keyboard::M){
                     window.setView(roomView);
                     return;
@@ -295,6 +358,5 @@ void GameManager::DisplayMap(sf::RenderWindow &window, Player* player, LinkedMap
         window.display();
 
     }
-
 
 }
