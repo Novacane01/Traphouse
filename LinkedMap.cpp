@@ -9,13 +9,12 @@ LinkedMap::LinkedMap(int rta) {
 	head = new room;
 	head->playerIsInside = true;
 	head->bIsVisited = true;
-
+    head->isCleared = false;
 	count++;
 	head->floor.setSize(sf::Vector2f(1536, 864));
 
 	head->floor.setOrigin(head->floor.getSize().x / 2, head->floor.getSize().y / 2);
 	head->floor.setPosition(0, 0);
-
 	positions.push_back(head->floor);
 	head->floor.setFillColor(sf::Color::Red);
 	head->neighbor1 = nullptr;
@@ -25,6 +24,7 @@ LinkedMap::LinkedMap(int rta) {
 	head->name = "HEAD";
 	std::cout << "Adding room 1" << std::endl;
 
+	current = head;
 }
 
 bool LinkedMap::doesIntersect(LinkedMap::room* current) {
@@ -469,25 +469,25 @@ void LinkedMap::displayMap(room* current, sf::RenderWindow &window) {
 		window.draw(current->neighbor1->floor);
 		window.draw(current->neighbor1->hallway->floor);
 
-		//if (current->neighbor1->neighbors>0) {
+		if (current->neighbor1->neighbors>0) {
 			displayMap(current->neighbor1, window);
-		//}
+		}
 	}
 	if (current->neighbor2 != nullptr) {
 		window.draw(current->neighbor2->floor);
 		window.draw(current->neighbor2->hallway->floor);
 
-		//if (current->neighbor2->neighbors>0) {
+		if (current->neighbor2->neighbors>0) {
 			displayMap(current->neighbor2, window);
-		//}
+		}
 	}
 	if (current->neighbor3 != nullptr) {
 		window.draw(current->neighbor3->floor);
 		window.draw(current->neighbor3->hallway->floor);
 
-		//if (current->neighbor3->neighbors>0) {
+		if (current->neighbor3->neighbors>0) {
 			displayMap(current->neighbor3, window);
-		//}
+		}
 	}
 }
 
@@ -513,14 +513,72 @@ void LinkedMap::printRoomNames(room* current) {
 		}
 	}
 }
-/*
-LinkedMap::room* LinkedMap::getCurrentRoom(LinkedMap::room* current, Player* player){
 
-    for (unsigned i = 0;i < positions.size();i++) {
-        if (player->getPlayer().getGlobalBounds().intersects(current->floor.getGlobalBounds()){
-            return current;
+void LinkedMap::findCurrentRoom(room* checkedRoom, Player* player){
+
+    if(checkedRoom == head){
+
+        if(checkedRoom->floor.getGlobalBounds().intersects(player->getPlayer().getGlobalBounds())){
+            current = checkedRoom;
+            checkedRoom->bIsVisited = true;
+            checkedRoom->playerIsInside = true;
+        } else{
+            checkedRoom->playerIsInside = false;
         }
     }
 
+    if (checkedRoom->neighbor2 != nullptr) {
+        if(checkedRoom->neighbor2->floor.getGlobalBounds().intersects(player->getPlayer().getGlobalBounds())){
+            current = checkedRoom;
+            checkedRoom->neighbor2->bIsVisited = true;
+            checkedRoom->neighbor2->playerIsInside = true;
+            return;
+        } else{
+            checkedRoom->neighbor2->playerIsInside = false;
+        }
+
+        if (checkedRoom->neighbor2->neighbors>0) {
+            findCurrentRoom(checkedRoom->neighbor2, player);
+        }
+    }
+    if (checkedRoom->neighbor3 != nullptr) {
+
+        if(checkedRoom->neighbor3->floor.getGlobalBounds().intersects(player->getPlayer().getGlobalBounds())){
+            current = checkedRoom;
+            checkedRoom->neighbor3->bIsVisited = true;
+            checkedRoom->neighbor3->playerIsInside = true;
+            return;
+        } else{
+            checkedRoom->neighbor3->playerIsInside = false;
+        }
+
+        if (checkedRoom->neighbor3->neighbors>0) {
+            findCurrentRoom(checkedRoom->neighbor3, player);
+        }
+    }
+    if (checkedRoom->neighbor1 != nullptr) {
+
+        if(checkedRoom->neighbor1->floor.getGlobalBounds().intersects(player->getPlayer().getGlobalBounds())){
+            current = checkedRoom;
+            checkedRoom->neighbor1->bIsVisited = true;
+            checkedRoom->neighbor1->playerIsInside = true;
+            return;
+        } else{
+            checkedRoom->neighbor1->playerIsInside = false;
+        }
+        if (checkedRoom->neighbor1->neighbors>0) {
+            findCurrentRoom(checkedRoom->neighbor1, player);
+        }
+    }
+
+
+
+
 }
-*/
+
+LinkedMap::room* LinkedMap::getCurrentRoom(){
+
+
+    return(current);
+}
+

@@ -11,7 +11,7 @@ Player::Player(std::string name, float hp, float walkspeed, float maxStamina):ma
 	setCurrentStamina(this->maxStamina);
 	setCurrentWalkSpeed(walkspeed);
 	player.setOrigin(20,20);
-	player.setPosition(WINDOW_WIDTH/2.f, WINDOW_LENGTH/2.f);
+	player.setPosition(0,0);
 	setTexture("Sprites/PlayerAnims/Walking/Walking1.png");
 	weaponInventory.push_back(*Weapon::weaponList["defaultPistol"]);
 	std::cout << "\'Pistol\' added to inventory" << std::endl;

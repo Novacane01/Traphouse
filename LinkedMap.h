@@ -4,6 +4,7 @@
 #include "ctime"
 #include "cstdlib"
 #include <random>
+#include <iostream>
 
 
 class LinkedMap {
@@ -15,7 +16,7 @@ public:
 		std::string name;
 		bool bIsVisited;
 		bool playerIsInside;
-		bool isCleared();
+		bool isCleared = false;
 		int neighbors = 0;
 		room* neighbor1;
 		room* neighbor2;
@@ -30,15 +31,17 @@ public:
 	const int hallwayWidth = 150;
 	LinkedMap(int);
 	room* head;
+
 	bool doesIntersect(LinkedMap::room* current);
 	void addRooms(int rooms,room* current, sf::RenderWindow &);
 	void displayMap(room* current, sf::RenderWindow &window);
 	void printRoomNames(room* current);
-
+    LinkedMap::room* getCurrentRoom();
+    void findCurrentRoom(LinkedMap::room*, Player* player);
 private:
 	std::vector<sf::RectangleShape> positions;
 
-
+    room* current;
 	int roomsToAdd;
 	int count = 0;
 

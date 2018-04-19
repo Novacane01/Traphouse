@@ -24,16 +24,12 @@ void GameManager::setWindowWidth(int value) {
 
 //Starts The Game
 void GameManager::Start() {
-
-	
-	//Creates Window with size WINDOW_WITDTH x WINDOW_LENGTH
+    //Creates Window with size WINDOW_WITDTH x WINDOW_LENGTH
 	static sf::RenderWindow window(sf::VideoMode(WINDOW_WIDTH, WINDOW_LENGTH), "Traphouse");
 
-
-    //creates randomized map
+	//creates randomized map
     LinkedMap lmap(17);
 	lmap.addRooms(17,lmap.head, window);
-	lmap.printRoomNames(lmap.head);
 
 	window.setKeyRepeatEnabled(false); //Disables repeated keypresses
 	window.setVerticalSyncEnabled(false); //Limits refresh rate to monitor
@@ -55,10 +51,10 @@ void GameManager::Start() {
 	Floor *map = new Floor;
 
 	//Spawning monsters
-	//Enemy::Spawn(new Skeleton());
+	Enemy::Spawn(new Skeleton());
 	//Enemy::Spawn(new Spider());
 
-
+	bool centered = true;
 
     //Main loop
 	while (window.isOpen()) {
@@ -133,10 +129,34 @@ void GameManager::Start() {
 			}
 		}
 
-		window.clear(); //Clears window
-		map->Draw(window); //Draws map
 
-		//Draws Enemmies to screen
+		if(Enemy::getEnemies().size() == 0){
+			lmap.getCurrentRoom()->isCleared = true;
+		}
+
+
+		if(lmap.getCurrentRoom()->isCleared){
+
+			lmap.findCurrentRoom(lmap.head, player);
+			roomView.setCenter(player->getPlayer().getPosition());
+			window.setView(roomView);
+			centered = false;
+
+		} else if(!centered){
+			centered = true;
+			roomView.setCenter(lmap.getCurrentRoom()->floor.getPosition());
+			window.setView(roomView);
+
+		}
+
+
+
+		window.clear(); //Clears window
+		//map->Draw(window); //Draws map
+
+        lmap.displayMap(lmap.head, window); //Draws Map
+
+        //Draws Enemmies to screen
 		for (unsigned i = 0; i < Enemy::getEnemies().size();i++) {
 			Enemy::getEnemies()[i]->Update(player, deltaTime);
 			Enemy::getEnemies()[i]->Draw(window);
@@ -150,7 +170,7 @@ void GameManager::Start() {
 			player->getWeapons()[i].Update(window, player, deltaTime); //Updates weapons and bullets
 		}
 		player->getCurrentWeapon().displayWeaponInfo(window);
-		lmap.displayMap(lmap.head, window);
+
 		window.display(); //Displays all drawn objects
 		if (player->isDead()) {
 			GameOver();
@@ -279,13 +299,11 @@ void GameManager::Pause(sf::RenderWindow &window) {
         while (window.pollEvent(event)) {
 			if(event.type == sf::Event::KeyPressed){
 				if(event.key.code == sf::Keyboard::Escape){
-					usleep(10000);
-					return;
+				    return;
 				}
 			}
 	    	if (event.type == event.Closed) {
-				usleep(10000);
-                window.close();
+			    window.close();
             }
 		}
 		window.clear();
@@ -341,7 +359,6 @@ void GameManager::DisplayMap(sf::RenderWindow &window, Player* player, LinkedMap
 					oldMousePos = window.mapPixelToCoords(sf::Vector2i(event.mouseMove.x, event.mouseMove.y));
 				}
 			}
-
 			if(event.type == sf::Event::KeyPressed){
                 if(event.key.code == sf::Keyboard::M){
                     window.setView(roomView);
