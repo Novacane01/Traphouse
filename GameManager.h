@@ -1,7 +1,8 @@
 #pragma once
 #include "SFML/Graphics.hpp"
-#include "Map.h"
+#include "Floor.h"
 #include "Enemy.h"
+#include "LinkedMap.h"
 #include "Player.h"
 #include <random>
 #include <iostream>
@@ -21,6 +22,7 @@ public:
 	void GameOver();
 	void Pause(sf::RenderWindow &);
 	void Quit(sf::RenderWindow &);
+	void DisplayMap(sf::RenderWindow &,Player *, LinkedMap *);
 	~GameManager();
 private:
 	sf::Font font;

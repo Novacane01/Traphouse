@@ -25,13 +25,13 @@ void GameManager::setWindowWidth(int value) {
 
 //Starts The Game
 void GameManager::Start() {
-	//LinkedMap lmap(12);
-	
 	//Creates Window with size WINDOW_WITDTH x WINDOW_LENGTH
 	static sf::RenderWindow window(sf::VideoMode(WINDOW_WIDTH, WINDOW_LENGTH), "Traphouse");
-	//window.setView(sf::View(sf::Vector2f(0, 0), sf::Vector2f(6000, 6000)));
-	//lmap.addRooms(12,lmap.head, window);
-	//lmap.printRoomNames(lmap.head);
+
+	//Creates randomized map
+	LinkedMap lmap(12);
+	lmap.addRooms(17,lmap.head, window);
+
 	window.setKeyRepeatEnabled(false); //Disables repeated keypresses
 	window.setVerticalSyncEnabled(false); //Limits refresh rate to monitor
 
@@ -42,12 +42,19 @@ void GameManager::Start() {
 	//Creates player object
 	Player* player = createPlayer(window);
 
-	//Creates bounded Map rectangle object
-	Map *map = new Map;
+	//Sets center of window at (0,0)
+	/*sf::View roomView;
+	roomView.setCenter(0, 0);
+	window.setView(roomView);*/
+
+	//Creates bounded Floor rectangle object
+	Floor *floor = new Floor;
 
 	//Spawning monsters
 	Enemy::Spawn(new Skeleton());
 	//Enemy::Spawn(new Spider());
+
+	bool centered = true;
 
 	//Main loop
 	while (window.isOpen()) {
@@ -55,6 +62,12 @@ void GameManager::Start() {
 		//Records window events such as mouse movement, mouse clicks, and key strokes
 		sf::Event event;
 		while (window.pollEvent(event)) {
+			if (clickInterval.getElapsedTime().asSeconds() > ((player->triggerhappy) ? player->getCurrentWeapon().getAttackSpeed() / 2.f : player->getCurrentWeapon().getAttackSpeed())) {
+				if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Left)) {
+					player->getCurrentWeapon().Shoot(player, window);
+					clickInterval.restart();
+				}
+			}
 			if (event.type == event.Closed) {
 				window.close();
 			}
@@ -73,6 +86,9 @@ void GameManager::Start() {
 				if (event.key.code == sf::Keyboard::D) {
 					player->isMovingRight = true;
 					
+				}
+				if (event.key.code == sf::Keyboard::M) {
+					DisplayMap(window, player, &lmap);
 				}
 				if (event.key.code == sf::Keyboard::R&&player->getCurrentWeapon().getCurrentClip()<player->getCurrentWeapon().getMaxClip()) {
 					player->getCurrentWeapon().bIsReloading = true;
@@ -112,14 +128,29 @@ void GameManager::Start() {
 				player->switchWeapons();
 			}
 		}
-		if (clickInterval.getElapsedTime().asSeconds() > ((player->triggerhappy)?player->getCurrentWeapon().getAttackSpeed()/2.f:player->getCurrentWeapon().getAttackSpeed())) {
-			if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Left)) {
-				player->getCurrentWeapon().Shoot(player, window);
-				clickInterval.restart();
-			}
+
+		if (Enemy::getEnemies().size() == 0) {
+			lmap.getCurrentRoom()->isCleared = true;
 		}
+
+
+		/*if (lmap.getCurrentRoom()->isCleared) {
+
+			lmap.findCurrentRoom(lmap.head, player);
+			roomView.setCenter(player->getPlayer().getPosition());
+			window.setView(roomView);
+			centered = false;
+
+		}
+		else if (!centered) {
+			centered = true;
+			roomView.setCenter(lmap.getCurrentRoom()->floor.getPosition());
+			window.setView(roomView);
+
+		}*/
+
 		window.clear(); //Clears window
-		map->Draw(window); //Draws map
+		floor->Draw(window); //Draws map
 
 		//Draws Enemmies to screen
 		for (unsigned i = 0; i < Enemy::getEnemies().size();i++) {
@@ -135,7 +166,7 @@ void GameManager::Start() {
 			player->getWeapons()[i].Update(window, player, deltaTime); //Updates weapons and bullets
 		}
 		player->getCurrentWeapon().displayWeaponInfo(window);
-		//lmap.displayMap(lmap.head, window);
+		//lmap.displayFloor(lmap.head, window);
 		window.display(); //Displays all drawn objects
 		if (player->isDead()) {
 			GameOver();
@@ -219,11 +250,127 @@ void GameManager::Pause(sf::RenderWindow &window) {
 	sf::Event event;
 	sf::Text resumeButton;
 	resumeButton.setFont(font);
-	resumeButton.setCharacterSize(12);
-	resumeButton.setPosition((float)WINDOW_LENGTH, (float)WINDOW_WIDTH);
+	resumeButton.setCharacterSize(48);
+	resumeButton.setString("Resume");
+	resumeButton.setOrigin(resumeButton.getGlobalBounds().width / 2, resumeButton.getGlobalBounds().height / 2);
+	resumeButton.setPosition(window.getView().getCenter().x, window.getView().getCenter().y - 200);
+
+	//Adds quit button to menu screen
+	sf::Text exitButton;
+	exitButton.setFont(font);
+	exitButton.setCharacterSize(48);
+	exitButton.setString("Quit");
+	exitButton.setOrigin(exitButton.getGlobalBounds().width / 2, exitButton.getGlobalBounds().height / 2);
+	exitButton.setPosition(window.getView().getCenter().x, window.getView().getCenter().y);
+
 	while (window.isOpen()) {
+		//Activates buttons if pressed, respectively
+		if (resumeButton.getGlobalBounds().contains(window.mapPixelToCoords(sf::Mouse::getPosition(window)))) {
+			resumeButton.setCharacterSize(58);//enlarges text when mouse is hovering over
+			resumeButton.setOrigin(resumeButton.getGlobalBounds().width / 2, resumeButton.getGlobalBounds().height / 2);
+			resumeButton.setPosition(window.getView().getCenter().x, window.getView().getCenter().y - 200);
+			if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Left)) {
+				return;
+			}
+		}
+		else {
+			resumeButton.setCharacterSize(48);
+			resumeButton.setOrigin(resumeButton.getGlobalBounds().width / 2, resumeButton.getGlobalBounds().height / 2);
+			resumeButton.setPosition(window.getView().getCenter().x, window.getView().getCenter().y - 200);
+		}
+		if (exitButton.getGlobalBounds().contains(window.mapPixelToCoords(sf::Mouse::getPosition(window)))) {
+			exitButton.setCharacterSize(58); //enlarges text when mouse is hovering over
+			exitButton.setOrigin(exitButton.getGlobalBounds().width / 2, exitButton.getGlobalBounds().height / 2);
+			exitButton.setPosition(window.getView().getCenter().x, window.getView().getCenter().y);
+			if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Left)) {
+				window.close();
+			}
+		}
+		else {
+			exitButton.setCharacterSize(48);
+			exitButton.setOrigin(exitButton.getGlobalBounds().width / 2, exitButton.getGlobalBounds().height / 2);
+			exitButton.setPosition(window.getView().getCenter().x, window.getView().getCenter().y);
+		}
+		while (window.pollEvent(event)) {
+			if (event.type == sf::Event::KeyPressed) {
+				if (event.key.code == sf::Keyboard::Escape) {
+					return;
+				}
+			}
+			if (event.type == event.Closed) {
+				window.close();
+			}
+		}
+		window.clear();
+		window.draw(resumeButton);
+		window.draw(exitButton);
+		window.display();
+	}
+}
+
+void GameManager::DisplayMap(sf::RenderWindow &window, Player* player, LinkedMap* linkedMap) {
+	sf::Event event;
+	sf::View mapView;
+	sf::View roomView;
+	bool windowMoving = false;
+	sf::Vector2f oldMousePos;
+	sf::Vector2f newMousePos;
+	sf::Vector2f diffPosition;
+
+
+	roomView = window.getView();
+	//Shows large portion of map
+	mapView.setSize(10000, 10000);
+	//Centers view of map around player
+	mapView.setCenter(player->getPlayer().getPosition().x, player->getPlayer().getPosition().y);
+	window.setView(mapView);
+
+	while (window.isOpen())
+	{
+
 		while (window.pollEvent(event)) {
 
+			/*
+			* Methods For changing window location by clicking and dragging mouse
+			*/
+			if (event.type == sf::Event::MouseButtonPressed) {
+				if (event.mouseButton.button == 0) {
+					oldMousePos = window.mapPixelToCoords(sf::Vector2i(event.mouseButton.x, event.mouseButton.y));
+					windowMoving = true;
+				}
+			}
+			else if (event.type == sf::Event::MouseButtonReleased) {
+				if (event.mouseButton.button == 0) {
+					windowMoving = false;
+				}
+
+			}
+			else if (event.type == sf::Event::MouseMoved) {
+				if (windowMoving) {
+					newMousePos = window.mapPixelToCoords(sf::Vector2i(event.mouseMove.x, event.mouseMove.y));
+					diffPosition = oldMousePos - newMousePos;
+					mapView.setCenter(mapView.getCenter() + diffPosition);
+					window.setView(mapView);
+
+					//Sets old position = new position, based on new window, for the next time the mouse is moved
+					oldMousePos = window.mapPixelToCoords(sf::Vector2i(event.mouseMove.x, event.mouseMove.y));
+				}
+			}
+			if (event.type == sf::Event::KeyPressed) {
+				if (event.key.code == sf::Keyboard::M) {
+					window.setView(roomView);
+					return;
+				}
+			}
+			if (event.type == event.Closed) {
+				window.close();
+			}
 		}
+		window.clear();
+		linkedMap->displayMap(linkedMap->head, window);
+		player->Draw(window);
+		window.display();
+
 	}
+
 }

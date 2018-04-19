@@ -2,14 +2,13 @@
 #include "GameManager.h"
 #include "Player.h"
 
-class Map
+class Floor
 {
 public:
-	Map();
-	void collisionTest(Player*);
+	Floor();
 	void Draw(sf::RenderWindow &);
 
 private:
-	sf::Sprite map;
+	sf::Sprite floor;
 	sf::Texture texture;
 };

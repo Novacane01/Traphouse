@@ -1,16 +1,16 @@
 //#include "stdafx.h"
-#include "Map.h"
+#include "Floor.h"
 #include <iostream>
 #include <math.h>
 
 
-Map::Map(){
+Floor::Floor(){
 	if (!texture.loadFromFile("Sprites\\Map\\DungeonFloorStone.png")) {
 		std::cout << "Could not load from file" << std::endl;
 	}
-	map.setTexture(texture);
+	floor.setTexture(texture);
 }
 
-void Map::Draw(sf::RenderWindow &window) {
-	window.draw(map);
+void Floor::Draw(sf::RenderWindow &window) {
+	window.draw(floor);
 }
