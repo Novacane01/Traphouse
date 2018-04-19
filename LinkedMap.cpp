@@ -24,7 +24,6 @@ LinkedMap::LinkedMap(int rta) {
 	head->name = "HEAD";
 	std::cout << "Adding room 1" << std::endl;
 
-	current = head;
 }
 
 bool LinkedMap::doesIntersect(LinkedMap::room* current) {
@@ -529,7 +528,7 @@ void LinkedMap::findCurrentRoom(room* checkedRoom, Player* player){
 
     if (checkedRoom->neighbor2 != nullptr) {
         if(checkedRoom->neighbor2->floor.getGlobalBounds().intersects(player->getPlayer().getGlobalBounds())){
-            current = checkedRoom;
+            current = checkedRoom->neighbor2;
             checkedRoom->neighbor2->bIsVisited = true;
             checkedRoom->neighbor2->playerIsInside = true;
             return;
@@ -544,7 +543,7 @@ void LinkedMap::findCurrentRoom(room* checkedRoom, Player* player){
     if (checkedRoom->neighbor3 != nullptr) {
 
         if(checkedRoom->neighbor3->floor.getGlobalBounds().intersects(player->getPlayer().getGlobalBounds())){
-            current = checkedRoom;
+            current = checkedRoom->neighbor3;
             checkedRoom->neighbor3->bIsVisited = true;
             checkedRoom->neighbor3->playerIsInside = true;
             return;
@@ -559,7 +558,7 @@ void LinkedMap::findCurrentRoom(room* checkedRoom, Player* player){
     if (checkedRoom->neighbor1 != nullptr) {
 
         if(checkedRoom->neighbor1->floor.getGlobalBounds().intersects(player->getPlayer().getGlobalBounds())){
-            current = checkedRoom;
+            current = checkedRoom->neighbor1;
             checkedRoom->neighbor1->bIsVisited = true;
             checkedRoom->neighbor1->playerIsInside = true;
             return;
@@ -577,8 +576,8 @@ void LinkedMap::findCurrentRoom(room* checkedRoom, Player* player){
 }
 
 LinkedMap::room* LinkedMap::getCurrentRoom(){
-
-
     return(current);
 }
-
+void LinkedMap::setCurrentRoom(){
+    current = nullptr;
+}

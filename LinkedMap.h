@@ -38,12 +38,14 @@ public:
 	void printRoomNames(room* current);
     LinkedMap::room* getCurrentRoom();
     void findCurrentRoom(LinkedMap::room*, Player* player);
+    void setCurrentRoom();
 private:
 	std::vector<sf::RectangleShape> positions;
 
-    room* current;
+    room* current = nullptr;
 	int roomsToAdd;
 	int count = 0;
+
 
 	bool createRoom(LinkedMap::room* current, std::string, sf::RenderWindow &);
 };

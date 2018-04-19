@@ -38,7 +38,6 @@ void GameManager::Start() {
 	sf::Clock FPSclock;
 	sf::Clock clickInterval;
 
-
 	//Creates player object
 	Player* player = createPlayer(window);
 
@@ -50,12 +49,9 @@ void GameManager::Start() {
 	//Creates bounded Map rectangle object
 	Floor *map = new Floor;
 
-	//Spawning monsters
-	Enemy::Spawn(new Skeleton());
-	//Enemy::Spawn(new Spider());
+	bool centered = false;
 
-	bool centered = true;
-
+	lmap.findCurrentRoom(lmap.head, player);
     //Main loop
 	while (window.isOpen()) {
 		float deltaTime = FPSclock.restart().asSeconds();
@@ -128,28 +124,31 @@ void GameManager::Start() {
 				player->switchWeapons();
 			}
 		}
-
-
-		if(Enemy::getEnemies().size() == 0){
-			lmap.getCurrentRoom()->isCleared = true;
-		}
-
-
-		if(lmap.getCurrentRoom()->isCleared){
+		//If not in current room (Between rooms/In hallways)
+		if(!lmap.getCurrentRoom()->playerIsInside){
 
 			lmap.findCurrentRoom(lmap.head, player);
 			roomView.setCenter(player->getPlayer().getPosition());
 			window.setView(roomView);
 			centered = false;
 
-		} else if(!centered){
+		//if room is not cleared and map is not already centered, centers map and spawns enemies, only called once per room
+		} else if(!centered && !lmap.getCurrentRoom()->isCleared){
+			std::cout << "howdy partner\n";
 			centered = true;
 			roomView.setCenter(lmap.getCurrentRoom()->floor.getPosition());
 			window.setView(roomView);
+			spawnEnemies();
 
+			//if room is cleared and player is inside, locks window view to players position until unvisited room is found
+		} else if(lmap.getCurrentRoom()->isCleared){
+			lmap.findCurrentRoom(lmap.head, player);
+			roomView.setCenter(player->getPlayer().getPosition());
+			window.setView(roomView);
+			centered = false;
+		} else if(Enemy::getEnemies().size() == 0){ //If all enemies have been killed, room is cleared;
+			lmap.getCurrentRoom()->isCleared = true;
 		}
-
-
 
 		window.clear(); //Clears window
 		//map->Draw(window); //Draws map
@@ -164,6 +163,7 @@ void GameManager::Start() {
 				Enemy::Destroy(Enemy::getEnemies().begin()+i);
 			}
 		}
+
 		player->Update(window, deltaTime); //Updates player position
 		player->Draw(window); //Draws player to screen
 		for (unsigned i = 0;i < player->getWeapons().size();i++) {
@@ -177,9 +177,6 @@ void GameManager::Start() {
 		}
 	}
 }
-
-
-
 
 Player* GameManager::createPlayer(sf::RenderWindow &window) {
 	window.setKeyRepeatEnabled(true);
@@ -374,6 +371,24 @@ void GameManager::DisplayMap(sf::RenderWindow &window, Player* player, LinkedMap
         player->Draw(window);
         window.display();
 
+    }
+
+}
+
+void GameManager::spawnEnemies(){
+
+    //Spawning monsters
+    int numOfEnemies = rand() % 5 + 1;
+
+    for(int i=0;i < numOfEnemies;i++){
+        Enemy::Spawn(new Skeleton());
+    }
+
+
+
+    numOfEnemies = rand() % 5 + 1;
+    for(int i=0;i < numOfEnemies;i++){
+        Enemy::Spawn(new Spider());
     }
 
 }

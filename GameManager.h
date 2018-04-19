@@ -23,6 +23,7 @@ public:
 	void Pause(sf::RenderWindow &);
 	void DisplayMap(sf::RenderWindow &, Player *, LinkedMap*);
 	void Quit(sf::RenderWindow &);
+	void spawnEnemies();
 	~GameManager();
 private:
 	sf::Font font;
