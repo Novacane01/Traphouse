@@ -19,10 +19,10 @@ public:
 	void setWindowLength(int);
 	void Start();
 	Player* createPlayer(sf::RenderWindow &);
-	void GameOver();
+	void GameOver(sf::RenderWindow &);
 	void Pause(sf::RenderWindow &);
 	void DisplayMap(sf::RenderWindow &, Player *, LinkedMap*);
-	void Quit(sf::RenderWindow &);
+
 	void spawnEnemies(LinkedMap*);
 	~GameManager();
 private:

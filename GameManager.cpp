@@ -173,7 +173,7 @@ void GameManager::Start() {
 
 		window.display(); //Displays all drawn objects
 		if (player->isDead()) {
-			GameOver();
+			GameOver(window);
 		}
 	}
 }
@@ -184,21 +184,24 @@ Player* GameManager::createPlayer(sf::RenderWindow &window) {
 
 	//Creates textbox
 	sf::RectangleShape textBox(sf::Vector2f(250, 50));
-	textBox.setPosition(WINDOW_WIDTH / 2.f - textBox.getSize().x/2.f, WINDOW_LENGTH / 2.f - textBox.getSize().y/2.f);
+	textBox.setOrigin(textBox.getSize().x/2,textBox.getSize().y/2);
+	textBox.setPosition(window.getView().getCenter().x , window.getView().getCenter().y);
 	textBox.setFillColor(sf::Color::Transparent);
 	textBox.setOutlineColor(sf::Color::Red);
 	textBox.setOutlineThickness(2);
 
 	sf::Text text; //Creates text object for name to be drawn to screen
 	text.setFont(font);
-	text.setPosition(textBox.getPosition().x + textBox.getSize().x / 2.f, textBox.getPosition().y + textBox.getSize().y / 5.f);
+	text.setOrigin(text.getGlobalBounds().width/2, text.getGlobalBounds().height/2);
+	text.setPosition(textBox.getPosition().x, textBox.getPosition().y -16);
 	text.setCharacterSize(25);
 	text.setFillColor(sf::Color::White);
 
 	sf::Text namePrompt; //Creates text object for user prompt
 	namePrompt.setFont(font);
 	namePrompt.setString("Enter your name:");
-	namePrompt.setPosition(WINDOW_WIDTH/2-namePrompt.getCharacterSize()*5.4f, textBox.getPosition().y - (textBox.getSize().y*1.5f));
+    namePrompt.setOrigin(namePrompt.getGlobalBounds().width/2, namePrompt.getGlobalBounds().height/2);
+	namePrompt.setPosition(window.getView().getCenter().x, window.getView().getCenter().y - 100);
 	namePrompt.setFillColor(sf::Color::White);
 
 	std::string name; //Player name
@@ -224,7 +227,14 @@ Player* GameManager::createPlayer(sf::RenderWindow &window) {
 				text.setString(name);
 				text.setPosition(text.getPosition().x - (textBox.getSize().x/ (text.getCharacterSize()*1.15f)), text.getPosition().y);
 			}
+
+			if (event.type == event.Closed) {
+                window.close();
+            }
 		}
+
+
+
 		window.clear();
 		window.draw(text);
 		window.draw(namePrompt);
@@ -244,9 +254,94 @@ GameManager::~GameManager() {
 
 }
 
-void GameManager::GameOver() {
+void GameManager::GameOver(sf::RenderWindow &window) {
 	std::cout << "You have died" << std::endl;
 	Enemy::getEnemies().clear();
+
+    sf::Event event;
+    sf::Text restartButton;
+    restartButton.setFont(font);
+    restartButton.setCharacterSize(48);
+    restartButton.setString("Restart");
+    restartButton.setOrigin(restartButton.getGlobalBounds().width/2, restartButton.getGlobalBounds().height/2);
+    restartButton.setPosition(window.getView().getCenter().x,window.getView().getCenter().y - 100);
+
+    //Adds quit button to menu screen
+    sf::Text exitButton;
+    exitButton.setFont(font);
+    exitButton.setCharacterSize(48);
+    exitButton.setString("Quit");
+    exitButton.setOrigin(exitButton.getGlobalBounds().width/2, exitButton.getGlobalBounds().height/2);
+    exitButton.setPosition(window.getView().getCenter().x,window.getView().getCenter().y + 100);
+
+    sf::Text gameOverText;
+    gameOverText.setFont(font);
+    gameOverText.setFillColor(sf::Color::Red);
+    gameOverText.setCharacterSize(80);
+    gameOverText.setString("Game Over");
+    gameOverText.setOrigin(gameOverText.getGlobalBounds().width/2, gameOverText.getGlobalBounds().height/2);
+    gameOverText.setPosition(window.getView().getCenter().x - window.getView().getSize().x, window.getView().getCenter().y - 350);
+
+    sf::RectangleShape fade;
+    fade.setSize(window.getView().getSize());
+    fade.setFillColor(sf::Color(0,0,0,1));
+    fade.setOrigin(fade.getSize().x/2,fade.getSize().y/2);
+    fade.setPosition(window.getView().getCenter().x,window.getView().getCenter().y);
+
+    //Fades into GameOver
+	for(int i = 2; i < 250; i++){
+		usleep(10000);
+		window.draw(fade);
+		window.display();
+		fade.setFillColor(sf::Color(0,0,0,i));
+	}
+	while(gameOverText.getPosition().x != window.getView().getCenter().x){
+		gameOverText.setPosition(gameOverText.getPosition().x + 1, gameOverText.getPosition().y);
+		usleep(2000);
+		window.clear();
+		window.draw(fade);
+		window.draw(gameOverText);
+		window.display();
+	}
+	while (window.isOpen()) {
+        //Activates buttons if pressed, respectively
+        if(restartButton.getGlobalBounds().contains(window.mapPixelToCoords(sf::Mouse::getPosition(window)))){
+            restartButton.setCharacterSize(58);//enlarges text when mouse is hovering over
+            restartButton.setOrigin(restartButton.getGlobalBounds().width/2, restartButton.getGlobalBounds().height/2);
+            restartButton.setPosition(window.getView().getCenter().x,window.getView().getCenter().y - 100);
+            if(sf::Mouse::isButtonPressed(sf::Mouse::Button::Left)){
+                Start();
+            }
+        } else{
+            restartButton.setCharacterSize(48);
+            restartButton.setOrigin(restartButton.getGlobalBounds().width/2, restartButton.getGlobalBounds().height/2);
+            restartButton.setPosition(window.getView().getCenter().x,window.getView().getCenter().y - 100);
+        }
+        if(exitButton.getGlobalBounds().contains(window.mapPixelToCoords(sf::Mouse::getPosition(window)))) {
+            exitButton.setCharacterSize(58); //enlarges text when mouse is hovering over
+            exitButton.setOrigin(exitButton.getGlobalBounds().width/2, exitButton.getGlobalBounds().height/2);
+            exitButton.setPosition(window.getView().getCenter().x,window.getView().getCenter().y + 100);
+            if(sf::Mouse::isButtonPressed(sf::Mouse::Button::Left)) {
+                window.close();
+            }
+        } else {
+            exitButton.setCharacterSize(48);
+            exitButton.setOrigin(exitButton.getGlobalBounds().width/2, exitButton.getGlobalBounds().height/2);
+            exitButton.setPosition(window.getView().getCenter().x,window.getView().getCenter().y + 100);
+        }
+        while (window.pollEvent(event)) {
+
+            if (event.type == event.Closed) {
+                window.close();
+            }
+        }
+		window.clear();
+        window.draw(fade);
+        window.draw(gameOverText);
+        window.draw(restartButton);
+        window.draw(exitButton);
+        window.display();
+    }
 	Start();
 }
 
