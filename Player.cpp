@@ -1,6 +1,6 @@
 //#include "stdafx.h"
 #include "Player.h"
-#include "Chest.h"
+
 
 //Player Constructor
 Player::Player(std::string name, float hp, float walkspeed, float maxStamina):maxHp(hp),defaultWalkspeed(walkspeed){

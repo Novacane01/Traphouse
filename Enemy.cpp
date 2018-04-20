@@ -3,16 +3,29 @@
 #include "Player.h"
 #include "Collision.h"
 
+
 std::vector<Enemy *> Enemy::enemies;
 
 //Enemy Constructor
 Enemy::Enemy(std::string name, int hp, float attack, float walkspeed, float attackSpeed):name(name) {
 	enemy.setOrigin(20, 20);
-	enemy.setPosition(600, 600);
+
 	setHp(hp);
 	setWalkspeed(walkspeed);
 	setAttack(attack);
 	setAttackSpeed(attackSpeed);
+}
+
+void Enemy::setPosition(LinkedMap::room* room){
+    std::mt19937 gen(time(0));
+    std::uniform_int_distribution<int> dis((int)(room->floor.getPosition().x - room->floor.getSize().x/2), (int)(room->floor.getPosition().x + room->floor.getSize().x/2));
+    int enemyPositionX = dis(gen);
+
+    std::uniform_int_distribution<int> dis2((int)(room->floor.getPosition().y - room->floor.getSize().y/2), (int)(room->floor.getPosition().y + room->floor.getSize().y/2));
+
+    int enemyPositionY = dis2(gen);
+
+	enemy.setPosition(enemyPositionX, enemyPositionY);
 }
 
 //Checks for bullet collision
@@ -57,8 +70,10 @@ std::vector<Enemy *> &Enemy::getEnemies() {
 }
 
 //Spawns an enemy
-void Enemy::Spawn(Enemy *enemy) {
+void Enemy::Spawn(Enemy *enemy, LinkedMap::room* room) {
+
 	enemies.push_back(enemy);
+	enemy->setPosition(room);
 }
 
 //Destroys an enemy

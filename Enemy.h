@@ -1,5 +1,6 @@
 #pragma once
 #include "SFML/Graphics.hpp"
+#include "LinkedMap.h"
 
 class Player;
 class Enemy
@@ -19,6 +20,7 @@ public:
 	void setTexture(sf::Sprite &, sf::Texture &, std::string);
 	void setAttackSpeed(float);
 	void setDirection(sf::Vector2f);
+	void setPosition(LinkedMap::room*);
 	//Getters
 	static std::vector<Enemy *> &getEnemies();
 	sf::Vector2f getDirection() const;
@@ -36,7 +38,7 @@ public:
 	static std::vector<Enemy *> enemies;
 	virtual void Update(Player *, float) = 0;
 	virtual void Draw(sf::RenderWindow &) = 0;
-	static void Spawn(Enemy *);
+	static void Spawn(Enemy *, LinkedMap::room*);
 	static void Destroy(std::vector<Enemy *>::iterator);
 	~Enemy();
 	

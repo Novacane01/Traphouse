@@ -3,7 +3,6 @@
 #include "Player.h"
 #include "Weapon.h"
 #include <exception>
-#include <cmath>
 
 std::map<std::string,Weapon *> Weapon::weaponList;
 bool Weapon::gunsLoaded;

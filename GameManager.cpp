@@ -138,7 +138,7 @@ void GameManager::Start() {
 			centered = true;
 			roomView.setCenter(lmap.getCurrentRoom()->floor.getPosition());
 			window.setView(roomView);
-			spawnEnemies();
+			spawnEnemies(&lmap);
 
 			//if room is cleared and player is inside, locks window view to players position until unvisited room is found
 		} else if(lmap.getCurrentRoom()->isCleared){
@@ -375,20 +375,22 @@ void GameManager::DisplayMap(sf::RenderWindow &window, Player* player, LinkedMap
 
 }
 
-void GameManager::spawnEnemies(){
+void GameManager::spawnEnemies(LinkedMap* linkedMap){
 
     //Spawning monsters
     int numOfEnemies = rand() % 5 + 1;
 
     for(int i=0;i < numOfEnemies;i++){
-        Enemy::Spawn(new Skeleton());
+        Enemy::Spawn(new Skeleton(), linkedMap->getCurrentRoom());
+
+
     }
 
 
 
     numOfEnemies = rand() % 5 + 1;
     for(int i=0;i < numOfEnemies;i++){
-        Enemy::Spawn(new Spider());
+        Enemy::Spawn(new Spider(), linkedMap->getCurrentRoom());
     }
 
 }
