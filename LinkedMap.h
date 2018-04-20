@@ -1,12 +1,11 @@
 #pragma once
 #include "SFML/Graphics.hpp"
-#include "Player.h"
 #include "ctime"
 #include "cstdlib"
 #include <random>
 #include <iostream>
 
-
+class Player;
 class LinkedMap {
 public:
 	struct hallway {

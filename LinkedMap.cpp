@@ -1,5 +1,6 @@
-//#include "stdafx.h"
+#include "stdafx.h"
 #include "LinkedMap.h"
+#include "Player.h"
 
 
 LinkedMap::LinkedMap(int rta) {
@@ -11,7 +12,7 @@ LinkedMap::LinkedMap(int rta) {
 	head->bIsVisited = true;
 	head->isCleared = false;
 	count++;
-	head->floor.setSize(sf::Vector2f(1536, 864));
+	head->floor.setSize(sf::Vector2f(900, 900));
 
 	head->floor.setOrigin(head->floor.getSize().x / 2, head->floor.getSize().y / 2);
 	head->floor.setPosition(0, 0);
@@ -40,6 +41,8 @@ bool LinkedMap::createRoom(LinkedMap::room* current, std::string dir, sf::Render
 	LinkedMap::room* temp = new room;
 	LinkedMap::hallway* tempHallway = new hallway;
 
+	int width = rand() % 350 + 500;
+	int height = rand() % 350 + 500;
 	//Creates a link between current and new neighbor for hallway
 	temp->hallway = tempHallway;
 
@@ -56,87 +59,57 @@ bool LinkedMap::createRoom(LinkedMap::room* current, std::string dir, sf::Render
 	if (dir == "Up") {
 
 
-		temp->hallway->floor.setSize(sf::Vector2f(hallwayWidth / 1.78, 1080));
+		temp->hallway->floor.setSize(sf::Vector2f(hallwayWidth / 1.78, 850));
 		temp->hallway->floor.setOrigin(temp->hallway->floor.getSize().x / 2, temp->hallway->floor.getSize().y / 2);
 		temp->hallway->floor.setFillColor(sf::Color::Yellow);
 		temp->hallway->floor.setPosition(current->floor.getPosition().x, (current->floor.getPosition().y - (current->floor.getSize().y / 2) - temp->hallway->floor.getSize().y / 2));
 
-		temp->floor.setSize(sf::Vector2f(1000, 1000));
+		temp->floor.setSize(sf::Vector2f(width,height));
 		temp->floor.setFillColor(sf::Color::White);
 		temp->floor.setOrigin(temp->floor.getSize().x / 2, temp->floor.getSize().y / 2);
-		temp->floor.setPosition(current->floor.getPosition().x, current->floor.getPosition().y - 1080 - ((current->floor.getSize().y + temp->floor.getSize().y) / 2));
+		temp->floor.setPosition(current->floor.getPosition().x, current->floor.getPosition().y - 850 - ((current->floor.getSize().y + temp->floor.getSize().y) / 2));
 
-		/*temp->floor.setSize(sf::Vector2f(1000, 1000));
-		temp->floor.setFillColor(sf::Color::White);
-		temp->floor.setOrigin(temp->floor.getSize().x / 2, temp->floor.getSize().y / 2);
-		temp->floor.setPosition(current->floor.getPosition().x, current->floor.getPosition().y - 600);
-
-		temp->hallway->floor.setSize(sf::Vector2f(hallwayWidth, (current->floor.getPosition().y - temp->floor.getPosition().y) - ((temp->floor.getSize().y + current->floor.getSize().y)/2)));
-		temp->hallway->floor.setOrigin(temp->hallway->floor.getSize().x / 2, temp->hallway->floor.getSize().y / 2);
-		temp->hallway->floor.setFillColor(sf::Color::Yellow);
-		temp->hallway->floor.setPosition(current->floor.getPosition().x,(temp->floor.getPosition().y + current->floor.getPosition().y)/2);*/
+	
 		//DOWN ROOM
 		if (doesIntersect(temp)) {
 
-			temp->hallway->floor.setSize(sf::Vector2f(hallwayWidth / 1.78, 1080));
+			temp->hallway->floor.setSize(sf::Vector2f(hallwayWidth / 1.78, 850));
 			temp->hallway->floor.setOrigin(temp->hallway->floor.getSize().x / 2, temp->hallway->floor.getSize().y / 2);
 			temp->hallway->floor.setFillColor(sf::Color::Yellow);
 			temp->hallway->floor.setPosition(current->floor.getPosition().x, (current->floor.getPosition().y + (current->floor.getSize().y / 2) + temp->hallway->floor.getSize().y / 2));
 
-			temp->floor.setSize(sf::Vector2f(1000, 1000));
+			temp->floor.setSize(sf::Vector2f(width,height));
 			temp->floor.setFillColor(sf::Color::Green);
 			temp->floor.setOrigin(temp->floor.getSize().x / 2, temp->floor.getSize().y / 2);
-			temp->floor.setPosition(current->floor.getPosition().x, current->floor.getPosition().y + 1080 + ((current->floor.getSize().y + temp->floor.getSize().y) / 2));
+			temp->floor.setPosition(current->floor.getPosition().x, current->floor.getPosition().y + 850 + ((current->floor.getSize().y + temp->floor.getSize().y) / 2));
 
-			/*temp->floor.setSize(sf::Vector2f(1000, 1000));
-			temp->floor.setFillColor(sf::Color::Green);
-			temp->floor.setOrigin(temp->floor.getSize().x / 2, temp->floor.getSize().y / 2);
-			temp->floor.setPosition(current->floor.getPosition().x, current->floor.getPosition().y + 600);
-
-			temp->hallway->floor.setSize(sf::Vector2f(hallwayWidth, (temp->floor.getPosition().y - current->floor.getPosition().y) - ((temp->floor.getSize().y + current->floor.getSize().y)/2)));
-			temp->hallway->floor.setOrigin(temp->hallway->floor.getSize().x / 2, temp->hallway->floor.getSize().y / 2);
-			temp->hallway->floor.setFillColor(sf::Color::Yellow);
-			temp->hallway->floor.setPosition(current->floor.getPosition().x,(temp->floor.getPosition().y + current->floor.getPosition().y)/2);*/
+			
 			//LEFT ROOM
 			if (doesIntersect(temp)) {
 
-				temp->hallway->floor.setSize(sf::Vector2f(1920, hallwayWidth));
+				temp->hallway->floor.setSize(sf::Vector2f(850, hallwayWidth));
 				temp->hallway->floor.setOrigin(temp->hallway->floor.getSize().x / 2, temp->hallway->floor.getSize().y / 2);
 				temp->hallway->floor.setFillColor(sf::Color::Yellow);
 				temp->hallway->floor.setPosition(current->floor.getPosition().x - (current->floor.getSize().x / 2) - (temp->hallway->floor.getSize().x / 2), current->floor.getPosition().y);
 
-				temp->floor.setSize(sf::Vector2f(1000, 1000));
+				temp->floor.setSize(sf::Vector2f(width,height));
 				temp->floor.setFillColor(sf::Color::Magenta);
 				temp->floor.setOrigin(temp->floor.getSize().x / 2, temp->floor.getSize().y / 2);
-				temp->floor.setPosition(current->floor.getPosition().x - 1920 - ((current->floor.getSize().x + temp->floor.getSize().x) / 2), current->floor.getPosition().y);
+				temp->floor.setPosition(current->floor.getPosition().x - 850 - ((current->floor.getSize().x + temp->floor.getSize().x) / 2), current->floor.getPosition().y);
 
-				/*temp->hallway->floor.setSize(sf::Vector2f((current->floor.getPosition().x - temp->floor.getPosition().x) - ((temp->floor.getSize().x + current->floor.getSize().x)/2), hallwayWidth));
-				temp->hallway->floor.setOrigin(temp->hallway->floor.getSize().x / 2, temp->hallway->floor.getSize().y / 2);
-				temp->hallway->floor.setFillColor(sf::Color::Yellow);
-				temp->hallway->floor.setPosition((temp->floor.getPosition().x + current->floor.getPosition().x)/2,current->floor.getPosition().y);*/
 
 				//RIGHT ROOM
 				if (doesIntersect(temp)) {
 
-					temp->hallway->floor.setSize(sf::Vector2f(1920, hallwayWidth));
+					temp->hallway->floor.setSize(sf::Vector2f(850, hallwayWidth));
 					temp->hallway->floor.setOrigin(temp->hallway->floor.getSize().x / 2, temp->hallway->floor.getSize().y / 2);
 					temp->hallway->floor.setFillColor(sf::Color::Yellow);
 					temp->hallway->floor.setPosition((current->floor.getPosition().x + current->floor.getSize().x / 2 + temp->hallway->floor.getSize().x / 2), current->floor.getPosition().y);
 
-					temp->floor.setSize(sf::Vector2f(1000, 1000));
+					temp->floor.setSize(sf::Vector2f(width,height));
 					temp->floor.setFillColor(sf::Color::Blue);
 					temp->floor.setOrigin(temp->floor.getSize().x / 2, temp->floor.getSize().y / 2);
-					temp->floor.setPosition(current->floor.getPosition().x + 1920 + ((current->floor.getSize().x + temp->floor.getSize().x) / 2), current->floor.getPosition().y);
-
-					/*temp->floor.setSize(sf::Vector2f(1000, 1000));
-					temp->floor.setFillColor(sf::Color::Blue);
-					temp->floor.setOrigin(temp->floor.getSize().x / 2, temp->floor.getSize().y / 2);
-					temp->floor.setPosition((current->floor.getPosition().x + 600), current->floor.getPosition().y);
-
-					temp->hallway->floor.setSize(sf::Vector2f((temp->floor.getPosition().x - current->floor.getPosition().x) - (temp->floor.getSize().x + current->floor.getSize().x)/2, hallwayWidth));
-					temp->hallway->floor.setOrigin(temp->hallway->floor.getSize().x / 2, temp->hallway->floor.getSize().y / 2);
-					temp->hallway->floor.setFillColor(sf::Color::Yellow);
-					temp->hallway->floor.setPosition((temp->floor.getPosition().x + current->floor.getPosition().x)/2,current->floor.getPosition().y);*/
+					temp->floor.setPosition(current->floor.getPosition().x + 850 + ((current->floor.getSize().x + temp->floor.getSize().x) / 2), current->floor.getPosition().y);
 					if (doesIntersect(temp)) {
 						std::cout << "Overlap" << std::endl;
 						addRooms(roomsToAdd - count, current->previous, window);
@@ -148,51 +121,51 @@ bool LinkedMap::createRoom(LinkedMap::room* current, std::string dir, sf::Render
 	}
 	//Down room
 	if (dir == "Down") {
-		temp->hallway->floor.setSize(sf::Vector2f(hallwayWidth / 1.78, 1080));
+		temp->hallway->floor.setSize(sf::Vector2f(hallwayWidth / 1.78, 850));
 		temp->hallway->floor.setOrigin(temp->hallway->floor.getSize().x / 2, temp->hallway->floor.getSize().y / 2);
 		temp->hallway->floor.setFillColor(sf::Color::Yellow);
 		temp->hallway->floor.setPosition(current->floor.getPosition().x, (current->floor.getPosition().y + (current->floor.getSize().y / 2) + temp->hallway->floor.getSize().y / 2));
 
-		temp->floor.setSize(sf::Vector2f(1000, 1000));
+		temp->floor.setSize(sf::Vector2f(width, height));
 		temp->floor.setFillColor(sf::Color::Green);
 		temp->floor.setOrigin(temp->floor.getSize().x / 2, temp->floor.getSize().y / 2);
-		temp->floor.setPosition(current->floor.getPosition().x, current->floor.getPosition().y + 1080 + ((current->floor.getSize().y + temp->floor.getSize().y) / 2));
+		temp->floor.setPosition(current->floor.getPosition().x, current->floor.getPosition().y + 850 + ((current->floor.getSize().y + temp->floor.getSize().y) / 2));
 
 		//UP ROOM
 		if (doesIntersect(temp)) {
-			temp->hallway->floor.setSize(sf::Vector2f(hallwayWidth / 1.78, 1080));
+			temp->hallway->floor.setSize(sf::Vector2f(hallwayWidth / 1.78, 850));
 			temp->hallway->floor.setOrigin(temp->hallway->floor.getSize().x / 2, temp->hallway->floor.getSize().y / 2);
 			temp->hallway->floor.setFillColor(sf::Color::Yellow);
 			temp->hallway->floor.setPosition(current->floor.getPosition().x, (current->floor.getPosition().y - (current->floor.getSize().y / 2) - temp->hallway->floor.getSize().y / 2));
 
-			temp->floor.setSize(sf::Vector2f(1000, 1000));
+			temp->floor.setSize(sf::Vector2f(width, height));
 			temp->floor.setFillColor(sf::Color::White);
 			temp->floor.setOrigin(temp->floor.getSize().x / 2, temp->floor.getSize().y / 2);
-			temp->floor.setPosition(current->floor.getPosition().x, current->floor.getPosition().y - 1080 - ((current->floor.getSize().y + temp->floor.getSize().y) / 2));
+			temp->floor.setPosition(current->floor.getPosition().x, current->floor.getPosition().y - 850 - ((current->floor.getSize().y + temp->floor.getSize().y) / 2));
 			//LEFT ROOM
 			if (doesIntersect(temp)) {
-				temp->hallway->floor.setSize(sf::Vector2f(1920, hallwayWidth));
+				temp->hallway->floor.setSize(sf::Vector2f(850, hallwayWidth));
 				temp->hallway->floor.setOrigin(temp->hallway->floor.getSize().x / 2, temp->hallway->floor.getSize().y / 2);
 				temp->hallway->floor.setFillColor(sf::Color::Yellow);
 				temp->hallway->floor.setPosition(current->floor.getPosition().x - (current->floor.getSize().x / 2) - (temp->hallway->floor.getSize().x / 2), current->floor.getPosition().y);
 
-				temp->floor.setSize(sf::Vector2f(1000, 1000));
+				temp->floor.setSize(sf::Vector2f(width, height));
 				temp->floor.setFillColor(sf::Color::Magenta);
 				temp->floor.setOrigin(temp->floor.getSize().x / 2, temp->floor.getSize().y / 2);
-				temp->floor.setPosition(current->floor.getPosition().x - 1920 - ((current->floor.getSize().x + temp->floor.getSize().x) / 2), current->floor.getPosition().y);
+				temp->floor.setPosition(current->floor.getPosition().x - 850 - ((current->floor.getSize().x + temp->floor.getSize().x) / 2), current->floor.getPosition().y);
 
 
 				//RIGHT ROOM
 				if (doesIntersect(temp)) {
-					temp->hallway->floor.setSize(sf::Vector2f(1920, hallwayWidth));
+					temp->hallway->floor.setSize(sf::Vector2f(850, hallwayWidth));
 					temp->hallway->floor.setOrigin(temp->hallway->floor.getSize().x / 2, temp->hallway->floor.getSize().y / 2);
 					temp->hallway->floor.setFillColor(sf::Color::Yellow);
 					temp->hallway->floor.setPosition((current->floor.getPosition().x + current->floor.getSize().x / 2 + temp->hallway->floor.getSize().x / 2), current->floor.getPosition().y);
 
-					temp->floor.setSize(sf::Vector2f(1000, 1000));
+					temp->floor.setSize(sf::Vector2f(width, height));
 					temp->floor.setFillColor(sf::Color::Blue);
 					temp->floor.setOrigin(temp->floor.getSize().x / 2, temp->floor.getSize().y / 2);
-					temp->floor.setPosition(current->floor.getPosition().x + 1920 + ((current->floor.getSize().x + temp->floor.getSize().x) / 2), current->floor.getPosition().y);
+					temp->floor.setPosition(current->floor.getPosition().x + 850 + ((current->floor.getSize().x + temp->floor.getSize().x) / 2), current->floor.getPosition().y);
 					if (doesIntersect(temp)) {
 						std::cout << "Overlap" << std::endl;
 						addRooms(roomsToAdd - count, current->previous, window);
@@ -204,48 +177,48 @@ bool LinkedMap::createRoom(LinkedMap::room* current, std::string dir, sf::Render
 	}
 	//Left room
 	if (dir == "Left") {
-		temp->hallway->floor.setSize(sf::Vector2f(1920, hallwayWidth));
+		temp->hallway->floor.setSize(sf::Vector2f(850, hallwayWidth));
 		temp->hallway->floor.setOrigin(temp->hallway->floor.getSize().x / 2, temp->hallway->floor.getSize().y / 2);
 		temp->hallway->floor.setFillColor(sf::Color::Yellow);
 		temp->hallway->floor.setPosition(current->floor.getPosition().x - (current->floor.getSize().x / 2) - (temp->hallway->floor.getSize().x / 2), current->floor.getPosition().y);
 
-		temp->floor.setSize(sf::Vector2f(1000, 1000));
+		temp->floor.setSize(sf::Vector2f(width, height));
 		temp->floor.setFillColor(sf::Color::Magenta);
 		temp->floor.setOrigin(temp->floor.getSize().x / 2, temp->floor.getSize().y / 2);
-		temp->floor.setPosition(current->floor.getPosition().x - 1920 - ((current->floor.getSize().x + temp->floor.getSize().x) / 2), current->floor.getPosition().y);
+		temp->floor.setPosition(current->floor.getPosition().x - 850 - ((current->floor.getSize().x + temp->floor.getSize().x) / 2), current->floor.getPosition().y);
 
 		//DOWN ROOM
 		if (doesIntersect(temp)) {
-			temp->hallway->floor.setSize(sf::Vector2f(hallwayWidth / 1.78, 1080));
+			temp->hallway->floor.setSize(sf::Vector2f(hallwayWidth / 1.78, 850));
 			temp->hallway->floor.setOrigin(temp->hallway->floor.getSize().x / 2, temp->hallway->floor.getSize().y / 2);
 			temp->hallway->floor.setFillColor(sf::Color::Yellow);
 			temp->hallway->floor.setPosition(current->floor.getPosition().x, (current->floor.getPosition().y + (current->floor.getSize().y / 2) + temp->hallway->floor.getSize().y / 2));
 
-			temp->floor.setSize(sf::Vector2f(1000, 1000));
+			temp->floor.setSize(sf::Vector2f(width, height));
 			temp->floor.setFillColor(sf::Color::Green);
 			temp->floor.setOrigin(temp->floor.getSize().x / 2, temp->floor.getSize().y / 2);
-			temp->floor.setPosition(current->floor.getPosition().x, current->floor.getPosition().y + 1080 + ((current->floor.getSize().y + temp->floor.getSize().y) / 2));
+			temp->floor.setPosition(current->floor.getPosition().x, current->floor.getPosition().y + 850 + ((current->floor.getSize().y + temp->floor.getSize().y) / 2));
 
 			//UP ROOM
 			if (doesIntersect(temp)) {
-				temp->hallway->floor.setSize(sf::Vector2f(hallwayWidth / 1.78, 1080));
+				temp->hallway->floor.setSize(sf::Vector2f(hallwayWidth / 1.78, 850));
 				temp->hallway->floor.setOrigin(temp->hallway->floor.getSize().x / 2, temp->hallway->floor.getSize().y / 2);
 				temp->hallway->floor.setFillColor(sf::Color::Yellow);
 				temp->hallway->floor.setPosition(current->floor.getPosition().x, (current->floor.getPosition().y - (current->floor.getSize().y / 2) - temp->hallway->floor.getSize().y / 2));
 
-				temp->floor.setSize(sf::Vector2f(1000, 1000));
+				temp->floor.setSize(sf::Vector2f(width, height));
 				temp->floor.setFillColor(sf::Color::White);
 				temp->floor.setOrigin(temp->floor.getSize().x / 2, temp->floor.getSize().y / 2);
-				temp->floor.setPosition(current->floor.getPosition().x, current->floor.getPosition().y - 1080 - ((current->floor.getSize().y + temp->floor.getSize().y) / 2));
+				temp->floor.setPosition(current->floor.getPosition().x, current->floor.getPosition().y - 850 - ((current->floor.getSize().y + temp->floor.getSize().y) / 2));
 
 				//RIGHT ROOM
 				if (doesIntersect(temp)) {
-					temp->hallway->floor.setSize(sf::Vector2f(1920, hallwayWidth));
+					temp->hallway->floor.setSize(sf::Vector2f(850, hallwayWidth));
 					temp->hallway->floor.setOrigin(temp->hallway->floor.getSize().x / 2, temp->hallway->floor.getSize().y / 2);
 					temp->hallway->floor.setFillColor(sf::Color::Yellow);
 					temp->hallway->floor.setPosition((current->floor.getPosition().x + current->floor.getSize().x / 2 + temp->hallway->floor.getSize().y / 2), current->floor.getPosition().y);
 
-					temp->floor.setSize(sf::Vector2f(1000, 1000));
+					temp->floor.setSize(sf::Vector2f(width, height));
 					temp->floor.setFillColor(sf::Color::Blue);
 					temp->floor.setOrigin(temp->floor.getSize().x / 2, temp->floor.getSize().y / 2);
 					temp->hallway->floor.setPosition((current->floor.getPosition().x + current->floor.getSize().x / 2 + temp->hallway->floor.getSize().x / 2), current->floor.getPosition().y);
@@ -260,51 +233,51 @@ bool LinkedMap::createRoom(LinkedMap::room* current, std::string dir, sf::Render
 	}
 	//Right room
 	if (dir == "Right") {
-		temp->hallway->floor.setSize(sf::Vector2f(1920, hallwayWidth));
+		temp->hallway->floor.setSize(sf::Vector2f(850, hallwayWidth));
 		temp->hallway->floor.setOrigin(temp->hallway->floor.getSize().x / 2, temp->hallway->floor.getSize().y / 2);
 		temp->hallway->floor.setFillColor(sf::Color::Yellow);
 		temp->hallway->floor.setPosition((current->floor.getPosition().x + current->floor.getSize().x / 2 + temp->hallway->floor.getSize().x / 2), current->floor.getPosition().y);
 
-		temp->floor.setSize(sf::Vector2f(1000, 1000));
+		temp->floor.setSize(sf::Vector2f(width, height));
 		temp->floor.setFillColor(sf::Color::Blue);
 		temp->floor.setOrigin(temp->floor.getSize().x / 2, temp->floor.getSize().y / 2);
-		temp->floor.setPosition(current->floor.getPosition().x + 1920 + ((current->floor.getSize().x + temp->floor.getSize().x) / 2), current->floor.getPosition().y);
+		temp->floor.setPosition(current->floor.getPosition().x + 850 + ((current->floor.getSize().x + temp->floor.getSize().x) / 2), current->floor.getPosition().y);
 
 		//LEFT ROOM
 		if (doesIntersect(temp)) {
-			temp->hallway->floor.setSize(sf::Vector2f(1920, hallwayWidth));
+			temp->hallway->floor.setSize(sf::Vector2f(850, hallwayWidth));
 			temp->hallway->floor.setOrigin(temp->hallway->floor.getSize().x / 2, temp->hallway->floor.getSize().y / 2);
 			temp->hallway->floor.setFillColor(sf::Color::Yellow);
 			temp->hallway->floor.setPosition(current->floor.getPosition().x - (current->floor.getSize().x / 2) - (temp->hallway->floor.getSize().x / 2), current->floor.getPosition().y);
 
-			temp->floor.setSize(sf::Vector2f(1000, 1000));
+			temp->floor.setSize(sf::Vector2f(width, height));
 			temp->floor.setFillColor(sf::Color::Magenta);
 			temp->floor.setOrigin(temp->floor.getSize().x / 2, temp->floor.getSize().y / 2);
-			temp->floor.setPosition(current->floor.getPosition().x - 1920 - ((current->floor.getSize().x + temp->floor.getSize().x) / 2), current->floor.getPosition().y);
+			temp->floor.setPosition(current->floor.getPosition().x - 850 - ((current->floor.getSize().x + temp->floor.getSize().x) / 2), current->floor.getPosition().y);
 
 			//DOWN ROOM
 			if (doesIntersect(temp)) {
-				temp->hallway->floor.setSize(sf::Vector2f(hallwayWidth / 1.78, 1080));
+				temp->hallway->floor.setSize(sf::Vector2f(hallwayWidth / 1.78, 850));
 				temp->hallway->floor.setOrigin(temp->hallway->floor.getSize().x / 2, temp->hallway->floor.getSize().y / 2);
 				temp->hallway->floor.setFillColor(sf::Color::Yellow);
 				temp->hallway->floor.setPosition(current->floor.getPosition().x, (current->floor.getPosition().y + (current->floor.getSize().y / 2) + temp->hallway->floor.getSize().y / 2));
 
-				temp->floor.setSize(sf::Vector2f(1000, 1000));
+				temp->floor.setSize(sf::Vector2f(width, height));
 				temp->floor.setFillColor(sf::Color::Green);
 				temp->floor.setOrigin(temp->floor.getSize().x / 2, temp->floor.getSize().y / 2);
-				temp->floor.setPosition(current->floor.getPosition().x, current->floor.getPosition().y + 1080 + ((current->floor.getSize().y + temp->floor.getSize().y) / 2));
+				temp->floor.setPosition(current->floor.getPosition().x, current->floor.getPosition().y + 850 + ((current->floor.getSize().y + temp->floor.getSize().y) / 2));
 
 				//UP ROOM
 				if (doesIntersect(temp)) {
-					temp->hallway->floor.setSize(sf::Vector2f(hallwayWidth / 1.78, 1080));
+					temp->hallway->floor.setSize(sf::Vector2f(hallwayWidth / 1.78, 850));
 					temp->hallway->floor.setOrigin(temp->hallway->floor.getSize().x / 2, temp->hallway->floor.getSize().y / 2);
 					temp->hallway->floor.setFillColor(sf::Color::Yellow);
 					temp->hallway->floor.setPosition(current->floor.getPosition().x, (current->floor.getPosition().y - (current->floor.getSize().y / 2) - temp->hallway->floor.getSize().y / 2));
 
-					temp->floor.setSize(sf::Vector2f(1000, 1000));
+					temp->floor.setSize(sf::Vector2f(width, height));
 					temp->floor.setFillColor(sf::Color::White);
 					temp->floor.setOrigin(temp->floor.getSize().x / 2, temp->floor.getSize().y / 2);
-					temp->floor.setPosition(current->floor.getPosition().x, current->floor.getPosition().y - 1080 - ((current->floor.getSize().y + temp->floor.getSize().y) / 2));
+					temp->floor.setPosition(current->floor.getPosition().x, current->floor.getPosition().y - 850 - ((current->floor.getSize().y + temp->floor.getSize().y) / 2));
 
 					if (doesIntersect(temp)) {
 						std::cout << "Overlap" << std::endl;
@@ -335,7 +308,7 @@ bool LinkedMap::createRoom(LinkedMap::room* current, std::string dir, sf::Render
 
 void LinkedMap::addRooms(int rooms, room* current, sf::RenderWindow &window) {
 
-	if (rooms <= 0) {
+	if (rooms <= 0||current == nullptr) {
 		return;
 	}
 	int neighbors = rand() % 3 + 1;
@@ -519,9 +492,12 @@ void LinkedMap::findCurrentRoom(room* checkedRoom, Player* player) {
 	if (checkedRoom == head) {
 
 		if (checkedRoom->floor.getGlobalBounds().intersects(player->getPlayer().getGlobalBounds())) {
-			current = checkedRoom;
-			checkedRoom->bIsVisited = true;
+			if (!checkedRoom->bIsVisited) {
+				checkedRoom->bIsVisited = true;
+				checkedRoom->isCleared = false;
+			}
 			checkedRoom->playerIsInside = true;
+			current = checkedRoom;
 		}
 		else {
 			checkedRoom->playerIsInside = false;
@@ -531,9 +507,12 @@ void LinkedMap::findCurrentRoom(room* checkedRoom, Player* player) {
 	if (checkedRoom->neighbor1 != nullptr) {
 
 		if (checkedRoom->neighbor1->floor.getGlobalBounds().intersects(player->getPlayer().getGlobalBounds())) {
-			current = checkedRoom;
-			checkedRoom->neighbor1->bIsVisited = true;
+			if (!checkedRoom->neighbor1->bIsVisited) {
+				checkedRoom->neighbor1->bIsVisited = true;
+				checkedRoom->neighbor1->isCleared = false;
+			}
 			checkedRoom->neighbor1->playerIsInside = true;
+			current = checkedRoom->neighbor1;
 			return;
 		}
 		else {
@@ -546,9 +525,12 @@ void LinkedMap::findCurrentRoom(room* checkedRoom, Player* player) {
 
 	if (checkedRoom->neighbor2 != nullptr) {
 		if (checkedRoom->neighbor2->floor.getGlobalBounds().intersects(player->getPlayer().getGlobalBounds())) {
-			current = checkedRoom;
-			checkedRoom->neighbor2->bIsVisited = true;
+			if (!checkedRoom->neighbor2->bIsVisited) {
+				checkedRoom->neighbor2->bIsVisited = true;
+				checkedRoom->neighbor2->isCleared = false;
+			}
 			checkedRoom->neighbor2->playerIsInside = true;
+			current = checkedRoom->neighbor2;
 			return;
 		}
 		else {
@@ -562,9 +544,12 @@ void LinkedMap::findCurrentRoom(room* checkedRoom, Player* player) {
 	if (checkedRoom->neighbor3 != nullptr) {
 
 		if (checkedRoom->neighbor3->floor.getGlobalBounds().intersects(player->getPlayer().getGlobalBounds())) {
-			current = checkedRoom;
-			checkedRoom->neighbor3->bIsVisited = true;
+			if (!checkedRoom->neighbor3->bIsVisited) {
+				checkedRoom->neighbor3->bIsVisited = true;
+				checkedRoom->neighbor3->isCleared = false;
+			}
 			checkedRoom->neighbor3->playerIsInside = true;
+			current = checkedRoom->neighbor3;
 			return;
 		}
 		else {

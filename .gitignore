@@ -10,3 +10,4 @@ TrapHouse.vcxproj.user
 .vs/
 cmake_modules/
 Debug/
+openal32.dll

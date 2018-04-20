@@ -18,7 +18,9 @@ public:
 	void setWindowWidth(int);
 	void setWindowLength(int);
 	void Start();
+	void LoadingScreen(sf::RenderWindow &);
 	Player* createPlayer(sf::RenderWindow &);
+	void spawnEnemies(LinkedMap*);
 	void GameOver();
 	void Pause(sf::RenderWindow &);
 	void Quit(sf::RenderWindow &);
@@ -27,6 +29,8 @@ public:
 private:
 	sf::Font font;
 	sf::View view;
+
+	Player *player;
 
 	Weapon defaultKnife;
 	Weapon defaultPistol;

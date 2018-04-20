@@ -1,4 +1,4 @@
-//#include "stdafx.h"
+#include "stdafx.h"
 #include "Player.h"
 #include "Chest.h"
 
@@ -13,13 +13,13 @@ Player::Player(std::string name, float hp, float walkspeed, float maxStamina):ma
 	player.setOrigin(20,20);
 	player.setPosition(WINDOW_WIDTH/2.f, WINDOW_LENGTH/2.f);
 	setTexture("Sprites\\PlayerAnims\\Walking\\Walking1.png");
-	weaponInventory.push_back(*Weapon::weaponList["defaultPistol"]);
+	weaponInventory.push_back(*Weapon::weaponList["boltSniper"]);
 	std::cout << "\'Pistol\' added to inventory" << std::endl;
 	//chest->Open(this);
-	weaponInventory.push_back(*Weapon::weaponList["shotgun"]);
+	weaponInventory.push_back(*Weapon::weaponList["minigun"]);
 	std::cout << "\'Shotgun\' added to inventory" << std::endl;
-	//potionInventory.push_back(new TimePotion());
-	//potionInventory.push_back(new AttackPotion());
+	potionInventory.push_back(new TimePotion());
+	potionInventory.push_back(new AttackPotion());
 	//std::cout << "\'Health Potion' added to inventory" << std::endl;
 	//weaponInventory.push_back(pickups.assaultRifle);
 	//weaponInventory.push_back(pickups.boltSniper);
@@ -262,7 +262,7 @@ void Player::Update(sf::RenderWindow &window, float dt) {
 		}
 	}
 
-	if (currentStamina == maxStamina) {
+	if (currentStamina >= maxStamina) {
 		bCanSprint = true;
 	}
 	else if (currentStamina <= 0) {
@@ -271,11 +271,11 @@ void Player::Update(sf::RenderWindow &window, float dt) {
 
 	if ((bIsSprinting&&bCanSprint&&!slowed||energized)&&!stunned) {
 		currentWalkspeed = defaultWalkspeed*1.5f;
-		currentStamina -= (energized)?0.f:1.f;
+		currentStamina -= (energized)?0.f:100.f*dt;
 	}
 	else if (currentStamina < 500.f&&!slowed) {
 		currentWalkspeed = defaultWalkspeed;
-		currentStamina += .5f;
+		currentStamina += 100.f*dt;
 	}
 	if (currentHp <= 0) {
 		bIsDead = true;
