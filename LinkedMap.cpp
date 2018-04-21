@@ -435,24 +435,38 @@ void LinkedMap::displayMap(room* current, sf::RenderWindow &window) {
 		window.draw(current->floor);
 	}
 	if (current->neighbor1 != nullptr) {
-		window.draw(current->neighbor1->floor);
-		window.draw(current->neighbor1->hallway->floor);
+		if(current->neighbor1->bIsVisited) {
+			window.draw(current->neighbor1->floor);
+			window.draw(current->neighbor1->hallway->floor);
 
+		} else if (current->bIsVisited){
+			window.draw(current->neighbor1->hallway->floor);
+		}
 		if (current->neighbor1->neighbors>0) {
 			displayMap(current->neighbor1, window);
 		}
 	}
-	if (current->neighbor2 != nullptr) {
-		window.draw(current->neighbor2->floor);
-		window.draw(current->neighbor2->hallway->floor);
+	if (current->neighbor2 != nullptr){
+		if(current->neighbor2->bIsVisited) {
+			window.draw(current->neighbor2->floor);
+			window.draw(current->neighbor2->hallway->floor);
+		} else if(current->bIsVisited){
+			window.draw(current->neighbor2->hallway->floor);
+		}
 
 		if (current->neighbor2->neighbors>0) {
 			displayMap(current->neighbor2, window);
 		}
+
 	}
 	if (current->neighbor3 != nullptr) {
-		window.draw(current->neighbor3->floor);
-		window.draw(current->neighbor3->hallway->floor);
+		if(current->neighbor1->bIsVisited) {
+			window.draw(current->neighbor3->floor);
+			window.draw(current->neighbor3->hallway->floor);
+
+		} else if(current->bIsVisited){
+			window.draw(current->neighbor3->hallway->floor);
+		}
 
 		if (current->neighbor3->neighbors>0) {
 			displayMap(current->neighbor3, window);
@@ -460,8 +474,91 @@ void LinkedMap::displayMap(room* current, sf::RenderWindow &window) {
 	}
 }
 
-void LinkedMap::printRoomNames(room* current) {
+void LinkedMap::displayCurrentRoom(sf::RenderWindow &window) {
+	if (current != nullptr) {
+		window.draw(current->floor);
+		if (current != head) {
+			window.draw(current->hallway->floor);
+		}
+	}
+	if (current->previous != nullptr) {
+		window.draw(current->previous->floor);
+		if (current->previous != head) {
+			window.draw(current->previous->hallway->floor);
+		}
+		if (current->previous->neighbor1 != nullptr) {
+			window.draw(current->previous->neighbor1->floor);
+			if (current->previous->neighbor1 != head) {
+				window.draw(current->previous->neighbor1->hallway->floor);
 
+			}
+		}
+		if (current->previous->neighbor2 != nullptr) {
+			window.draw(current->previous->neighbor2->floor);
+			if (current->previous->neighbor2 != head) {
+				window.draw(current->previous->neighbor2->hallway->floor);
+			}
+		}
+		if (current->previous->neighbor3 != nullptr) {
+			window.draw(current->previous->neighbor3->floor);
+			if (current->previous->neighbor3 != head) {
+				window.draw(current->previous->neighbor3->hallway->floor);
+
+			}
+		}
+	}
+	if (current->neighbor1 != nullptr) {
+		window.draw(current->neighbor1->floor);
+		window.draw(current->neighbor1->hallway->floor);
+		if (current->neighbor1->neighbor1 != nullptr) {
+			window.draw(current->neighbor1->neighbor1->hallway->floor);
+			window.draw(current->neighbor1->neighbor1->floor);
+		}
+		if (current->neighbor1->neighbor2 != nullptr) {
+			window.draw(current->neighbor1->neighbor2->hallway->floor);
+			window.draw(current->neighbor1->neighbor2->floor);
+		}
+		if (current->neighbor1->neighbor3 != nullptr) {
+			window.draw(current->neighbor1->neighbor3->hallway->floor);
+			window.draw(current->neighbor1->neighbor3->floor);
+		}
+	}
+	if (current->neighbor2 != nullptr) {
+		window.draw(current->neighbor2->floor);
+		window.draw(current->neighbor2->hallway->floor);
+		if (current->neighbor2->neighbor1 != nullptr) {
+			window.draw(current->neighbor2->neighbor1->hallway->floor);
+			window.draw(current->neighbor2->neighbor1->floor);
+		}
+		if (current->neighbor2->neighbor2 != nullptr) {
+			window.draw(current->neighbor2->neighbor2->hallway->floor);
+			window.draw(current->neighbor2->neighbor2->floor);
+			if (current->neighbor2->neighbor3 != nullptr) {
+				window.draw(current->neighbor2->neighbor3->hallway->floor);
+				window.draw(current->neighbor2->neighbor3->floor);
+			}
+		}
+	}
+	if (current->neighbor3 != nullptr) {
+		window.draw(current->neighbor3->floor);
+		window.draw(current->neighbor3->hallway->floor);
+		if (current->neighbor3->neighbor1 != nullptr) {
+			window.draw(current->neighbor3->neighbor1->hallway->floor);
+			window.draw(current->neighbor3->neighbor1->floor);
+		}
+		if (current->neighbor3->neighbor2 != nullptr) {
+			window.draw(current->neighbor3->neighbor2->hallway->floor);
+			window.draw(current->neighbor3->neighbor2->floor);
+		}
+		if (current->neighbor3->neighbor3 != nullptr) {
+			window.draw(current->neighbor3->neighbor3->hallway->floor);
+			window.draw(current->neighbor3->neighbor3->floor);
+		}
+	}
+}
+
+
+void LinkedMap::printRoomNames(room* current) {
 	if (current->neighbor2 != nullptr) {
 		std::cout << current->neighbor2->name<<std::endl;
 
@@ -570,10 +667,6 @@ void LinkedMap::findCurrentRoom(room* checkedRoom, Player* player){
             findCurrentRoom(checkedRoom->neighbor1, player);
         }
     }
-
-
-
-
 }
 
 LinkedMap::room* LinkedMap::getCurrentRoom(){

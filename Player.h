@@ -84,7 +84,7 @@ private:
 	bool bIsDead;
 	float staminaUsage = .5f;
 
-private:
+public:
 	//UI
 	sf::RectangleShape healthBar;
 	sf::RectangleShape staminaBar;

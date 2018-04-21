@@ -31,9 +31,10 @@ void GameManager::Start() {
     //Starts loading screen
     LoadingScreen(window);
 
+    int numOfRooms = rand() % 5 + 8;
     //Creates randomized map
-    LinkedMap lmap(12);
-    lmap.addRooms(12, lmap.head, window);
+    LinkedMap lmap(numOfRooms);
+    lmap.addRooms(numOfRooms, lmap.head, window);
 
     window.setKeyRepeatEnabled(false); //Disables repeated keypresses
     window.setVerticalSyncEnabled(false); //Limits refresh rate to monitor
@@ -55,14 +56,15 @@ void GameManager::Start() {
     window.setView(roomView);
 
     //Creates bounded Map rectangle object
-
-
     bool centered = false;
 
+    //sets size and shape of health, stamina and name for player
+    player->setUI();
 
     lmap.findCurrentRoom(lmap.head, player);
     //Main loop
     while (window.isOpen()) {
+
         float deltaTime = FPSclock.restart().asSeconds();
         //Records window events such as mouse movement, mouse clicks, and key strokes
         sf::Event event;
@@ -73,7 +75,6 @@ void GameManager::Start() {
                     clickInterval.restart();
                 }
             }
-
             while (window.pollEvent(event)) {
                 if (event.type == event.Closed) {
                     window.close();
@@ -168,7 +169,10 @@ void GameManager::Start() {
             window.clear(); //Clears window
             //map->Draw(window); //Draws map
 
-            lmap.displayMap(lmap.head, window); //Draws Map
+            lmap.displayCurrentRoom(window); //Draws Map
+
+
+            player->displayPlayerInfo(window);
 
             //Draws Enemmies to screen
             for (unsigned i = 0; i < Enemy::getEnemies().size(); i++) {
@@ -184,6 +188,7 @@ void GameManager::Start() {
             for (unsigned i = 0; i < player->getWeapons().size(); i++) {
                 player->getWeapons()[i].Update(window, player, deltaTime); //Updates weapons and bullets
             }
+
             player->getCurrentWeapon().displayWeaponInfo(window);
 
             window.display(); //Displays all drawn objects

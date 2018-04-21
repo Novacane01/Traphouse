@@ -26,23 +26,27 @@ Player::Player(std::string name, float hp, float walkspeed, float maxStamina):ma
 	//std::cout << "\'Minigun\' added to inventory" << std::endl;
 	//weaponInventory.push_back(pickups.defaultKnife);
 	//std::cout << "\'Knife\' added to inventory" << std::endl;
-	setUI();
+
 }
 
 //Sets UI
 void Player::setUI() {
 	font.loadFromFile("Fonts/light_pixel-7.ttf");
-	healthBar.setPosition(20, 55);
+
 	healthBar.setFillColor(sf::Color::Red);
 	staminaBar.setFillColor(sf::Color::Green);
-	staminaBar.setPosition(20, 65);
-	playerName.setString(getName());
-	playerName.setCharacterSize(25);
-	playerName.setPosition(20, 5);
+
+
 	playerName.setFont(font);
-	hpNum.setPosition(20, 35);
+	playerName.setFillColor(sf::Color::White);
+	playerName.setCharacterSize(25);
+	playerName.setString(getName());
+
+
 	hpNum.setCharacterSize(15);
 	hpNum.setFont(font);
+
+
 }
 
 //Sets player name
@@ -52,7 +56,8 @@ void Player::setName(std::string value) {
 
 //Returns player name
 const std::string Player::getName() const{
-	return name;
+
+    return name;
 }
 
 //Sets player currentStamina
@@ -150,12 +155,21 @@ void Player::displayPlayerInfo(sf::RenderWindow &window) {
 	if (!poisoned&&healthBar.getFillColor() == sf::Color::Magenta) {
 		healthBar.setFillColor(sf::Color::Red);
 	}
+
 	healthBar.setSize(sf::Vector2f(currentHp*2.5f, 5));
+    healthBar.setPosition(window.getView().getCenter().x - (window.getView().getSize().x/2) + 20, window.getView().getCenter().y - (window.getView().getSize().y/2) + 70);
+
 	staminaBar.setSize(sf::Vector2f(currentStamina/2.f, 5));
+    staminaBar.setPosition(healthBar.getPosition().x, healthBar.getPosition().y + 40);
+
 	hpNum.setString(std::to_string((int)currentHp) + "/" + std::to_string((int)maxHp));
-	window.draw(staminaBar);
+    hpNum.setPosition(healthBar.getPosition().x + (healthBar.getSize().x/2) - (hpNum.getGlobalBounds().width/2), healthBar.getPosition().y + 15);
+
+	playerName.setPosition(healthBar.getPosition().x, healthBar.getPosition().y - 35);
+
+    window.draw(playerName);
+    window.draw(staminaBar);
 	window.draw(healthBar);
-	window.draw(playerName);
 	window.draw(hpNum);
 }
 
@@ -311,7 +325,7 @@ void Player::Update(sf::RenderWindow &window, float dt) {
 //Draws player to screen
 void Player::Draw(sf::RenderWindow &window) {
 	window.draw(player);
-	displayPlayerInfo(window);
+
 }
 
 //Returns current weapon

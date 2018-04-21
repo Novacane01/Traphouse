@@ -256,35 +256,43 @@ void Weapon::setUI() {
 	}
 	ammoCount.setCharacterSize(20);
 	ammoCount.setFont(font);
-	ammoCount.setPosition(1800, 1000);
+
 	gunName.setString(name);
 	gunName.setFont(font);
 	gunName.setCharacterSize(15);
-	gunName.setPosition(ammoCount.getPosition().x, ammoCount.getPosition().y - 20);
-	float offsetX = 0, offsetY = -getMaxClip()/2.f+4, rectSizeX = 5.f, rectSizeY = 15.f, size = 0.f, standardOffset = 40.f, desiredOffset = 200.f;
-	for (int i = 8;i < getMaxClip();i += 8) {
-		rectSizeX -= 4.f / 23.f;
-	}
-	for (int i = 32;i < getMaxClip();i+=32) {
-		if (i < i + 32) {
-			desiredOffset += 100;
-		}
-	}
-	for (int i = 0; i < getMaxClip();i++) {
-		sf::RectangleShape temp(sf::Vector2f(rectSizeX, rectSizeY));
-		temp.setPosition(ammoCount.getPosition().x-standardOffset-offsetX,ammoCount.getPosition().y+offsetY);
-		ammoBlocks.push_back(temp);
-		offsetX += 20;
-		if (standardOffset + offsetX>desiredOffset) {
-			offsetX = 0;
-			offsetY += temp.getSize().y+5;
-		}
-	}
 }
 
 //Displays ammo UI
 void Weapon::displayWeaponInfo(sf::RenderWindow &window) {
-	ammoCount.setString(std::to_string(getCurrentClip()) + "/" + std::to_string(getCurrentMax()));
+    //Updates current clip numbers
+    ammoCount.setString(std::to_string(getCurrentClip()) + "/" + std::to_string(getCurrentMax()));
+
+    //sets x location of ammoCount based on current view
+    int infoLocation = (int)window.getView().getCenter().x + (int)window.getView().getSize().x/2 - (int)ammoCount.getGlobalBounds().width - 20;
+
+    //sets location of ammoCount, gunName and ammoBlocks rely on this for location
+    ammoCount.setPosition(infoLocation, window.getView().getCenter().y + (window.getView().getSize().y/2) - 50);
+    gunName.setPosition(ammoCount.getPosition().x, ammoCount.getPosition().y - 20);
+
+    float offsetX = 0, offsetY = -getMaxClip()/2.f+4, rectSizeX = 5.f, rectSizeY = 15.f, size = 0.f, standardOffset = 40.f, desiredOffset = 200.f;
+    for (int i = 8;i < getMaxClip();i += 8) {
+        rectSizeX -= 4.f / 23.f;
+    }
+    for (int i = 32;i < getMaxClip();i+=32) {
+        if (i < i + 32) {
+            desiredOffset += 100;
+        }
+    }
+    for (int i = 0; i < getMaxClip();i++) {
+        sf::RectangleShape temp(sf::Vector2f(rectSizeX, rectSizeY));
+        temp.setPosition(ammoCount.getPosition().x-standardOffset-offsetX,ammoCount.getPosition().y+offsetY);
+        ammoBlocks.push_back(temp);
+        offsetX += 20;
+        if (standardOffset + offsetX>desiredOffset) {
+            offsetX = 0;
+            offsetY += temp.getSize().y+5;
+        }
+    }
 	for (int i = ammoBlocks.size()-1;i >= 0;i--) {
 		if ((unsigned)getCurrentClip()<ammoBlocks.size()&&i==ammoBlocks.size()-1) {
 			i -= (getMaxClip() - getCurrentClip());
@@ -293,7 +301,9 @@ void Weapon::displayWeaponInfo(sf::RenderWindow &window) {
 			window.draw(ammoBlocks[i]);
 		}
 	}
-	window.draw(ammoCount);
+	//clears ammo blocks for next time looped around to get new location.
+	ammoBlocks.clear();
+    window.draw(ammoCount);
 	window.draw(gunName);
 }
 

@@ -34,6 +34,7 @@ public:
 	bool doesIntersect(LinkedMap::room* current);
 	void addRooms(int rooms,room* current, sf::RenderWindow &);
 	void displayMap(room* current, sf::RenderWindow &window);
+	void displayCurrentRoom(sf::RenderWindow &window);
 	void printRoomNames(room* current);
     LinkedMap::room* getCurrentRoom();
     void findCurrentRoom(LinkedMap::room*, Player* player);
