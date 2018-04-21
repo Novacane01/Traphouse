@@ -1,13 +1,14 @@
 #pragma once
 #include "SFML/Graphics.hpp"
-#include "Floor.h"
+
 #include "Enemy.h"
+#include "LinkedMap.h"
 #include "Player.h"
 #include <random>
 #include <iostream>
 #include <string>
 #include <vector>
-#include "LinkedMap.h"
+
 
 extern unsigned WINDOW_LENGTH, WINDOW_WIDTH;
 
@@ -18,16 +19,20 @@ public:
 	void setWindowWidth(int);
 	void setWindowLength(int);
 	void Start();
+	void LoadingScreen(sf::RenderWindow &);
 	Player* createPlayer(sf::RenderWindow &);
+	void spawnEnemies(LinkedMap*);
+
 	void GameOver(sf::RenderWindow &);
 	void Pause(sf::RenderWindow &);
 	void DisplayMap(sf::RenderWindow &, Player *, LinkedMap*);
+    void Quit(sf::RenderWindow &);
 
-	void spawnEnemies(LinkedMap*);
-	~GameManager();
 private:
 	sf::Font font;
 	sf::View view;
+
+	Player *player;
 
 	Weapon defaultKnife;
 	Weapon defaultPistol;

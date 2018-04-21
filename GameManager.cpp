@@ -25,158 +25,173 @@ void GameManager::setWindowWidth(int value) {
 //Starts The Game
 void GameManager::Start() {
     //Creates Window with size WINDOW_WITDTH x WINDOW_LENGTH
-	static sf::RenderWindow window(sf::VideoMode(WINDOW_WIDTH, WINDOW_LENGTH), "Traphouse");
+    static sf::RenderWindow window(sf::VideoMode(WINDOW_WIDTH, WINDOW_LENGTH), "Traphouse");
 
-	//creates randomized map
-    LinkedMap lmap(17);
-	lmap.addRooms(17,lmap.head, window);
 
-	window.setKeyRepeatEnabled(false); //Disables repeated keypresses
-	window.setVerticalSyncEnabled(false); //Limits refresh rate to monitor
+    //Starts loading screen
+    LoadingScreen(window);
+
+    //Creates randomized map
+    LinkedMap lmap(12);
+    lmap.addRooms(12, lmap.head, window);
+
+    window.setKeyRepeatEnabled(false); //Disables repeated keypresses
+    window.setVerticalSyncEnabled(false); //Limits refresh rate to monitor
 
     //Initializes clock to record frames per second
-	sf::Clock FPSclock;
-	sf::Clock clickInterval;
+    sf::Clock FPSclock;
+    sf::Clock clickInterval;
 
-	//Creates player object
-	Player* player = createPlayer(window);
+    sf::Music music;
+    if (!music.openFromFile("Music/GameBGM.wav")) {
+        std::cout << "Could not open sound file" << std::endl;
+    }
+    music.play();
 
-    //sets center of window at 0,0
+    //Sets center of window at (0,0)
     sf::View roomView;
-    roomView.setCenter(0,0);
+    roomView.setCenter(910, 540);
+    roomView.zoom(1.5f);
     window.setView(roomView);
 
-	//Creates bounded Map rectangle object
-	Floor *map = new Floor;
+    //Creates bounded Map rectangle object
 
-	bool centered = false;
 
-	lmap.findCurrentRoom(lmap.head, player);
+    bool centered = false;
+
+
+    lmap.findCurrentRoom(lmap.head, player);
     //Main loop
-	while (window.isOpen()) {
-		float deltaTime = FPSclock.restart().asSeconds();
-		//Records window events such as mouse movement, mouse clicks, and key strokes
-		sf::Event event;
-		while (window.pollEvent(event)) {
-			if (clickInterval.getElapsedTime().asSeconds() > ((player->triggerhappy)?player->getCurrentWeapon().getAttackSpeed()/2.f:player->getCurrentWeapon().getAttackSpeed())) {
-				if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Left)) {
-					player->getCurrentWeapon().Shoot(player, window);
-					clickInterval.restart();
-				}
-			}
-			if (event.type == event.Closed) {
-				window.close();
-			}
-			if (event.type == sf::Event::KeyPressed) {
-				if (event.key.code == sf::Keyboard::W) {
-					player->isMovingUp = true;
-				}
-				if (event.key.code == sf::Keyboard::A) {
-					player->isMovingLeft = true;
-				
-				}
-				if (event.key.code == sf::Keyboard::S) {
-					player->isMovingDown = true;
-					
-				}
-				if (event.key.code == sf::Keyboard::D) {
-					player->isMovingRight = true;
-					
-				}
-				if (event.key.code == sf::Keyboard::R&&player->getCurrentWeapon().getCurrentClip()<player->getCurrentWeapon().getMaxClip()) {
-					player->getCurrentWeapon().bIsReloading = true;
-				}
-				if (event.key.code == sf::Keyboard::LShift) {
-					player->bIsSprinting = true;
-				}
-				if (event.key.code == sf::Keyboard::Escape) {
-					Pause(window);
-				}
-                if(event.key.code == sf::Keyboard::M){
-				    DisplayMap(window, player, &lmap);
+    while (window.isOpen()) {
+        float deltaTime = FPSclock.restart().asSeconds();
+        //Records window events such as mouse movement, mouse clicks, and key strokes
+        sf::Event event;
+
+            if (clickInterval.getElapsedTime().asSeconds() > ((player->triggerhappy) ? player->getCurrentWeapon().getAttackSpeed() / 2.f : player->getCurrentWeapon().getAttackSpeed())) {
+                if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Left)) {
+                    player->getCurrentWeapon().Shoot(player, window);
+                    clickInterval.restart();
                 }
-				if (event.key.code == sf::Keyboard::X) {
-					if (player->getPotions().size() > 0) {
-						player->getCurrentPotion()->Use(player);
-						std::cout << player->getCurrentPotion()->getName() << " used" << std::endl;
-						player->getPotions().erase(player->getPotions().begin());
-					}
-				}
-			}
-			else if (event.type == sf::Event::KeyReleased) {
-				if (event.key.code == sf::Keyboard::W) {
-					player->isMovingUp = false;
-				}
-				if (event.key.code == sf::Keyboard::A) {
-					player->isMovingLeft = false;
-				}
-				if (event.key.code == sf::Keyboard::S) {
-					player->isMovingDown = false;
-				}
-				if (event.key.code == sf::Keyboard::D) {
-					player->isMovingRight = false;
-				}
-				if (event.key.code == sf::Keyboard::LShift) {
-					player->bIsSprinting = false;
-				}
-			}
-			else if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Right)) {
-				player->switchWeapons();
-			}
-		}
-		//If not in current room (Between rooms/In hallways)
-		if(!lmap.getCurrentRoom()->playerIsInside){
+            }
 
-			lmap.findCurrentRoom(lmap.head, player);
-			roomView.setCenter(player->getPlayer().getPosition());
-			window.setView(roomView);
-			centered = false;
+            while (window.pollEvent(event)) {
+                if (event.type == event.Closed) {
+                    window.close();
+                }
+                if (event.type == sf::Event::KeyPressed) {
+                    if (event.key.code == sf::Keyboard::W) {
+                        player->isMovingUp = true;
+                    }
+                    if (event.key.code == sf::Keyboard::A) {
+                        player->isMovingLeft = true;
 
-		//if room is not cleared and map is not already centered, centers map and spawns enemies, only called once per room
-		} else if(!centered && !lmap.getCurrentRoom()->isCleared){
-			std::cout << "howdy partner\n";
-			centered = true;
-			roomView.setCenter(lmap.getCurrentRoom()->floor.getPosition());
-			window.setView(roomView);
-			spawnEnemies(&lmap);
+                    }
+                    if (event.key.code == sf::Keyboard::S) {
+                        player->isMovingDown = true;
 
-			//if room is cleared and player is inside, locks window view to players position until unvisited room is found
-		} else if(lmap.getCurrentRoom()->isCleared){
-			lmap.findCurrentRoom(lmap.head, player);
-			roomView.setCenter(player->getPlayer().getPosition());
-			window.setView(roomView);
-			centered = false;
-		} else if(Enemy::getEnemies().size() == 0){ //If all enemies have been killed, room is cleared;
-			lmap.getCurrentRoom()->isCleared = true;
-		}
+                    }
+                    if (event.key.code == sf::Keyboard::D) {
+                        player->isMovingRight = true;
 
-		window.clear(); //Clears window
-		//map->Draw(window); //Draws map
+                    }
+                    if (event.key.code == sf::Keyboard::M) {
+                        DisplayMap(window, player, &lmap);
+                    }
+                    if (event.key.code == sf::Keyboard::R &&
+                        player->getCurrentWeapon().getCurrentClip() < player->getCurrentWeapon().getMaxClip()) {
+                        player->getCurrentWeapon().bIsReloading = true;
+                    }
+                    if (event.key.code == sf::Keyboard::LShift) {
+                        player->bIsSprinting = true;
+                    }
+                    if (event.key.code == sf::Keyboard::Escape) {
+                        music.pause();
+                        Pause(window);
+                        music.play();
+                    }
+                    if (event.key.code == sf::Keyboard::M) {
+                        DisplayMap(window, player, &lmap);
+                    }
+                    if (event.key.code == sf::Keyboard::X) {
+                        if (player->getPotions().size() > 0) {
+                            player->getCurrentPotion()->Use(player);
+                            std::cout << player->getCurrentPotion()->getName() << " used" << std::endl;
+                            player->getPotions().erase(player->getPotions().begin());
+                        }
+                    }
+                } else if (event.type == sf::Event::KeyReleased) {
+                    if (event.key.code == sf::Keyboard::W) {
+                        player->isMovingUp = false;
+                    }
+                    if (event.key.code == sf::Keyboard::A) {
+                        player->isMovingLeft = false;
+                    }
+                    if (event.key.code == sf::Keyboard::S) {
+                        player->isMovingDown = false;
+                    }
+                    if (event.key.code == sf::Keyboard::D) {
+                        player->isMovingRight = false;
+                    }
+                    if (event.key.code == sf::Keyboard::LShift) {
+                        player->bIsSprinting = false;
+                    }
+                } else if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Right)) {
+                    player->switchWeapons();
+                }
+            }
+            //If not in current room (Between rooms/In hallways)
+            if (!lmap.getCurrentRoom()->playerIsInside) {
 
-        lmap.displayMap(lmap.head, window); //Draws Map
+                lmap.findCurrentRoom(lmap.head, player);
+                roomView.setCenter(player->getPlayer().getPosition());
+                window.setView(roomView);
+                centered = false;
 
-        //Draws Enemmies to screen
-		for (unsigned i = 0; i < Enemy::getEnemies().size();i++) {
-			Enemy::getEnemies()[i]->Update(player, deltaTime);
-			Enemy::getEnemies()[i]->Draw(window);
-			if (Enemy::getEnemies()[i]->isDead()) {
-				Enemy::Destroy(Enemy::getEnemies().begin()+i);
-			}
-		}
+                //if room is not cleared and map is not already centered, centers map and spawns enemies, only called once per room
+            } else if (!centered && !lmap.getCurrentRoom()->isCleared) {
+                std::cout << "howdy partner\n";
+                centered = true;
+                roomView.setCenter(lmap.getCurrentRoom()->floor.getPosition());
+                window.setView(roomView);
+                spawnEnemies(&lmap);
 
-		player->Update(window, deltaTime); //Updates player position
-		player->Draw(window); //Draws player to screen
-		for (unsigned i = 0;i < player->getWeapons().size();i++) {
-			player->getWeapons()[i].Update(window, player, deltaTime); //Updates weapons and bullets
-		}
-		player->getCurrentWeapon().displayWeaponInfo(window);
+                //if room is cleared and player is inside, locks window view to players position until unvisited room is found
+            } else if (lmap.getCurrentRoom()->isCleared) {
+                lmap.findCurrentRoom(lmap.head, player);
+                roomView.setCenter(player->getPlayer().getPosition());
+                window.setView(roomView);
+                centered = false;
+            } else if (Enemy::getEnemies().size() == 0) { //If all enemies have been killed, room is cleared;
+                lmap.getCurrentRoom()->isCleared = true;
+            }
 
-		window.display(); //Displays all drawn objects
-		if (player->isDead()) {
-			GameOver(window);
-		}
-	}
-}
+            window.clear(); //Clears window
+            //map->Draw(window); //Draws map
+
+            lmap.displayMap(lmap.head, window); //Draws Map
+
+            //Draws Enemmies to screen
+            for (unsigned i = 0; i < Enemy::getEnemies().size(); i++) {
+                Enemy::getEnemies()[i]->Update(player, deltaTime);
+                Enemy::getEnemies()[i]->Draw(window);
+                if (Enemy::getEnemies()[i]->isDead()) {
+                    Enemy::Destroy(Enemy::getEnemies().begin() + i);
+                }
+            }
+
+            player->Update(window, deltaTime); //Updates player position
+            player->Draw(window); //Draws player to screen
+            for (unsigned i = 0; i < player->getWeapons().size(); i++) {
+                player->getWeapons()[i].Update(window, player, deltaTime); //Updates weapons and bullets
+            }
+            player->getCurrentWeapon().displayWeaponInfo(window);
+
+            window.display(); //Displays all drawn objects
+            if (player->isDead()) {
+                GameOver(window);
+            }
+        }
+    }
 
 Player* GameManager::createPlayer(sf::RenderWindow &window) {
 	window.setKeyRepeatEnabled(true);
@@ -232,9 +247,6 @@ Player* GameManager::createPlayer(sf::RenderWindow &window) {
                 window.close();
             }
 		}
-
-
-
 		window.clear();
 		window.draw(text);
 		window.draw(namePrompt);
@@ -245,57 +257,52 @@ Player* GameManager::createPlayer(sf::RenderWindow &window) {
 	window.setKeyRepeatEnabled(false);
 
 	//Creating player
-	Player *player = new Player(name);
-	return player;
-}
-
-//Game Manager Destructor
-GameManager::~GameManager() {
-
+	return new Player(name);
 }
 
 void GameManager::GameOver(sf::RenderWindow &window) {
 	std::cout << "You have died" << std::endl;
 	Enemy::getEnemies().clear();
 
-    sf::Event event;
-    sf::Text restartButton;
-    restartButton.setFont(font);
-    restartButton.setCharacterSize(48);
-    restartButton.setString("Restart");
-    restartButton.setOrigin(restartButton.getGlobalBounds().width/2, restartButton.getGlobalBounds().height/2);
-    restartButton.setPosition(window.getView().getCenter().x,window.getView().getCenter().y - 100);
+	sf::Event event;
+	sf::Text restartButton;
+	restartButton.setFont(font);
+	restartButton.setCharacterSize(48);
+	restartButton.setString("Restart");
+	restartButton.setOrigin(restartButton.getGlobalBounds().width / 2, restartButton.getGlobalBounds().height / 2);
+	restartButton.setPosition(window.getView().getCenter().x, window.getView().getCenter().y - 100);
 
-    //Adds quit button to menu screen
-    sf::Text exitButton;
-    exitButton.setFont(font);
-    exitButton.setCharacterSize(48);
-    exitButton.setString("Quit");
-    exitButton.setOrigin(exitButton.getGlobalBounds().width/2, exitButton.getGlobalBounds().height/2);
-    exitButton.setPosition(window.getView().getCenter().x,window.getView().getCenter().y + 100);
+	//Adds quit button to menu screen
+	sf::Text exitButton;
+	exitButton.setFont(font);
+	exitButton.setCharacterSize(48);
+	exitButton.setString("Quit");
+	exitButton.setOrigin(exitButton.getGlobalBounds().width / 2, exitButton.getGlobalBounds().height / 2);
+	exitButton.setPosition(window.getView().getCenter().x, window.getView().getCenter().y + 100);
 
-    sf::Text gameOverText;
-    gameOverText.setFont(font);
-    gameOverText.setFillColor(sf::Color::Red);
-    gameOverText.setCharacterSize(80);
-    gameOverText.setString("Game Over");
-    gameOverText.setOrigin(gameOverText.getGlobalBounds().width/2, gameOverText.getGlobalBounds().height/2);
-    gameOverText.setPosition(window.getView().getCenter().x - window.getView().getSize().x, window.getView().getCenter().y - 350);
+	sf::Text gameOverText;
+	gameOverText.setFont(font);
+	gameOverText.setFillColor(sf::Color::Red);
+	gameOverText.setCharacterSize(80);
+	gameOverText.setString("Game Over");
+	gameOverText.setOrigin(gameOverText.getGlobalBounds().width / 2, gameOverText.getGlobalBounds().height / 2);
+	gameOverText.setPosition(window.getView().getCenter().x - window.getView().getSize().x,
+							 window.getView().getCenter().y - 350);
 
-    sf::RectangleShape fade;
-    fade.setSize(window.getView().getSize());
-    fade.setFillColor(sf::Color(0,0,0,1));
-    fade.setOrigin(fade.getSize().x/2,fade.getSize().y/2);
-    fade.setPosition(window.getView().getCenter().x,window.getView().getCenter().y);
+	sf::RectangleShape fade;
+	fade.setSize(window.getView().getSize());
+	fade.setFillColor(sf::Color(0, 0, 0, 1));
+	fade.setOrigin(fade.getSize().x / 2, fade.getSize().y / 2);
+	fade.setPosition(window.getView().getCenter().x, window.getView().getCenter().y);
 
-    //Fades into GameOver
-	for(int i = 2; i < 250; i++){
+	//Fades into GameOver
+	for (int i = 2; i < 250; i++) {
 		usleep(10000);
 		window.draw(fade);
 		window.display();
-		fade.setFillColor(sf::Color(0,0,0,i));
+		fade.setFillColor(sf::Color(0, 0, 0, i));
 	}
-	while(gameOverText.getPosition().x != window.getView().getCenter().x){
+	while (gameOverText.getPosition().x != window.getView().getCenter().x) {
 		gameOverText.setPosition(gameOverText.getPosition().x + 1, gameOverText.getPosition().y);
 		usleep(2000);
 		window.clear();
@@ -304,48 +311,103 @@ void GameManager::GameOver(sf::RenderWindow &window) {
 		window.display();
 	}
 	while (window.isOpen()) {
-        //Activates buttons if pressed, respectively
-        if(restartButton.getGlobalBounds().contains(window.mapPixelToCoords(sf::Mouse::getPosition(window)))){
-            restartButton.setCharacterSize(58);//enlarges text when mouse is hovering over
-            restartButton.setOrigin(restartButton.getGlobalBounds().width/2, restartButton.getGlobalBounds().height/2);
-            restartButton.setPosition(window.getView().getCenter().x,window.getView().getCenter().y - 100);
-            if(sf::Mouse::isButtonPressed(sf::Mouse::Button::Left)){
-                Start();
-            }
-        } else{
-            restartButton.setCharacterSize(48);
-            restartButton.setOrigin(restartButton.getGlobalBounds().width/2, restartButton.getGlobalBounds().height/2);
-            restartButton.setPosition(window.getView().getCenter().x,window.getView().getCenter().y - 100);
-        }
-        if(exitButton.getGlobalBounds().contains(window.mapPixelToCoords(sf::Mouse::getPosition(window)))) {
-            exitButton.setCharacterSize(58); //enlarges text when mouse is hovering over
-            exitButton.setOrigin(exitButton.getGlobalBounds().width/2, exitButton.getGlobalBounds().height/2);
-            exitButton.setPosition(window.getView().getCenter().x,window.getView().getCenter().y + 100);
-            if(sf::Mouse::isButtonPressed(sf::Mouse::Button::Left)) {
-                window.close();
-            }
-        } else {
-            exitButton.setCharacterSize(48);
-            exitButton.setOrigin(exitButton.getGlobalBounds().width/2, exitButton.getGlobalBounds().height/2);
-            exitButton.setPosition(window.getView().getCenter().x,window.getView().getCenter().y + 100);
-        }
-        while (window.pollEvent(event)) {
+		//Activates buttons if pressed, respectively
+		if (restartButton.getGlobalBounds().contains(window.mapPixelToCoords(sf::Mouse::getPosition(window)))) {
+			restartButton.setCharacterSize(58);//enlarges text when mouse is hovering over
+			restartButton.setOrigin(restartButton.getGlobalBounds().width / 2,
+									restartButton.getGlobalBounds().height / 2);
+			restartButton.setPosition(window.getView().getCenter().x, window.getView().getCenter().y - 100);
+			if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Left)) {
+				Start();
+			}
+		} else {
+			restartButton.setCharacterSize(48);
+			restartButton.setOrigin(restartButton.getGlobalBounds().width / 2,
+									restartButton.getGlobalBounds().height / 2);
+			restartButton.setPosition(window.getView().getCenter().x, window.getView().getCenter().y - 100);
+		}
+		if (exitButton.getGlobalBounds().contains(window.mapPixelToCoords(sf::Mouse::getPosition(window)))) {
+			exitButton.setCharacterSize(58); //enlarges text when mouse is hovering over
+			exitButton.setOrigin(exitButton.getGlobalBounds().width / 2, exitButton.getGlobalBounds().height / 2);
+			exitButton.setPosition(window.getView().getCenter().x, window.getView().getCenter().y + 100);
+			if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Left)) {
+				window.close();
+			}
+		} else {
+			exitButton.setCharacterSize(48);
+			exitButton.setOrigin(exitButton.getGlobalBounds().width / 2, exitButton.getGlobalBounds().height / 2);
+			exitButton.setPosition(window.getView().getCenter().x, window.getView().getCenter().y + 100);
+		}
+		while (window.pollEvent(event)) {
 
-            if (event.type == event.Closed) {
-                window.close();
-            }
-        }
+			if (event.type == event.Closed) {
+				window.close();
+			}
+		}
 		window.clear();
-        window.draw(fade);
-        window.draw(gameOverText);
-        window.draw(restartButton);
-        window.draw(exitButton);
-        window.display();
-    }
-	Start();
+		window.draw(fade);
+		window.draw(gameOverText);
+		window.draw(restartButton);
+		window.draw(exitButton);
+		window.display();
+	}
+}
+
+void GameManager::LoadingScreen(sf::RenderWindow &window) {
+	sf::Music music;
+	if (!music.openFromFile("Music/LoadingScreen.wav")) {
+		std::cout << "Could not open music file"<<std::endl;
+	}
+	music.play();
+	sf::Text title;
+	sf::Text playButton;
+	playButton.setCharacterSize(50);
+	playButton.setFont(font);
+	playButton.setString("Play");
+	title.setPosition(WINDOW_WIDTH / 2, WINDOW_LENGTH*.3f);
+	title.setFont(font);
+	title.setString("TrapHouse");
+	float x = 0;
+	sf::Clock deltaTime;
+	while (window.isOpen()) {
+		x += .001f;
+		title.move(0, sin(x)/100);
+		title.setCharacterSize(150);
+		title.setOrigin(title.getGlobalBounds().width / 2, title.getGlobalBounds().height / 2);
+
+		sf::Event event;
+		while (window.pollEvent(event)) {
+			if (event.type == sf::Event::Closed) {
+				window.close();
+			}
+			if (playButton.getGlobalBounds().contains(window.mapPixelToCoords(sf::Mouse::getPosition(window)))) {
+				playButton.setCharacterSize(60);
+				playButton.setOrigin(playButton.getGlobalBounds().width / 2, playButton.getGlobalBounds().height / 2);
+				playButton.setPosition(WINDOW_WIDTH / 2, WINDOW_LENGTH*.7f);
+				if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Left)) {
+					player = createPlayer(window);
+					return;
+				}
+			}
+			else {
+				playButton.setCharacterSize(50);
+				playButton.setOrigin(playButton.getGlobalBounds().width / 2, playButton.getGlobalBounds().height / 2);
+				playButton.setPosition(WINDOW_WIDTH / 2, WINDOW_LENGTH*.7f);
+			}
+		}
+		window.clear();
+		window.draw(title);
+		window.draw(playButton);
+		window.display();
+	}
 }
 
 void GameManager::Pause(sf::RenderWindow &window) {
+	sf::Music music;
+	if (!music.openFromFile("Music/PauseMusic.wav")) {
+		std::cout << "Could not open music file" << std::endl;
+	}
+	music.play();
 	sf::Event event;
 	sf::Text resumeButton;
 	resumeButton.setFont(font);
@@ -417,7 +479,7 @@ void GameManager::DisplayMap(sf::RenderWindow &window, Player* player, LinkedMap
 
     roomView = window.getView();
 	//Shows large portion of map
-	mapView.setSize(10000,10000);
+	mapView.setSize(8000,8000);
     //Centers view of map around player
     mapView.setCenter(player->getPlayer().getPosition().x,player->getPlayer().getPosition().y);
     window.setView(mapView);
@@ -466,25 +528,23 @@ void GameManager::DisplayMap(sf::RenderWindow &window, Player* player, LinkedMap
         player->Draw(window);
         window.display();
 
-    }
+	}
 
 }
 
-void GameManager::spawnEnemies(LinkedMap* linkedMap){
+void GameManager::spawnEnemies(LinkedMap* linkedMap) {
 
     //Spawning monsters
     int numOfEnemies = rand() % 5 + 1;
 
-    for(int i=0;i < numOfEnemies;i++){
+    for (int i = 0; i < numOfEnemies; i++) {
         Enemy::Spawn(new Skeleton(), linkedMap->getCurrentRoom());
 
 
     }
 
-
-
     numOfEnemies = rand() % 5 + 1;
-    for(int i=0;i < numOfEnemies;i++){
+    for (int i = 0; i < numOfEnemies; i++) {
         Enemy::Spawn(new Spider(), linkedMap->getCurrentRoom());
     }
 

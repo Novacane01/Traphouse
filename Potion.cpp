@@ -1,4 +1,4 @@
-//#include "stdafx.h"
+
 #include "Potion.h"
 #include "Player.h"
 
@@ -28,7 +28,7 @@ void Potion::displayPotionInfo(sf::RenderWindow &window, Player *player) {
 	}
 }
 void Potion::setUI() {
-	if (!font.loadFromFile("Fonts\\light_pixel-7.ttf")) {
+	if (!font.loadFromFile("Fonts/light_pixel-7.ttf")) {
 		std::cout << "Could not load font from file" << std::endl;
 	}
 

@@ -6,7 +6,7 @@ class Player;
 class Enemy
 {
 public:
-	enum class animationState { IDLE, MELEE, RANGED, DEAD } state;
+	enum class animationState {WALKING, IDLE, MELEE, RANGED, DEAD } state;
 	enum class behaviour { AGGRESSIVE, PASSIVE }mode;
 
 	Enemy& operator= (const Enemy&) {
@@ -34,18 +34,21 @@ public:
 	//Booleans
 	bool isDead()const;
 	void isHit(Player *);
+	//Drawing
 	//Misc.
 	static std::vector<Enemy *> enemies;
 	virtual void Update(Player *, float) = 0;
 	virtual void Draw(sf::RenderWindow &) = 0;
-	static void Spawn(Enemy *, LinkedMap::room*);
+	virtual void Animate(Player *) = 0;
+
+	static void Spawn(Enemy *,LinkedMap::room *);
+
 	static void Destroy(std::vector<Enemy *>::iterator);
 	~Enemy();
 	
 private:
 
 	sf::Vector2f direction;
-	bool bIsDead;
 	const std::string name;
 	int hp = 0;
 	float walkspeed = 0.f;
@@ -57,23 +60,27 @@ private:
 
 protected:
 	sf::Sprite enemy;
-	sf::Texture attackTexture;
-	sf::Texture	walkTexture;
-};
-
-class Skeleton:public Enemy {
-public:
-	Skeleton(std::string name = "Skeleton", int hp = 100, float attack = 10.f, float walkspeed = 100.f, float attackspeed = 2.f);
-	void boneWhack(Player *);
-	void boneThrow(Player *);
-	void walkAnim(Player *);
-	void Update(Player *, float);
-	void Draw(sf::RenderWindow &);
-private:
+	//Animation
 	sf::Clock attackTimer;
 	sf::Clock animationTimer;
 	sf::IntRect AttackRect;
 	sf::IntRect WalkRect;
+	sf::IntRect DeathRect;
+	sf::Texture attackTexture;
+	sf::Texture	walkTexture;
+	sf::Texture	deathTexture;
+	bool bIsDead;
+};
+
+class Skeleton:public Enemy {
+public:
+	Skeleton(std::string name = "Skeleton", float hp = 100.f, float attack = 10.f, float walkspeed = 100.f, float attackspeed = 2.f);
+	void boneWhack(Player *);
+	void boneThrow(Player *);
+	void Update(Player *, float);
+	void Draw(sf::RenderWindow &);
+	void Animate(Player *);
+private:
 	struct Bone {
 		sf::Sprite bone;
 		sf::Texture texture;
@@ -86,23 +93,32 @@ private:
 
 class Spider :public Enemy {
 public:
-	Spider(std::string name = "Spider", int hp = 15, float attack = 2.f, float walkspeed = 200.f, float attackspeed = 2.f);
+	Spider(std::string name = "Spider", float hp = 30.f, float attack = 2.f, float walkspeed = 200.f, float attackspeed = 2.f);
 	void webShot(Player *);
 	void Bite(Player *);
 	void Update(Player *, float);
-	void walkAnim();
+	void Animate(Player *);
 	void Draw(sf::RenderWindow &);
 private:
 	struct Web {
 		sf::Sprite web;
 		sf::Texture texture;
 		sf::Vector2f direction;
-		float velocity = 250.f;
+		float velocity = 750.f;
 		sf::Clock deleteTimer;
 	}web;
 	std::vector<Web> webs;
-	sf::Clock attackTimer;
-	sf::Clock animationTimer;
-	sf::IntRect rectSourceSprite;
+};
+
+class Troll :public Enemy {
+public:
+	Troll(std::string name = "Troll", float hp = 500.f, float attack = 30, float walkspeed = 25.f, float attackspeed = 3.f);
+	void groundSmash(Player *);
+	void melee(Player *);
+	void Update(Player *, float);
+	void Animate(Player *);
+	void Draw(sf::RenderWindow &);
+private:
+
 };
 

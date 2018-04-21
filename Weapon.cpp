@@ -3,6 +3,7 @@
 #include "Player.h"
 #include "Weapon.h"
 #include <exception>
+#include <cmath>
 
 std::map<std::string,Weapon *> Weapon::weaponList;
 bool Weapon::gunsLoaded;
@@ -73,6 +74,9 @@ void Weapon::playAudio(sf::SoundBuffer *buffer) {
 Weapon::Bullet Weapon::createBullet(Player* player, sf::RenderWindow &window) {
 	//Instantiating bullet
 	Bullet b;
+	if (type == "Sniper") {
+		b.velocity *= 5;
+	}
 	b.damage = (player->empowered)?damage*1.5f:damage;
 	b.bullet.setRadius(2.5f);
 	b.bullet.setPosition(player->getPlayer().getPosition());
