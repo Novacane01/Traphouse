@@ -157,16 +157,15 @@ void Player::displayPlayerInfo(sf::RenderWindow &window) {
 	}
 
 	healthBar.setSize(sf::Vector2f(currentHp*2.5f, 5));
-    healthBar.setPosition(window.getView().getCenter().x - (window.getView().getSize().x/2) + 20, window.getView().getCenter().y - (window.getView().getSize().y/2) + 70);
+    healthBar.setPosition(window.getView().getCenter().x - (window.getView().getSize().x/2) + 20, window.getView().getCenter().y - (window.getView().getSize().y/2) + 50);
 
 	staminaBar.setSize(sf::Vector2f(currentStamina/2.f, 5));
-    staminaBar.setPosition(healthBar.getPosition().x, healthBar.getPosition().y + 40);
+    staminaBar.setPosition(healthBar.getPosition().x, healthBar.getPosition().y + 20);
 
-	hpNum.setString(std::to_string((int)currentHp) + "/" + std::to_string((int)maxHp));
-    hpNum.setPosition(healthBar.getPosition().x + (healthBar.getSize().x/2) - (hpNum.getGlobalBounds().width/2), healthBar.getPosition().y + 15);
+	playerName.setPosition(healthBar.getPosition().x, healthBar.getPosition().y - 40);
 
-	playerName.setPosition(healthBar.getPosition().x, healthBar.getPosition().y - 35);
-
+    hpNum.setString(std::to_string((int)currentHp) + "/" + std::to_string((int)maxHp));
+    hpNum.setPosition(playerName.getPosition().x + playerName.getGlobalBounds().width + 10, playerName.getPosition().y + playerName.getGlobalBounds().height/2 - 8);
     window.draw(playerName);
     window.draw(staminaBar);
 	window.draw(healthBar);

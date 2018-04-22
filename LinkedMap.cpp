@@ -3,7 +3,9 @@
 #include "Player.h"
 
 LinkedMap::LinkedMap(int rta) {
-
+	if (!font.loadFromFile("Fonts/light_pixel-7.ttf")) {
+		std::cout << "Could not load file" << std::endl;
+	}
 	srand(time(0));
 	roomsToAdd = rta;
 	head = new room;
@@ -557,6 +559,58 @@ void LinkedMap::displayCurrentRoom(sf::RenderWindow &window) {
 	}
 }
 
+void LinkedMap::getNextLevel(room* current){
+    if (current->neighbor2 != nullptr) {
+        if(current->neighbor2->neighbors == 0){
+            levelUpRoom = current->neighbor2;
+        } else{
+            getNextLevel(current->neighbor2);
+        }
+    }
+    if (current->neighbor3 != nullptr) {
+		if(current->neighbor3->neighbors == 0){
+
+			levelUpRoom = current->neighbor3;
+
+		} else{
+			getNextLevel(current->neighbor3);
+		}
+    }
+    if (current->neighbor1 != nullptr) {
+    	if(current->neighbor1->neighbors == 0){
+			levelUpRoom = current->neighbor1;
+		} else{
+			getNextLevel(current->neighbor1);
+		}
+    }
+}
+
+void LinkedMap::spawnNextLevel(){
+
+	if (texture.loadFromFile("Sprites/Map/Stairs.png")) {
+		stairs.setTexture(texture);
+	}
+	stairs.setOrigin(stairs.getGlobalBounds().width/2,stairs.getGlobalBounds().height/2);
+    stairs.setPosition(levelUpRoom->floor.getPosition());
+}
+
+void LinkedMap::setLevelUpText(){
+	levelUpText.setFont(font);
+	levelUpText.setCharacterSize(24);
+	levelUpText.setString("Press 'F' To Level Up");
+	levelUpText.setPosition(stairs.getPosition().x + 40,stairs.getPosition().y + 40);
+}
+
+
+bool LinkedMap::displayStairs(sf::RenderWindow &window, Player* player){
+    window.draw(stairs);
+    if(player->getPlayer().getGlobalBounds().intersects(stairs.getGlobalBounds())){
+
+		window.draw(levelUpText);
+		return true;
+    }
+    return false;
+}
 
 void LinkedMap::printRoomNames(room* current) {
 	if (current->neighbor2 != nullptr) {
@@ -580,6 +634,7 @@ void LinkedMap::printRoomNames(room* current) {
 	}
 }
 
+//Method determines which rooms have been visited, which room the player is currently in and whether or not a room is cleared
 void LinkedMap::findCurrentRoom(room* checkedRoom, Player* player){
 
     if(checkedRoom == head){
@@ -668,10 +723,15 @@ void LinkedMap::findCurrentRoom(room* checkedRoom, Player* player){
         }
     }
 }
-
+//returns current room
 LinkedMap::room* LinkedMap::getCurrentRoom(){
     return(current);
 }
-void LinkedMap::setCurrentRoom(){
-    current = nullptr;
+
+LinkedMap::room* LinkedMap::getHead(){
+    return(head);
+}
+
+LinkedMap::room* LinkedMap::getLevelUpRoom(){
+    return(levelUpRoom);
 }

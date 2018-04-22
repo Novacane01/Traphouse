@@ -34,7 +34,10 @@ void GameManager::Start() {
     int numOfRooms = rand() % 5 + 8;
     //Creates randomized map
     LinkedMap lmap(numOfRooms);
-    lmap.addRooms(numOfRooms, lmap.head, window);
+    lmap.addRooms(numOfRooms, lmap.getHead(), window);
+    lmap.getNextLevel(lmap.getHead()); //sets an end room to level up room
+	lmap.spawnNextLevel();
+	lmap.setLevelUpText();
 
     window.setKeyRepeatEnabled(false); //Disables repeated keypresses
     window.setVerticalSyncEnabled(false); //Limits refresh rate to monitor
@@ -120,6 +123,10 @@ void GameManager::Start() {
                             player->getPotions().erase(player->getPotions().begin());
                         }
                     }
+                    if(event.key.code == sf::Keyboard::F && lmap.displayStairs(window, player)){
+                    	Start();
+                    	return;
+                    }
                 } else if (event.type == sf::Event::KeyReleased) {
                     if (event.key.code == sf::Keyboard::W) {
                         player->isMovingUp = false;
@@ -171,8 +178,12 @@ void GameManager::Start() {
 
             lmap.displayCurrentRoom(window); //Draws Map
 
+			if(lmap.getCurrentRoom() == lmap.getLevelUpRoom()){
 
-            player->displayPlayerInfo(window);
+				lmap.displayStairs(window, player);
+			}
+
+            player->displayPlayerInfo(window); //Draws player info: health, stamina, name
 
             //Draws Enemmies to screen
             for (unsigned i = 0; i < Enemy::getEnemies().size(); i++) {
@@ -188,8 +199,7 @@ void GameManager::Start() {
             for (unsigned i = 0; i < player->getWeapons().size(); i++) {
                 player->getWeapons()[i].Update(window, player, deltaTime); //Updates weapons and bullets
             }
-
-            player->getCurrentWeapon().displayWeaponInfo(window);
+            player->getCurrentWeapon().displayWeaponInfo(window); //draws gun name, bullets and ammo
 
             window.display(); //Displays all drawn objects
             if (player->isDead()) {

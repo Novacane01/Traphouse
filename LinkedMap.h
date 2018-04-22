@@ -24,6 +24,7 @@ public:
 		sf::RectangleShape floor;
 		LinkedMap::hallway* hallway;
 
+
 	};
 
 
@@ -31,20 +32,35 @@ public:
 	LinkedMap(int);
 	room* head;
 
+
 	bool doesIntersect(LinkedMap::room* current);
 	void addRooms(int rooms,room* current, sf::RenderWindow &);
 	void displayMap(room* current, sf::RenderWindow &window);
 	void displayCurrentRoom(sf::RenderWindow &window);
 	void printRoomNames(room* current);
     LinkedMap::room* getCurrentRoom();
+    LinkedMap::room* getHead();
+    LinkedMap::room* getLevelUpRoom();
     void findCurrentRoom(LinkedMap::room*, Player* player);
-    void setCurrentRoom();
-private:
-	std::vector<sf::RectangleShape> positions;
 
+    //Gets room on map that will contain staircase to level up
+    void getNextLevel(room* current);
+    //Spawns staircase in level up room
+    void spawnNextLevel();
+    bool displayStairs(sf::RenderWindow &window, Player* player);
+    void setLevelUpText();
+private:
+    //list of all rectangle shapes added to check for intersections as rooms are made
+    std::vector<sf::RectangleShape> positions;
+    sf::Sprite stairs;
     room* current = nullptr;
-	int roomsToAdd;
+    room* levelUpRoom = nullptr;
+
+    int roomsToAdd;
 	int count = 0;
+    sf::Texture texture;
+    sf::Text levelUpText;
+    sf::Font font;
 
 
 	bool createRoom(LinkedMap::room* current, std::string, sf::RenderWindow &);
