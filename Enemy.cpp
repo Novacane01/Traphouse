@@ -1,4 +1,3 @@
-//#include "stdafx.h"
 #include "Enemy.h"
 #include "Player.h"
 #include "Collision.h"
@@ -39,6 +38,7 @@ void Enemy::isHit(Player * player) {
 				player->getWeapons()[i].bullets.erase(player->getWeapons()[i].bullets.begin() + j);
 				if (hp <= 0) {
 					state  = animationState::DEAD;
+					deathTimer.restart();
 				}
 			}
 		}
@@ -154,7 +154,7 @@ Skeleton::Skeleton(std::string name, float hp, float attack, float walkspeed, fl
 	AttackRect = sf::IntRect(0, 0, 110, 63);
 	DeathRect = sf::IntRect(0, 0, 130, 75);
 	scoreValue = 10;
-
+	
 	deathTexture.loadFromFile("Sprites/EnemyAnims/Skeleton/SkeletonDeath.png");
 	walkTexture.loadFromFile("Sprites/EnemyAnims/Skeleton/SkeletonWalk.png");
 	attackTexture.loadFromFile("Sprites/EnemyAnims/Skeleton/SkeletonMelee.png");
@@ -216,7 +216,6 @@ void Skeleton::Animate(Player *player) {
 		else if (state == animationState::DEAD) {
 			enemy.setOrigin(50, 20);
 			if (DeathRect.left >= 1200) {
-				static sf::Clock deathTimer;
 				if (deathTimer.getElapsedTime().asSeconds() > 3.f) {
 					bIsDead = true;
 					player->setScore(scoreValue);

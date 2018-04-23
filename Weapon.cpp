@@ -17,10 +17,10 @@ Weapon::Weapon() {
 		weaponList["boltSniper"] = new Weapon("Sniper", "L96A1", 15, 15, 5, 5, 100.f, 2.f, 4.f, 0.f, 0.04f, "SFX/Guns/Sniper.wav","Sprites/Weapons/L9.png");
 		weaponList["semiAuto"]= new Weapon("SemiAuto", "M14", 60, 60, 10, 10, 25.f, .4f, 2.f, 1.f, 0.1f, "SFX/Guns/AssaultRifle.wav","Sprites/Weapons/m14.png");
 		weaponList["shotgun"] = new Weapon("Shotgun", "KSG", 30, 30, 6, 6, 20.f, 1.f, 0.f, 5.f, 0.1f, "SFX/Guns/Shotgun.wav", "Sprites/Weapons/KSG.png");
-		weaponList["assaultRifle"] = new Weapon("Assault Rifle", "AK47", 90, 90, 30, 30, 30.f, .1f, 2.f, 5.f, .01f, "SFX/Guns/AssaultRifle.wav", "Sprites/Weapons/AK47.png");
-		weaponList["minigun"]= new Weapon("Minigun", "Minigun", 180, 180, 180, 180, 20.f, .05f, 5.f, 7.5f, .06f, "SFX/Guns/Minigun.wav", "Sprites/Weapons/m1911.png");
-		weaponList["semiSninper"] = new Weapon("Sniper", "Barrett .50 Cal", 30, 30, 10, 10, 80.f, .5f, 4.f, 0.f, .01f, "SFX/Guns/Sniper.wav", "Sprites/Weapons/50cal.png");
-		weaponList["submachine"] = new Weapon("Submachine Gun", "MP40", 96, 96, 32, 32, 20.f, .4f, 2.f, 2.5f, .2f, "SFX/Guns/Submachine.wav", "Sprites/Weapons/mp40.png");
+		weaponList["assaultRifle"] = new Weapon("Assault Rifle", "AK47", 90, 90, 30, 30, 30.f, .1f, 2.f, 5.f, .1f, "SFX/Guns/AssaultRifle.wav", "Sprites/Weapons/AK47.png");
+		weaponList["minigun"]= new Weapon("Minigun", "Minigun", 180, 180, 180, 180, 20.f, .05f, 5.f, 7.5f, .06f, "SFX/Guns/Minigun.wav", "Sprites/Weapons/minigun.png");
+		weaponList["semiSninper"] = new Weapon("Sniper", "Barrett .50 Cal", 30, 30, 10, 10, 80.f, .5f, 4.f, 0.f, .1f, "SFX/Guns/Sniper.wav", "Sprites/Weapons/50cal.png");
+		weaponList["submachine"] = new Weapon("Submachine Gun", "MP40", 96, 96, 32, 32, 20.f, .2f, 2.f, 2.5f, .2f, "SFX/Guns/Submachine.wav", "Sprites/Weapons/mp40.png");
 		gunsLoaded = true;
 	}
 }

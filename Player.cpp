@@ -1,9 +1,10 @@
+
 #include "Player.h"
+#include "Chest.h"
 
 
 //Player Constructor
-Player::Player(std::string name, float hp, float walkspeed, float maxStamina):maxHp(hp),defaultWalkspeed(walkspeed){
-	//Chest *chest = new Chest();
+Player::Player(std::string name, float hp, float walkspeed, float maxStamina):maxHp(hp),defaultWalkspeed(walkspeed){ //player constructor
 	setName(name);
 	setCurrentHp(maxHp);
 	setMaxStamina(maxStamina);
@@ -13,13 +14,13 @@ Player::Player(std::string name, float hp, float walkspeed, float maxStamina):ma
 	player.setPosition(0,0);
 	score = 0;
 	setTexture("Sprites/PlayerAnims/Walking/Walking1.png");
-	weaponInventory.push_back(*Weapon::weaponList["boltSniper"]);
+	weaponInventory.push_back(*Weapon::weaponList["defaultPistol"]);
 	std::cout << "\'Pistol\' added to inventory" << std::endl;
-	//chest->Open(this);
-	weaponInventory.push_back(*Weapon::weaponList["assaultRifle"]);
-	std::cout << "\'Shotgun\' added to inventory" << std::endl;
-	potionInventory.push_back(new TimePotion());
-	potionInventory.push_back(new AttackPotion());
+
+	//weaponInventory.push_back(*Weapon::weaponList["minigun"]);
+	//std::cout << "\'Shotgun\' added to inventory" << std::endl;
+	//potionInventory.push_back(new TimePotion());
+	//potionInventory.push_back(new AttackPotion());
 	//std::cout << "\'Health Potion' added to inventory" << std::endl;
 	//weaponInventory.push_back(pickups.assaultRifle);
 	//weaponInventory.push_back(pickups.boltSniper);
@@ -30,7 +31,7 @@ Player::Player(std::string name, float hp, float walkspeed, float maxStamina):ma
 }
 
 //Sets UI
-void Player::setUI() {
+void Player::setUI() { // UI for name, score, health and stamina
 	font.loadFromFile("Fonts/light_pixel-7.ttf");
 
 	healthBar.setFillColor(sf::Color::Red);
@@ -57,13 +58,13 @@ void Player::setName(std::string value) {
 }
 
 //Returns player name
-const std::string Player::getName() const{
+const std::string Player::getName() const{ //getter and setters for name
 
     return name;
 }
 
 //Sets player currentStamina
-void Player::setCurrentStamina(float value) {
+void Player::setCurrentStamina(float value) { //set stamina
 	currentStamina = value;
 }
 
@@ -112,7 +113,7 @@ float Player::getDefaultWalkspeed() const {
 	return defaultWalkspeed;
 }
 
-void Player::setScore(int scoreValue){
+void Player::setScore(int scoreValue){ //incrementing score
 	score += scoreValue;
 }
 
@@ -139,7 +140,7 @@ void Player::MoveLeft(float dt) {
 
 //Moves player up
 void Player::MoveUp(float dt) {
-	player.move(0, -(dt*currentWalkspeed));
+	player.move(0, -(dt*currentWalkspeed)); //most of this is self explanatory
 }
 
 //Movbes player down
@@ -158,7 +159,7 @@ bool Player::isDead() const{
 }
 
 //Displays player info to screen
-void Player::displayPlayerInfo(sf::RenderWindow &window) {
+void Player::displayPlayerInfo(sf::RenderWindow &window) { //displaying all info about player
 	if (poisoned) {
 		healthBar.setFillColor(sf::Color::Magenta);
 	}
@@ -254,7 +255,7 @@ void Player::Update(sf::RenderWindow &window, float dt) {
 				energized = true;
 				buffs[i].second -= bTime;
 				if (buffs[i].second <= 0) {
-					buffs.erase(buffs.begin() + i--);
+					buffs.erase(buffs.begin() + i--); //stamina work
 					energized = false;
 				}
 				else {
@@ -297,7 +298,7 @@ void Player::Update(sf::RenderWindow &window, float dt) {
 			}
 		}
 	}
-	if (currentStamina >= maxStamina) {
+	if (currentStamina >= maxStamina) { //can or cannot sprint
 		bCanSprint = true;
 	}
 	else if (currentStamina <= 0) {
@@ -325,7 +326,7 @@ void Player::Update(sf::RenderWindow &window, float dt) {
 		if (isMovingDown&&canMoveDown) {
 			MoveDown(dt);
 		}
-		if (isMovingRight&&canMoveRight) {
+		if (isMovingRight&&canMoveRight) { //stun function
 			MoveRight(dt);
 		}
 		if (isMovingLeft&&canMoveLeft) {

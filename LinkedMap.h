@@ -40,7 +40,7 @@ public:
 	void displayMap(room* current, sf::RenderWindow &window);
 	void displayCurrentRoom(room *, sf::RenderWindow &window, bool);
 	void printRoomNames(room* current);
-    LinkedMap::room* getCurrentRoom();
+	LinkedMap::room* getCurrentRoom();
     LinkedMap::room* getHead();
     LinkedMap::room* getLevelUpRoom();
     void findCurrentRoom(LinkedMap::room*, Player* player);

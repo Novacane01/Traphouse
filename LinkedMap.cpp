@@ -1,19 +1,18 @@
-
 #include "LinkedMap.h"
 
 
-LinkedMap::LinkedMap(int rta, int level) {
+LinkedMap::LinkedMap(int rta, int level) { //constructor for linked map
 	if (!font.loadFromFile("Fonts/light_pixel-7.ttf")) {
 		std::cout << "Could not load file" << std::endl;
 	}
-	chest1 = new Chest;
-	chest2 = new Chest;
+	chest1 = new Chest; //one out of two chests
+	chest2 = new Chest; //second
 	this->level = level;
 	if (!floorTexture.loadFromFile("Sprites/Map/DungeonFloorStone.png")) {
 		std::cout << "Could not load file<<std" << std::endl;
 	}
-	srand(time(0));
-	roomsToAdd = rta;
+	srand(time(0)); //seed time
+	roomsToAdd = rta; //how many rooms to add randomly
 	head = new room;
 	head->playerIsInside = true;
 	head->bIsVisited = true;
@@ -33,7 +32,7 @@ LinkedMap::LinkedMap(int rta, int level) {
 	head->wallLeft.setPosition(head->floor.getPosition().x - head->floor.getGlobalBounds().width / 2-50, head->floor.getPosition().y - head->floor.getGlobalBounds().height / 2);
 	head->wallLeft.setTexture(&floorTexture);
 	head->floor.setOrigin(head->floor.getSize().x / 2, head->floor.getSize().y / 2);
-	head->floor.setTexture(&floorTexture);
+	head->floor.setTexture(&floorTexture); // last lines set walls, floor, textures, etc. for head room
 	head->floor.setPosition(0, 0);
 	positions.push_back(head->floor);
 	head->floor.setFillColor(sf::Color::Blue);
@@ -50,13 +49,13 @@ LinkedMap::LinkedMap(int rta, int level) {
 bool LinkedMap::doesIntersect(LinkedMap::room* current) {
 	for (unsigned i = 0;i < positions.size();i++) {
 		if (current->floor.getGlobalBounds().intersects(positions[i].getGlobalBounds())) {
-			return true;
+			return true; //checks if floor intersects with another floor (should never)
 		}
 	}
 	return false;
 }
-
-void LinkedMap::doesCollide(Player *player) {
+//Function determines collision for walls of rooms and hallways
+void LinkedMap::doesCollide(Player *player) { //if it collides, move it somewhere else
 	if (!current->isCleared) {
 		if (current->wallTop.getGlobalBounds().intersects(player->getPlayer().getGlobalBounds())) {
 			player->canMoveUp = false;
@@ -299,10 +298,11 @@ void LinkedMap::doesCollide(Player *player) {
 	}
 }
 
-bool LinkedMap::createRoom(LinkedMap::room* current,std::string dir,sf::RenderWindow &window) {
+//Create room called in add rooms, adds each room to linked map, checking if new square intersects any previous squares
+bool LinkedMap::createRoom(LinkedMap::room* current,std::string dir,sf::RenderWindow &window) { //string determines if room placed up down left or right, random
 	LinkedMap::room* temp = new room;
 	LinkedMap::hallway* tempHallway = new hallway;
-	int width = rand() % 350 + 500;
+	int width = rand() % 350 + 500; //size of room is random between values
 	int height = rand() % 350 + 500;
 	//Creates a link between current and new neighbor for hallway
 	temp->hallway = tempHallway;
@@ -317,7 +317,7 @@ bool LinkedMap::createRoom(LinkedMap::room* current,std::string dir,sf::RenderWi
 	temp->playerIsInside = false;
 	temp->bIsVisited = false;
 
-	switch(level){
+	switch(level){	//floor changes shade colors as levels progress
 		case 1:
 			temp->hallway->floor.setFillColor(sf::Color::Yellow);
 			temp->floor.setFillColor(sf::Color::Yellow);
@@ -538,6 +538,8 @@ bool LinkedMap::createRoom(LinkedMap::room* current,std::string dir,sf::RenderWi
 	}
 	temp->name = "room " + std::to_string(count++);
 	temp->floor.setTexture(&floorTexture);
+
+	//Walls adding to room and hallway after their creation
 	temp->wallTop.setSize(sf::Vector2f(temp->floor.getGlobalBounds().width + 100, 50));
 	temp->wallTop.setPosition(temp->floor.getPosition().x - temp->floor.getGlobalBounds().width / 2 - 50, temp->floor.getPosition().y - temp->floor.getGlobalBounds().height / 2 - 50);
 	temp->wallTop.setTexture(&floorTexture);
@@ -584,11 +586,11 @@ bool LinkedMap::createRoom(LinkedMap::room* current,std::string dir,sf::RenderWi
 }
 
 void LinkedMap::addRooms(int rooms, room* current, sf::RenderWindow &window) {
-
+	//if no more rooms to create, return
 	if (rooms <= 0||current == nullptr) {
 		return;
 	}
-
+	//each room has random number of neighbors
 	int neighbors = rand() % 3 + 1;
 
     if (current->neighbors == 0) {
@@ -645,7 +647,7 @@ void LinkedMap::addRooms(int rooms, room* current, sf::RenderWindow &window) {
 			else {
 				r = rand() % (rooms - 1) + 1;
 			}
-			addRooms(r, current->neighbor1, window);
+			addRooms(r, current->neighbor1, window); //recursively calls a random number of rooms to be added to neighboring room
 			rooms -= r;
 			if (rooms == 1) {
 				r = 1;
@@ -656,8 +658,8 @@ void LinkedMap::addRooms(int rooms, room* current, sf::RenderWindow &window) {
 			else {
 				r = rand() % (rooms - 1) + 1;
 			}
-			addRooms(r, current->neighbor2, window);
-			addRooms(rooms - r, current->neighbor3, window);
+			addRooms(r, current->neighbor2, window); //adds another random amount of rooms
+			addRooms(rooms - r, current->neighbor3, window); //adds rest of rooms
 		}
 	}
 	else if(current->neighbors<3) {
@@ -700,8 +702,8 @@ void LinkedMap::addRooms(int rooms, room* current, sf::RenderWindow &window) {
 				r = rand() % (rooms - 1) + 1;
 			}
 
-            addRooms(r, current->neighbor2, window);
-			addRooms(rooms - r, current->neighbor3, window);
+            addRooms(r, current->neighbor2, window); //adds random amount of rooms to neighbor 2
+			addRooms(rooms - r, current->neighbor3, window); //adds remaining rooms to neighbor 3
 		}
 		else {
 			std::cout << "THIS SHOULDN'T HAPPEN" << std::endl;
@@ -712,6 +714,7 @@ void LinkedMap::addRooms(int rooms, room* current, sf::RenderWindow &window) {
 	}
 }
 
+//if room has been visited, draws it on map when M is pressed by user, also draws hallways to unexplored rooms
 void LinkedMap::displayMap(room* current, sf::RenderWindow &window) {
 	if (current == head) {
 		window.draw(current->floor);
@@ -758,7 +761,7 @@ void LinkedMap::displayMap(room* current, sf::RenderWindow &window) {
 
 void LinkedMap::displayCurrentRoom(room * curr, sf::RenderWindow &window, bool cleared) {
 	if (cleared) {
-		if (curr != nullptr) {
+		if (curr != nullptr) { //draws floor and then hallways
 			window.draw(curr->floor);
 			window.draw(curr->wallTop);
 			window.draw(curr->wallRight);
@@ -773,18 +776,7 @@ void LinkedMap::displayCurrentRoom(room * curr, sf::RenderWindow &window, bool c
 			}
 		}
 	}
-	//if (current->previous != nullptr) {
-		/*window.draw(current->previous->floor);
-		if (current->previous != head) {
-			window.draw(current->previous->hallway->floor);
-		}
-		if (current->previous->neighbor1 != nullptr) {
-			window.draw(current->previous->neighbor1->floor);
-			if (current->previous->neighbor1 != head) {
-				window.draw(current->previous->neighbor1->hallway->floor);
 
-			}*/
-		//}
 	if (curr->neighbor1 != nullptr) {
 		displayCurrentRoom(curr->neighbor1, window, cleared);
 	}
@@ -795,7 +787,7 @@ void LinkedMap::displayCurrentRoom(room * curr, sf::RenderWindow &window, bool c
 		displayCurrentRoom(curr->neighbor3, window, cleared);
 	}
 
-	if (!cleared) {
+	if (!cleared) {	//draws floor and then hallways
 		if (current != nullptr) {
 			if (current != head) {
 				window.draw(current->hallway->floor);
@@ -813,6 +805,7 @@ void LinkedMap::displayCurrentRoom(room * curr, sf::RenderWindow &window, bool c
 	}
 }
 
+//gets end room for stairs to be placed to go to next level
 void LinkedMap::findStairRoom(room* current){
     if (current->neighbor2 != nullptr) {
         if(current->neighbor2->neighbors == 0){
@@ -840,7 +833,7 @@ void LinkedMap::findStairRoom(room* current){
 		}
     }
 }
-
+//places stairs in stair room found in last method
 void LinkedMap::placeStairs(){
 	if (stairTexture.loadFromFile("Sprites/Map/Stairs.png")) {
 		stairs.setTexture(stairTexture);
@@ -850,7 +843,7 @@ void LinkedMap::placeStairs(){
     stairs.setPosition(levelUpRoom->floor.getPosition());
 
 }
-
+//level up text displayed when player walks over stairs
 void LinkedMap::placeLevelUpText(){
 	levelUpText.setFont(font);
 	levelUpText.setCharacterSize(24);
@@ -858,7 +851,7 @@ void LinkedMap::placeLevelUpText(){
 	levelUpText.setPosition(stairs.getPosition().x + 40,stairs.getPosition().y - 40);
 
 }
-
+//finds up to 2 available end rooms (rooms with no neighbors) to create chests in
 void LinkedMap::findChestRoom(room* current){
 	if(endRoomCount > 3){
 		endRoomCount = 3;
@@ -913,7 +906,7 @@ void LinkedMap::findChestRoom(room* current){
 		}
 	}
 }
-
+//places between 1 and 2 chests in chest rooms
 void LinkedMap::placeChests() {
 
 	if (chestRoom != nullptr) {
@@ -924,13 +917,13 @@ void LinkedMap::placeChests() {
 		chest2->setData(chestRoom2->floor.getPosition().x,chestRoom2->floor.getPosition().y);
 		}
 	}
-
+//text appears when near chest to open it
 void LinkedMap::placeChestText(){
 	chestText.setFont(font);
 	chestText.setCharacterSize(24);
 	chestText.setString("Press 'F' to Open");
 }
-
+//draws stairs if you're in stair room
 bool LinkedMap::displayStairs(sf::RenderWindow &window, Player* player){
     window.draw(stairs);
     if(player->getPlayer().getGlobalBounds().intersects(stairs.getGlobalBounds())){
@@ -939,7 +932,7 @@ bool LinkedMap::displayStairs(sf::RenderWindow &window, Player* player){
     }
     return false;
 }
-
+//draws chest one if player is in chest 1 room
 bool LinkedMap::displayChest1(sf::RenderWindow &window, Player* player){
 	if(chest1 != nullptr) {
 		window.draw(chest1->getChestSprite());
@@ -952,7 +945,7 @@ bool LinkedMap::displayChest1(sf::RenderWindow &window, Player* player){
 	}
 	return false;
 }
-
+//draws chest two if player is in chest 2 room
 bool LinkedMap::displayChest2(sf::RenderWindow &window, Player* player){
 	if(chest2 != nullptr) {
 		window.draw(chest2->getChestSprite());

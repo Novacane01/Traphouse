@@ -1,6 +1,6 @@
 #include "GameManager.h"
 #include "Chest.h"
-#include <unistd.h>
+
 unsigned WINDOW_LENGTH, WINDOW_WIDTH;
 //Game Manager Constructor
 GameManager::GameManager(int width, int length) {
@@ -9,9 +9,8 @@ GameManager::GameManager(int width, int length) {
 	if (!font.loadFromFile("Fonts/light_pixel-7.ttf")) {
 		std::cout << "Could not load file" << std::endl;
 	}
+	Weapon();
 	level = 1;
-
-	Weapon{};
 
 	//Creates Window with size WINDOW_WITDTH x WINDOW_LENGTH
 	window.create(sf::VideoMode(WINDOW_WIDTH, WINDOW_LENGTH), "TrapHouse");
@@ -102,7 +101,6 @@ void GameManager::Start() {
                     }
                     if (event.key.code == sf::Keyboard::S) {
                         player->isMovingDown = true;
-
                     }
                     if (event.key.code == sf::Keyboard::D) {
                         player->isMovingRight = true;
@@ -187,7 +185,7 @@ void GameManager::Start() {
 				player->isMovingUp = false;
 				player-> isMovingLeft = false;
 				player->isMovingRight = false;
-                changeView(lmap);
+                changeView(lmap, deltaTime);
                 spawnEnemies(lmap);
 
                 //if room is cleared and player is inside, locks window view to players position until unvisited room is found
@@ -206,7 +204,6 @@ void GameManager::Start() {
 			}
 			lmap->doesCollide(player);
             window.clear(); //Clears window
-            //map->Draw(window); //Draws map
 
             lmap->displayCurrentRoom(lmap->getHead(),window, lmap->getCurrentRoom()->isCleared); //Draws Map
 
@@ -221,6 +218,7 @@ void GameManager::Start() {
 			}
             player->displayPlayerInfo(window); //Draws player info: health, stamina, name
 
+			//sets text in top left for current level
 			levelText.setString("Level " + std::to_string(level));
 			levelText.setPosition(window.getView().getCenter().x + window.getView().getSize().x/2 - 180, window.getView().getCenter().y - window.getView().getSize().y/2 + 100);
 			window.draw(levelText);
@@ -248,9 +246,12 @@ void GameManager::Start() {
         }
     }
 
-void GameManager::changeView(LinkedMap* lmap){
+void GameManager::changeView(LinkedMap* lmap, float dt){
+
 	sf::View viewMotion = roomView;
 	sf::Vector2f direction;
+
+	//bounds rectangle for determining intersection between view and room center, for slow transition to room center before enemies spawning
 	sf::RectangleShape bounds;
 	bounds.setSize(sf::Vector2f(20,20));
 	bounds.setOrigin(bounds.getSize().x/2, bounds.getSize().y/2);
@@ -261,15 +262,17 @@ void GameManager::changeView(LinkedMap* lmap){
 	vectorSquare.setSize(sf::Vector2f(10,10));
 	vectorSquare.setOrigin(10,10);
 
+	//gets vector from player to room center, and normalizes it
 	direction = (lmap->getCurrentRoom()->floor.getPosition() - player->getPlayer().getPosition());
 	float mag = sqrt(pow(direction.x, 2) + pow(direction.y, 2));
 	direction.x = direction.x / mag;
 	direction.y = direction.y / mag;
 
+	//until view center intersects room center, increment view by normalized vector
 	while(!bounds.getGlobalBounds().intersects(vectorSquare.getGlobalBounds())) {
 		window.clear();
 		vectorSquare.setPosition(window.getView().getCenter());
-		viewMotion.move(direction);
+		viewMotion.move(direction*(dt*500));
 		window.setView(viewMotion);
 		lmap->displayCurrentRoom(lmap->getHead(), window, lmap->getCurrentRoom()->isCleared);
 		window.display();

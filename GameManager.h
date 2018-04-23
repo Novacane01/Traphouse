@@ -27,7 +27,7 @@ public:
 	void Pause();
 	void DisplayMap(Player *, LinkedMap*);
 	void levelUp(LinkedMap* lmap);
-	void changeView(LinkedMap*);
+	void changeView(LinkedMap*, float);
 private:
 	sf::Font font;
 	sf::View view;
