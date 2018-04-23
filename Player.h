@@ -58,6 +58,8 @@ public:
 	 Weapon& getCurrentWeapon();
 	 void switchWeapons();
 	 void setWeapon(Weapon &);
+	 bool bCanShoot;
+	 sf::Clock shootTimer;
 
 	 //Potions
 	 std::vector<Potion *>& getPotions();

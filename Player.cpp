@@ -1,4 +1,4 @@
-//#include "stdafx.h"
+#include "stdafx.h"
 #include "Player.h"
 #include "Chest.h"
 
@@ -309,6 +309,11 @@ void Player::Update(sf::RenderWindow &window, float dt) {
 		if (isMovingLeft) {
 			MoveLeft(dt);
 		}
+	}
+
+	if (bCanShoot&&shootTimer.getElapsedTime().asSeconds() > ((triggerhappy) ? getCurrentWeapon().getAttackSpeed() / 2.f : getCurrentWeapon().getAttackSpeed())) {
+		getCurrentWeapon().Shoot(this, window);
+		shootTimer.restart();
 	}
 
 	//Rotates player based off of mouse position

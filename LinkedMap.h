@@ -22,21 +22,20 @@ public:
 		room* neighbor3;
 		room* previous;
 		sf::RectangleShape floor;
+		sf::RectangleShape wallTop, wallRight, wallBottom, wallLeft;
 		LinkedMap::hallway* hallway;
-
-
 	};
 
-
+	sf::Texture floorTexture;
 	const int hallwayWidth = 150;
 	LinkedMap(int);
 	room* head;
 
-
+	void doesCollide(Player *);
 	bool doesIntersect(LinkedMap::room* current);
 	void addRooms(int rooms,room* current, sf::RenderWindow &);
 	void displayMap(room* current, sf::RenderWindow &window);
-	void displayCurrentRoom(sf::RenderWindow &window);
+	void displayCurrentRoom(sf::RenderWindow &window, bool);
 	void printRoomNames(room* current);
     LinkedMap::room* getCurrentRoom();
     LinkedMap::room* getHead();
