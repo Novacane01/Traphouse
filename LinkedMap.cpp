@@ -1,11 +1,14 @@
 
 #include "LinkedMap.h"
-#include "Player.h"
+
 
 LinkedMap::LinkedMap(int rta) {
 	if (!font.loadFromFile("Fonts/light_pixel-7.ttf")) {
 		std::cout << "Could not load file" << std::endl;
 	}
+	chest1 = new Chest;
+	chest2 = new Chest;
+
 	srand(time(0));
 	roomsToAdd = rta;
 	head = new room;
@@ -559,57 +562,157 @@ void LinkedMap::displayCurrentRoom(sf::RenderWindow &window) {
 	}
 }
 
-void LinkedMap::getNextLevel(room* current){
+void LinkedMap::findStairRoom(room* current){
     if (current->neighbor2 != nullptr) {
         if(current->neighbor2->neighbors == 0){
+        	endRoomCount++;
             levelUpRoom = current->neighbor2;
         } else{
-            getNextLevel(current->neighbor2);
+            findStairRoom(current->neighbor2);
         }
     }
     if (current->neighbor3 != nullptr) {
 		if(current->neighbor3->neighbors == 0){
-
+			endRoomCount++;
 			levelUpRoom = current->neighbor3;
 
 		} else{
-			getNextLevel(current->neighbor3);
+			findStairRoom(current->neighbor3);
 		}
     }
     if (current->neighbor1 != nullptr) {
     	if(current->neighbor1->neighbors == 0){
+    		endRoomCount++;
 			levelUpRoom = current->neighbor1;
 		} else{
-			getNextLevel(current->neighbor1);
+			findStairRoom(current->neighbor1);
 		}
     }
 }
 
-void LinkedMap::spawnNextLevel(){
-
-	if (texture.loadFromFile("Sprites/Map/Stairs.png")) {
-		stairs.setTexture(texture);
+void LinkedMap::placeStairs(){
+	if (stairTexture.loadFromFile("Sprites/Map/Stairs.png")) {
+		stairs.setTexture(stairTexture);
+		stairs.setScale(2,2);
 	}
 	stairs.setOrigin(stairs.getGlobalBounds().width/2,stairs.getGlobalBounds().height/2);
     stairs.setPosition(levelUpRoom->floor.getPosition());
+
 }
 
-void LinkedMap::setLevelUpText(){
+void LinkedMap::placeLevelUpText(){
 	levelUpText.setFont(font);
 	levelUpText.setCharacterSize(24);
 	levelUpText.setString("Press 'F' To Level Up");
-	levelUpText.setPosition(stairs.getPosition().x + 40,stairs.getPosition().y + 40);
+	levelUpText.setPosition(stairs.getPosition().x + 40,stairs.getPosition().y - 40);
+	
 }
 
+void LinkedMap::findChestRoom(room* current){
+	if(endRoomCount > 3){
+		endRoomCount = 3;
+	}
+	if(endRoomCount >= 2){
+		if (current->neighbor2 != nullptr) {
+			if(current->neighbor2->neighbors == 0 && current->neighbor2 != levelUpRoom){
+				if(chestRoom == nullptr){
+					endRoomCount--;
+					chestRoom = current->neighbor2;
+				} else if(chestRoom2 == nullptr){
+					endRoomCount--;
+					chestRoom2 = current->neighbor2;
+				} else{
+					return;
+				}
+				
+			} else{
+				findChestRoom(current->neighbor2);
+			}
+		}
+		if (current->neighbor3 != nullptr) {
+			if(current->neighbor3->neighbors == 0 && current->neighbor3 != levelUpRoom){
+				if(chestRoom == nullptr){
+					endRoomCount--;
+					chestRoom = current->neighbor3;
+				} else if(chestRoom2 == nullptr){
+					endRoomCount--;
+					chestRoom2 = current->neighbor3;
+				} else{
+					return;
+				}
+
+			} else{
+				findChestRoom(current->neighbor3);
+			}
+		}
+		if (current->neighbor1 != nullptr) {
+			if(current->neighbor1->neighbors == 0 && current->neighbor1 != levelUpRoom){
+				if(chestRoom == nullptr){
+					endRoomCount--;
+					chestRoom = current->neighbor1;
+				} else if(chestRoom2 == nullptr){
+					endRoomCount--;
+					chestRoom2 = current->neighbor1;
+				} else{
+					return;
+				}
+			} else{
+				findChestRoom(current->neighbor1);
+			}
+		}
+	}
+}
+
+void LinkedMap::placeChests() {
+
+	if (chestRoom != nullptr) {
+		chest1->setData(chestRoom->floor.getPosition().x,chestRoom->floor.getPosition().y);
+	}
+
+	if (chestRoom2 != nullptr) {
+		chest2->setData(chestRoom2->floor.getPosition().x,chestRoom2->floor.getPosition().y);
+		}
+	}
+
+
+void LinkedMap::placeChestText(){
+	chestText.setFont(font);
+	chestText.setCharacterSize(24);
+	chestText.setString("Press 'F' to Open");
+}
 
 bool LinkedMap::displayStairs(sf::RenderWindow &window, Player* player){
     window.draw(stairs);
     if(player->getPlayer().getGlobalBounds().intersects(stairs.getGlobalBounds())){
-
 		window.draw(levelUpText);
 		return true;
     }
     return false;
+}
+
+bool LinkedMap::displayChest1(sf::RenderWindow &window, Player* player){
+	if(chest1 != nullptr) {
+		window.draw(chest1->getChestSprite());
+
+		if (player->getPlayer().getGlobalBounds().intersects(chest1->getChestSprite().getGlobalBounds())) {
+			chestText.setPosition(chest1->getChestSprite().getPosition());
+			window.draw(chestText);
+			return true;
+		}
+	}
+	return false;
+}
+
+bool LinkedMap::displayChest2(sf::RenderWindow &window, Player* player){
+	if(chest2 != nullptr) {
+		window.draw(chest2->getChestSprite());
+		if (player->getPlayer().getGlobalBounds().intersects(chest2->getChestSprite().getGlobalBounds())) {
+			chestText.setPosition(chest2->getChestSprite().getPosition());
+			window.draw(chestText);
+			return true;
+		}
+	}
+	return false;
 }
 
 void LinkedMap::printRoomNames(room* current) {
@@ -734,4 +837,12 @@ LinkedMap::room* LinkedMap::getHead(){
 
 LinkedMap::room* LinkedMap::getLevelUpRoom(){
     return(levelUpRoom);
+}
+
+LinkedMap::room* LinkedMap::getChestRoom1(){
+	return(chestRoom);
+}
+
+LinkedMap::room* LinkedMap::getChestRoom2(){
+	return(chestRoom2);
 }

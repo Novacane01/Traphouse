@@ -153,6 +153,7 @@ Skeleton::Skeleton(std::string name, float hp, float attack, float walkspeed, fl
 	WalkRect = sf::IntRect(0,0,64,67);
 	AttackRect = sf::IntRect(0, 0, 110, 63);
 	DeathRect = sf::IntRect(0, 0, 130, 75);
+	scoreValue = 10;
 
 	deathTexture.loadFromFile("Sprites/EnemyAnims/Skeleton/SkeletonDeath.png");
 	walkTexture.loadFromFile("Sprites/EnemyAnims/Skeleton/SkeletonWalk.png");
@@ -218,6 +219,7 @@ void Skeleton::Animate(Player *player) {
 				static sf::Clock deathTimer;
 				if (deathTimer.getElapsedTime().asSeconds() > 3.f) {
 					bIsDead = true;
+					player->setScore(scoreValue);
 				}
 			}
 			else {
@@ -289,6 +291,7 @@ void Skeleton::Draw(sf::RenderWindow &window) {
 
 //Spider Class
 Spider::Spider(std::string name, float hp, float attack, float walkspeed, float attackspeed):Enemy(name,hp,attack,walkspeed,attackspeed) {
+	scoreValue = 5;
 	WalkRect = sf::IntRect(0, 0, 75, 70);
 	DeathRect = sf::IntRect(0, 0, 75, 75);
 	walkTexture.loadFromFile("Sprites/EnemyAnims/Spider/SpiderWalk.png");
@@ -301,7 +304,7 @@ Spider::Spider(std::string name, float hp, float attack, float walkspeed, float 
 }
 
 
-void Spider::Animate(Player *) {
+void Spider::Animate(Player * player) {
 	if (animationTimer.getElapsedTime().asSeconds() > 0.05f) {
 		if (enemy.getColor() != sf::Color::White) {
 			enemy.setColor(sf::Color::White);
@@ -321,6 +324,7 @@ void Spider::Animate(Player *) {
 				static sf::Clock deathTimer;
 				if (deathTimer.getElapsedTime().asSeconds() > 3.f) {
 					bIsDead = true;
+					player->setScore(scoreValue);
 				}
 			}
 			else {

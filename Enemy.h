@@ -13,6 +13,8 @@ public:
 		return *this;
 	}
 	Enemy(std::string, int, float, float, float);
+	int scoreValue;
+
 	//Setters
     void setHp(int);
 	void setWalkspeed(float);

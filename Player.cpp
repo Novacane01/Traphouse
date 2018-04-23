@@ -1,6 +1,6 @@
 //#include "stdafx.h"
 #include "Player.h"
-#include "Chest.h"
+
 
 //Player Constructor
 Player::Player(std::string name, float hp, float walkspeed, float maxStamina):maxHp(hp),defaultWalkspeed(walkspeed){
@@ -12,6 +12,7 @@ Player::Player(std::string name, float hp, float walkspeed, float maxStamina):ma
 	setCurrentWalkSpeed(walkspeed);
 	player.setOrigin(20,20);
 	player.setPosition(0,0);
+	score = 0;
 	setTexture("Sprites/PlayerAnims/Walking/Walking1.png");
 	weaponInventory.push_back(*Weapon::weaponList["defaultPistol"]);
 	std::cout << "\'Pistol\' added to inventory" << std::endl;
@@ -36,9 +37,11 @@ void Player::setUI() {
 	healthBar.setFillColor(sf::Color::Red);
 	staminaBar.setFillColor(sf::Color::Green);
 
+	playerScore.setFont(font);
+	playerScore.setCharacterSize(30);
+	playerScore.setString("Score: " + score);
 
 	playerName.setFont(font);
-	playerName.setFillColor(sf::Color::White);
 	playerName.setCharacterSize(25);
 	playerName.setString(getName());
 
@@ -110,6 +113,14 @@ float Player::getDefaultWalkspeed() const {
 	return defaultWalkspeed;
 }
 
+void Player::setScore(int scoreValue){
+	score += scoreValue;
+}
+
+int Player::getScore(){
+	return score;
+}
+
 //Returns player sprite
 sf::Sprite& Player::getPlayer(){
 	return player;
@@ -157,15 +168,25 @@ void Player::displayPlayerInfo(sf::RenderWindow &window) {
 	}
 
 	healthBar.setSize(sf::Vector2f(currentHp*2.5f, 5));
-    healthBar.setPosition(window.getView().getCenter().x - (window.getView().getSize().x/2) + 20, window.getView().getCenter().y - (window.getView().getSize().y/2) + 50);
+    healthBar.setPosition(window.getView().getCenter().x - (window.getView().getSize().x/2) + 20, window.getView().getCenter().y - (window.getView().getSize().y/2) + 90);
 
+    //places stamina bar below health bar
 	staminaBar.setSize(sf::Vector2f(currentStamina/2.f, 5));
     staminaBar.setPosition(healthBar.getPosition().x, healthBar.getPosition().y + 20);
 
-	playerName.setPosition(healthBar.getPosition().x, healthBar.getPosition().y - 40);
+    //Places player name above health bar, top left corner
+	playerName.setPosition(healthBar.getPosition().x, healthBar.getPosition().y - 70);
 
+    //places current health above health bar, centered
     hpNum.setString(std::to_string((int)currentHp) + "/" + std::to_string((int)maxHp));
-    hpNum.setPosition(playerName.getPosition().x + playerName.getGlobalBounds().width + 10, playerName.getPosition().y + playerName.getGlobalBounds().height/2 - 8);
+    hpNum.setPosition(healthBar.getPosition().x + healthBar.getSize().x/2 - hpNum.getGlobalBounds().width/2, healthBar.getPosition().y - 30);
+
+    //gets current player score and sets UI to that
+    playerScore.setString("Score: " + std::to_string(score));
+    //Places player score in top right corner of view
+    playerScore.setPosition(window.getView().getCenter().x + window.getView().getSize().x/2 - 240, window.getView().getCenter().y - window.getView().getSize().y/2 + 20);
+
+    window.draw(playerScore);
     window.draw(playerName);
     window.draw(staminaBar);
 	window.draw(healthBar);
@@ -274,7 +295,6 @@ void Player::Update(sf::RenderWindow &window, float dt) {
 			}
 		}
 	}
-
 	if (currentStamina >= maxStamina) {
 		bCanSprint = true;
 	}

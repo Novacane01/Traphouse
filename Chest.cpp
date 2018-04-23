@@ -49,6 +49,18 @@ void Chest::fillChestWeapons() {
 	};
 }
 
+sf::Sprite Chest::getChestSprite(){
+    return chest;
+}
+
+void Chest::setData(float x, float y){
+	if (texture.loadFromFile("Sprites/Map/chest.png")) {
+		chest.setTexture(texture);
+		chest.setOrigin(chest.getGlobalBounds().width / 2, chest.getGlobalBounds().height / 2);
+		chest.setPosition(x, y);
+	}
+}
+
 void Chest::fillChestPotions() {
 	std::mt19937 gen(rd()); //Standard mersenne_twister_engine seeded with rd()
 	std::uniform_real_distribution<> dis(0.f, 1.f);

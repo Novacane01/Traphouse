@@ -19,19 +19,18 @@ public:
 	void setWindowWidth(int);
 	void setWindowLength(int);
 	void Start();
-	void LoadingScreen(sf::RenderWindow &);
-	Player* createPlayer(sf::RenderWindow &);
+	void LoadingScreen();
+	Player* createPlayer();
 	void spawnEnemies(LinkedMap*);
 
-	void GameOver(sf::RenderWindow &);
-	void Pause(sf::RenderWindow &);
-	void DisplayMap(sf::RenderWindow &, Player *, LinkedMap*);
-    void Quit(sf::RenderWindow &);
-
+	void GameOver();
+	void Pause();
+	void DisplayMap(Player *, LinkedMap*);
+	void levelUp(LinkedMap* lmap);
 private:
 	sf::Font font;
 	sf::View view;
-
+	sf::RenderWindow window;
 	Player *player;
 
 	Weapon defaultKnife;

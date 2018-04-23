@@ -1,6 +1,6 @@
 #pragma once
-#include "GameManager.h"
-
+#include <random>
+#include "Player.h"
 class Chest
 {
 public:
@@ -10,8 +10,11 @@ public:
 	void fillChestPotions();
 	std::vector<Weapon *>& getWeaponContents();
 	std::vector<Potion *>& getPotionContents();
+    sf::Sprite getChestSprite();
+    void setData(float,float);
 	~Chest();
-	
+
+
 private:
 	std::vector<Weapon *> weaponContents;
 	std::vector<Potion *> potionContents;
