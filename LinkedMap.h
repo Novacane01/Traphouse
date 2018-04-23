@@ -10,6 +10,7 @@ class LinkedMap {
 public:
 	struct hallway{
 		sf::RectangleShape floor;
+		sf::RectangleShape wallTop, wallRight, wallBottom, wallLeft;
 	};
 	struct room {
 		std::string name;
@@ -35,7 +36,7 @@ public:
 	bool doesIntersect(LinkedMap::room* current);
 	void addRooms(int rooms,room* current, sf::RenderWindow &);
 	void displayMap(room* current, sf::RenderWindow &window);
-	void displayCurrentRoom(sf::RenderWindow &window, bool);
+	void displayCurrentRoom(room *, sf::RenderWindow &window, bool);
 	void printRoomNames(room* current);
     LinkedMap::room* getCurrentRoom();
     LinkedMap::room* getHead();

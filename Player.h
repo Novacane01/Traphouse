@@ -39,6 +39,10 @@ public:
 	 bool isMovingRight = false;
 	 bool isMovingUp = false;
 	 bool isMovingDown = false;
+	 bool canMoveLeft = false;
+	 bool canMoveRight = false;
+	 bool canMoveUp = false;
+	 bool canMoveDown = false;
 	 void Draw(sf::RenderWindow &);
 	 bool bIsSprinting;
 	 bool bCanSprint;

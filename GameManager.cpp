@@ -33,7 +33,6 @@ void GameManager::Start() {
     lmap->getNextLevel(lmap->getHead()); //sets an end room to level up room
 	lmap->spawnNextLevel();
 	lmap->setLevelUpText();
-
     window.setKeyRepeatEnabled(false); //Disables repeated keypresses
     window.setVerticalSyncEnabled(false); //Limits refresh rate to monitor
 
@@ -175,7 +174,7 @@ void GameManager::Start() {
             window.clear(); //Clears window
             //map->Draw(window); //Draws map
 
-            lmap->displayCurrentRoom(window, lmap->getCurrentRoom()->isCleared); //Draws Map
+            lmap->displayCurrentRoom(lmap->head,window, lmap->getCurrentRoom()->isCleared); //Draws Map
 
 			if(lmap->getCurrentRoom() == lmap->getLevelUpRoom()){
 

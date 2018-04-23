@@ -297,16 +297,16 @@ void Player::Update(sf::RenderWindow &window, float dt) {
 		bIsDead = false;
 	}
 	if (!stunned) {
-		if (isMovingUp) {
+		if (isMovingUp&&canMoveUp) {
 			MoveUp(dt);
 		}
-		if (isMovingDown) {
+		if (isMovingDown&&canMoveDown) {
 			MoveDown(dt);
 		}
-		if (isMovingRight) {
+		if (isMovingRight&&canMoveRight) {
 			MoveRight(dt);
 		}
-		if (isMovingLeft) {
+		if (isMovingLeft&&canMoveLeft) {
 			MoveLeft(dt);
 		}
 	}
