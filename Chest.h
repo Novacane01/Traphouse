@@ -19,7 +19,10 @@ private:
 	std::vector<Weapon *> weaponContents;
 	std::vector<Potion *> potionContents;
 	sf::Sprite chest;
-	sf::Texture texture;
+	sf::Texture closedTexture;
+	sf::Texture openTexture;
+
+	bool opened = false;
 
 	std::random_device rd;  //Will be used to obtain a seed for the random number engine
 };

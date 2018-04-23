@@ -129,11 +129,10 @@ void GameManager::Start() {
 							return;
                     	}
                     	if(lmap->displayChest1(window, player)){
-
-
+                    		lmap->getChest1()->Open(player);
                     	}
                     	if(lmap->displayChest2(window,player)){
-
+							lmap->getChest2()->Open(player);
                     	}
                     }
                 } else if (event.type == sf::Event::KeyReleased) {
@@ -192,13 +191,9 @@ void GameManager::Start() {
 			}
 			if(lmap->getCurrentRoom() == lmap->getChestRoom1()){
 				lmap->displayChest1(window,player);
-				std::cout << lmap->getChestRoom1()->floor.getPosition().x << "\n" << lmap->getChestRoom1()->floor.getPosition().x << "\n";
-				std::cout << "in chest room 1\n";
 			}
 			if(lmap->getCurrentRoom() == lmap->getChestRoom2()){
 				lmap->displayChest2(window,player);
-				std::cout << lmap->getChestRoom2()->floor.getPosition().x << "\n" << lmap->getChestRoom2()->floor.getPosition().x << "\n";
-
 			}
             player->displayPlayerInfo(window); //Draws player info: health, stamina, name
 

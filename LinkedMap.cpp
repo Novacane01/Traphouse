@@ -674,7 +674,6 @@ void LinkedMap::placeChests() {
 		}
 	}
 
-
 void LinkedMap::placeChestText(){
 	chestText.setFont(font);
 	chestText.setCharacterSize(24);
@@ -845,4 +844,11 @@ LinkedMap::room* LinkedMap::getChestRoom1(){
 
 LinkedMap::room* LinkedMap::getChestRoom2(){
 	return(chestRoom2);
+}
+
+Chest* LinkedMap::getChest1(){
+	return chest1;
+}
+Chest* LinkedMap::getChest2(){
+	return chest2;
 }

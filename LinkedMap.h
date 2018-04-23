@@ -54,6 +54,8 @@ public:
 	bool displayChest2(sf::RenderWindow &window, Player* player);
 	LinkedMap::room* getChestRoom1();
 	LinkedMap::room* getChestRoom2();
+	Chest* getChest1();
+	Chest* getChest2();
 
 private:
     //list of all rectangle shapes added to check for intersections as rooms are made
