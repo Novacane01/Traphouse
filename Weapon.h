@@ -26,7 +26,7 @@ public:
 	Weapon();
 	Weapon(std::string type,std::string name, float, int, float, float);
 	Weapon(std::string type, std::string name, int maxAmmo, int currentMax, int currentClip, int maxClip, float damage, float attackSpeed,
-		float reloadTime,float deviation, float dropChance, std::string shootFX);
+		float reloadTime,float deviation, float dropChance, std::string shootFX, std::string weaponUI);
 	void Update(sf::RenderWindow &, Player *, float);
 	void Draw(sf::RenderWindow &);
 	//Setters
@@ -52,11 +52,13 @@ public:
 	void Shoot(Player *, sf::RenderWindow &window);
 	void Reload(Player *);
 	void canReload(Player *);
-	void setUI();
+	void setUI(std::string);
 	//Audio
 	void playAudio(sf::SoundBuffer *);
 	sf::SoundBuffer FXgunshot;
 	sf::SoundBuffer FXreload;
+	sf::Sprite weaponImage;
+	sf::Texture weaponTexture;
 	~Weapon();
 
 	//Audio

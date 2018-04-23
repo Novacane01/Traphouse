@@ -10,6 +10,9 @@ GameManager::GameManager(int width, int length) {
 		std::cout << "Could not load file" << std::endl;
 	}
 	level = 1;
+
+	Weapon{};
+
 	//Creates Window with size WINDOW_WITDTH x WINDOW_LENGTH
 	window.create(sf::VideoMode(WINDOW_WIDTH, WINDOW_LENGTH), "TrapHouse");
 
@@ -178,7 +181,7 @@ void GameManager::Start() {
                 centered = false;
 
                 //if room is not cleared and map is not already centered, centers map and spawns enemies, only called once per room
-            } else if (!centered && !lmap->getCurrentRoom()->isCleared && lmap->getCurrentRoom() != lmap->getChestRoom1() && lmap->getCurrentRoom() != lmap->getChestRoom2() && lmap->getCurrentRoom() != lmap->getHead()) {
+            } else if (!centered && !lmap->getCurrentRoom()->isCleared && lmap->getCurrentRoom() != lmap->getChestRoom1() && lmap->getCurrentRoom() != lmap->getChestRoom2() && lmap->getCurrentRoom() != lmap->getHead() && lmap->getCurrentRoom() != lmap->getLevelUpRoom()) {
                 centered = true;
 				player->isMovingDown = false;
 				player->isMovingUp = false;

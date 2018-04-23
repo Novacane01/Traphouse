@@ -185,6 +185,9 @@ void Player::displayPlayerInfo(sf::RenderWindow &window) {
     //Places player score in top right corner of view
     playerScore.setPosition(window.getView().getCenter().x + window.getView().getSize().x/2 - 240, window.getView().getCenter().y - window.getView().getSize().y/2 + 20);
 
+    getCurrentWeapon().weaponImage.setPosition(window.getView().getCenter().x + 410, window.getView().getCenter().y + 380);
+
+    window.draw(getCurrentWeapon().weaponImage);
     window.draw(playerScore);
     window.draw(playerName);
     window.draw(staminaBar);

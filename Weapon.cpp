@@ -12,15 +12,15 @@ bool Weapon::gunsLoaded;
 Weapon::Weapon() {
 	if (!gunsLoaded) {
 		weaponList["defaultKnife"] = new Weapon("Melee", "Knife", 100000.f, 2, .5f, 0.f);
-		weaponList["defaultPistol"]= new Weapon("Pistol", "M1911", 88, 88, 8, 8, 10.f, 0.25f, 1.f, 2.5f, 0.f, "SFX/Guns/DefaultPistol.wav");
-		weaponList["heavyPistol"] = new Weapon("Heavy Pistol", "Desert Eagle", 35, 35, 7, 7, 50.f, .5f, 2.f, 2.f, 0.3f, "SFX/Guns/DesertEagle.wav");
-		weaponList["boltSniper"] = new Weapon("Sniper", "L96A1", 15, 15, 5, 5, 100.f, 2.f, 4.f, 0.f, 0.04f, "SFX/Guns/Sniper.wav");
-		weaponList["semiAuto"]= new Weapon("SemiAuto", "M14", 60, 60, 10, 10, 25.f, .4f, 2.f, 1.f, 0.1f, "SFX/Guns/AssaultRifle.wav");
-		weaponList["shotgun"] = new Weapon("Shotgun", "KSG", 30, 30, 6, 6, 20.f, 1.f, 0.f, 5.f, 0.1f, "SFX/Guns/Shotgun.wav");
-		weaponList["assaultRifle"] = new Weapon("Assault Rifle", "AK47", 90, 90, 30, 30, 30.f, .1f, 2.f, 5.f, .01f, "SFX/Guns/AssaultRifle.wav");
-		weaponList["minigun"]= new Weapon("Minigun", "Minigun", 180, 180, 180, 180, 20.f, .05f, 5.f, 7.5f, .06f, "SFX/Guns/Minigun.wav");
-		weaponList["semiSninper"] = new Weapon("Sniper", "Barrett .50 Cal", 30, 30, 10, 10, 80.f, .5f, 4.f, 0.f, .01f, "SFX/Guns/Sniper.wav");
-		weaponList["submachine"] = new Weapon("Submachine Gun", "MP40", 96, 96, 32, 32, 20.f, .4f, 2.f, 2.5f, .2f, "SFX/Guns/Submachine.wav");
+		weaponList["defaultPistol"]= new Weapon("Pistol", "M1911", 88, 88, 8, 8, 10.f, 0.25f, 1.f, 2.5f, 0.f, "SFX/Guns/DefaultPistol.wav", "Sprites/Weapons/m1911.png");
+		weaponList["heavyPistol"] = new Weapon("Heavy Pistol", "Desert Eagle", 35, 35, 7, 7, 50.f, .5f, 2.f, 2.f, 0.3f, "SFX/Guns/DesertEagle.wav", "Sprites/Weapons/Deagle.png");
+		weaponList["boltSniper"] = new Weapon("Sniper", "L96A1", 15, 15, 5, 5, 100.f, 2.f, 4.f, 0.f, 0.04f, "SFX/Guns/Sniper.wav","Sprites/Weapons/L9.png");
+		weaponList["semiAuto"]= new Weapon("SemiAuto", "M14", 60, 60, 10, 10, 25.f, .4f, 2.f, 1.f, 0.1f, "SFX/Guns/AssaultRifle.wav","Sprites/Weapons/m14.png");
+		weaponList["shotgun"] = new Weapon("Shotgun", "KSG", 30, 30, 6, 6, 20.f, 1.f, 0.f, 5.f, 0.1f, "SFX/Guns/Shotgun.wav", "Sprites/Weapons/KSG.png");
+		weaponList["assaultRifle"] = new Weapon("Assault Rifle", "AK47", 90, 90, 30, 30, 30.f, .1f, 2.f, 5.f, .01f, "SFX/Guns/AssaultRifle.wav", "Sprites/Weapons/AK47.png");
+		weaponList["minigun"]= new Weapon("Minigun", "Minigun", 180, 180, 180, 180, 20.f, .05f, 5.f, 7.5f, .06f, "SFX/Guns/Minigun.wav", "Sprites/Weapons/m1911.png");
+		weaponList["semiSninper"] = new Weapon("Sniper", "Barrett .50 Cal", 30, 30, 10, 10, 80.f, .5f, 4.f, 0.f, .01f, "SFX/Guns/Sniper.wav", "Sprites/Weapons/50cal.png");
+		weaponList["submachine"] = new Weapon("Submachine Gun", "MP40", 96, 96, 32, 32, 20.f, .4f, 2.f, 2.5f, .2f, "SFX/Guns/Submachine.wav", "Sprites/Weapons/mp40.png");
 		gunsLoaded = true;
 	}
 }
@@ -32,7 +32,7 @@ Weapon::Weapon(std::string type, std::string meleeName, float damage, int range,
 
 //Weapon(Ranged) Construtor
 Weapon::Weapon(std::string weaponType, std::string Name, int MaxAmmo, int currentMax, int currentClip, int maxClip, float Damage,
-float attackSpeed, float reloadTime, float Deviation, float DropChance, std::string soundFX):type(weaponType),name(Name),maxAmmo(MaxAmmo),deviation(Deviation),dropChance(DropChance){
+float attackSpeed, float reloadTime, float Deviation, float DropChance, std::string soundFX, std::string weaponUI):type(weaponType),name(Name),maxAmmo(MaxAmmo),deviation(Deviation),dropChance(DropChance){
     setCurrentClip(currentClip);
     setCurrentMax(currentMax);
     setDamage(Damage);
@@ -41,7 +41,7 @@ float attackSpeed, float reloadTime, float Deviation, float DropChance, std::str
 	setReloadTime(reloadTime);
 	loadBuffer(FXgunshot, soundFX);
 	loadBuffer(FXreload, "SFX/Guns/Reload.wav");
-	setUI();
+	setUI(weaponUI);
 }
 
 //Shoots bullet
@@ -155,6 +155,7 @@ void Weapon::loadBuffer(sf::SoundBuffer &buffer, std::string soundfile) {
 	}
 }
 
+
 //Returns weapon max clip
 int Weapon::getMaxClip() const {
 	return maxClip;
@@ -254,10 +255,18 @@ float Weapon::getDropChance() const {
 }
 
 //Sets ammo UI
-void Weapon::setUI() {
+void Weapon::setUI(std::string weaponUI) {
 	if (!font.loadFromFile("Fonts/light_pixel-7.ttf")) {
 		std::cout << "Could not open font" << std::endl;
 	}
+
+
+	if(weaponTexture.loadFromFile(weaponUI)) {
+		weaponImage.setTexture(weaponTexture);
+	}
+	weaponImage.setOrigin(weaponImage.getGlobalBounds().width/2,weaponImage.getGlobalBounds().height/2);
+	weaponImage.setScale(0.2,0.2);
+
 	ammoCount.setCharacterSize(20);
 	ammoCount.setFont(font);
 
@@ -305,6 +314,7 @@ void Weapon::displayWeaponInfo(sf::RenderWindow &window) {
 			window.draw(ammoBlocks[i]);
 		}
 	}
+
 	//clears ammo blocks for next time looped around to get new location.
 	ammoBlocks.clear();
     window.draw(ammoCount);
