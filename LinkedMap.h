@@ -28,6 +28,7 @@ public:
 		sf::RectangleShape wallTop, wallRight, wallBottom, wallLeft;
 		LinkedMap::hallway* hallway;
 	};
+    sf::Texture wallTexture;
 	sf::Texture floorTexture;
 	const int hallwayWidth = 150;
 	LinkedMap(int,int);

@@ -1,4 +1,3 @@
-//#include "stdafx.h"
 #include "GameManager.h"
 #include "Chest.h"
 #include <unistd.h>
@@ -61,7 +60,8 @@ void GameManager::Start() {
     if (!music.openFromFile("Music/GameBGM.wav")) {
         std::cout << "Could not open sound file" << std::endl;
     }
-    music.play();
+	music.setVolume(10);
+    //music.play();
 
     //Sets center of window at (0,0)
 
@@ -115,6 +115,7 @@ void GameManager::Start() {
                     if (event.key.code == sf::Keyboard::R &&
                         player->getCurrentWeapon().getCurrentClip() < player->getCurrentWeapon().getMaxClip()) {
                         player->getCurrentWeapon().bIsReloading = true;
+						player->getCurrentWeapon().playAudio(&player->getCurrentWeapon().FXreload);
                     }
                     if (event.key.code == sf::Keyboard::LShift) {
                         player->bIsSprinting = true;
