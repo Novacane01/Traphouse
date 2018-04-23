@@ -1,9 +1,10 @@
+#include "stdafx.h"
 #include "Player.h"
+#include "Chest.h"
 
 
 //Player Constructor
 Player::Player(std::string name, float hp, float walkspeed, float maxStamina):maxHp(hp),defaultWalkspeed(walkspeed){
-	//Chest *chest = new Chest();
 	setName(name);
 	setCurrentHp(maxHp);
 	setMaxStamina(maxStamina);
@@ -13,13 +14,12 @@ Player::Player(std::string name, float hp, float walkspeed, float maxStamina):ma
 	player.setPosition(0,0);
 	score = 0;
 	setTexture("Sprites/PlayerAnims/Walking/Walking1.png");
-	weaponInventory.push_back(*Weapon::weaponList["boltSniper"]);
+	weaponInventory.push_back(*Weapon::weaponList["defaultPistol"]);
 	std::cout << "\'Pistol\' added to inventory" << std::endl;
-	//chest->Open(this);
-	weaponInventory.push_back(*Weapon::weaponList["assaultRifle"]);
-	std::cout << "\'Shotgun\' added to inventory" << std::endl;
-	potionInventory.push_back(new TimePotion());
-	potionInventory.push_back(new AttackPotion());
+	//weaponInventory.push_back(*Weapon::weaponList["assaultRifle"]);
+	//std::cout << "\'Shotgun\' added to inventory" << std::endl;
+	//potionInventory.push_back(new TimePotion());
+	//potionInventory.push_back(new AttackPotion());
 	//std::cout << "\'Health Potion' added to inventory" << std::endl;
 	//weaponInventory.push_back(pickups.assaultRifle);
 	//weaponInventory.push_back(pickups.boltSniper);

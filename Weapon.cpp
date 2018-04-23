@@ -1,4 +1,4 @@
-
+#include "stdafx.h"
 #include "GameManager.h"
 #include "Player.h"
 #include "Weapon.h"
@@ -17,10 +17,10 @@ Weapon::Weapon() {
 		weaponList["boltSniper"] = new Weapon("Sniper", "L96A1", 15, 15, 5, 5, 100.f, 2.f, 4.f, 0.f, 0.04f, "SFX/Guns/Sniper.wav");
 		weaponList["semiAuto"]= new Weapon("SemiAuto", "M14", 60, 60, 10, 10, 25.f, .4f, 2.f, 1.f, 0.1f, "SFX/Guns/AssaultRifle.wav");
 		weaponList["shotgun"] = new Weapon("Shotgun", "KSG", 30, 30, 6, 6, 20.f, 1.f, 0.f, 5.f, 0.1f, "SFX/Guns/Shotgun.wav");
-		weaponList["assaultRifle"] = new Weapon("Assault Rifle", "AK47", 90, 90, 30, 30, 30.f, .1f, 2.f, 5.f, .01f, "SFX/Guns/AssaultRifle.wav");
+		weaponList["assaultRifle"] = new Weapon("Assault Rifle", "AK47", 90, 90, 30, 30, 30.f, .1f, 2.f, 5.f, .1f, "SFX/Guns/AssaultRifle.wav");
 		weaponList["minigun"]= new Weapon("Minigun", "Minigun", 180, 180, 180, 180, 20.f, .05f, 5.f, 7.5f, .06f, "SFX/Guns/Minigun.wav");
-		weaponList["semiSninper"] = new Weapon("Sniper", "Barrett .50 Cal", 30, 30, 10, 10, 80.f, .5f, 4.f, 0.f, .01f, "SFX/Guns/Sniper.wav");
-		weaponList["submachine"] = new Weapon("Submachine Gun", "MP40", 96, 96, 32, 32, 20.f, .4f, 2.f, 2.5f, .2f, "SFX/Guns/Submachine.wav");
+		weaponList["semiSninper"] = new Weapon("Sniper", "Barrett .50 Cal", 30, 30, 10, 10, 80.f, .5f, 4.f, 0.f, .1f, "SFX/Guns/Sniper.wav");
+		weaponList["submachine"] = new Weapon("Submachine Gun", "MP40", 96, 96, 32, 32, 20.f, .2f, 2.f, 2.5f, .2f, "SFX/Guns/Submachine.wav");
 		gunsLoaded = true;
 	}
 }

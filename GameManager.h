@@ -27,7 +27,7 @@ public:
 	void Pause();
 	void DisplayMap(Player *, LinkedMap*);
 	void levelUp(LinkedMap* lmap);
-	void changeView(LinkedMap*);
+	void changeView(LinkedMap*, float);
 private:
 	sf::Font font;
 	sf::View view;
@@ -37,14 +37,4 @@ private:
 	Player *player;
 	int level;
 	sf::View roomView;
-	Weapon defaultKnife;
-	Weapon defaultPistol;
-	Weapon heavyPistol;
-	Weapon boltSniper;
-	Weapon semiAuto;
-	Weapon shotgun;
-	Weapon assaultRifle;
-	Weapon minigun;
-	Weapon semiSniper;
-	Weapon submachine;
 };

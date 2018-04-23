@@ -1,6 +1,7 @@
+#include "stdafx.h"
 #include "GameManager.h"
 #include "Chest.h"
-#include <unistd.h>
+
 unsigned WINDOW_LENGTH, WINDOW_WIDTH;
 //Game Manager Constructor
 GameManager::GameManager(int width, int length) {
@@ -9,6 +10,7 @@ GameManager::GameManager(int width, int length) {
 	if (!font.loadFromFile("Fonts/light_pixel-7.ttf")) {
 		std::cout << "Could not load file" << std::endl;
 	}
+	Weapon();
 	level = 1;
 	//Creates Window with size WINDOW_WITDTH x WINDOW_LENGTH
 	window.create(sf::VideoMode(WINDOW_WIDTH, WINDOW_LENGTH), "TrapHouse");
@@ -184,7 +186,7 @@ void GameManager::Start() {
 				player->isMovingUp = false;
 				player-> isMovingLeft = false;
 				player->isMovingRight = false;
-                changeView(lmap);
+                changeView(lmap, deltaTime);
                 spawnEnemies(lmap);
 
                 //if room is cleared and player is inside, locks window view to players position until unvisited room is found
@@ -245,7 +247,7 @@ void GameManager::Start() {
         }
     }
 
-void GameManager::changeView(LinkedMap* lmap){
+void GameManager::changeView(LinkedMap* lmap, float dt){
 	sf::View viewMotion = roomView;
 	sf::Vector2f direction;
 	sf::RectangleShape bounds;
@@ -266,7 +268,7 @@ void GameManager::changeView(LinkedMap* lmap){
 	while(!bounds.getGlobalBounds().intersects(vectorSquare.getGlobalBounds())) {
 		window.clear();
 		vectorSquare.setPosition(window.getView().getCenter());
-		viewMotion.move(direction);
+		viewMotion.move(direction*(dt*300));
 		window.setView(viewMotion);
 		lmap->displayCurrentRoom(lmap->getHead(), window, lmap->getCurrentRoom()->isCleared);
 		window.display();

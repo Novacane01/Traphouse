@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include "Chest.h"
 
 Chest::Chest() {
@@ -21,7 +22,12 @@ void Chest::Open(Player *player) {
 	if(!opened) {
 		opened = true;
 		if (weaponContents.size() == 1) {
-			player->getWeapons().push_back(*weaponContents[0]);
+			if(player->getWeapons().size()>1){
+				player->getWeapons()[1] = *weaponContents[0];
+			}
+			else {
+				player->getWeapons().push_back(*weaponContents[0]);
+			}
 			std::cout << weaponContents[0]->getName() << " added" << std::endl;
 		}
 		if (potionContents.size() == 1) {
@@ -47,8 +53,9 @@ void Chest::fillChestWeapons() {
 	std::uniform_real_distribution<> dis(0.f, 1.f);
 	float r = dis(gen);
 	int i = 0;
-	for(std::map<std::string,Weapon *>::iterator it = Weapon::weaponList.begin();it!=Weapon::weaponList.end();it++) {
-		if (r -= it->second->getDropChance()) {
+	for(std::map<std::string,Weapon *>::iterator it = Weapon::weaponList.begin();it!=Weapon::weaponList.end()&&r>=0;it++) {
+		r -= it->second->getDropChance();
+		if (r<=0) {
 			weaponContents.push_back(it->second);
 		}
 	};

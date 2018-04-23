@@ -63,6 +63,7 @@ protected:
 	//Animation
 	sf::Clock attackTimer;
 	sf::Clock animationTimer;
+	sf::Clock deathTimer;
 	sf::IntRect AttackRect;
 	sf::IntRect WalkRect;
 	sf::IntRect DeathRect;
