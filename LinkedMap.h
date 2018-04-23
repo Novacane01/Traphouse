@@ -28,7 +28,7 @@ public:
 	};
 
 	const int hallwayWidth = 150;
-	LinkedMap(int);
+	LinkedMap(int,int);
 	room* head;
 
 	bool doesIntersect(LinkedMap::room* current);
@@ -61,7 +61,7 @@ private:
     //list of all rectangle shapes added to check for intersections as rooms are made
     std::vector<sf::RectangleShape> positions;
     sf::Sprite stairs;
-
+	int level;
     room* current = nullptr;
     room* levelUpRoom = nullptr;
 	room* chestRoom = nullptr;

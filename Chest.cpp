@@ -88,3 +88,7 @@ void Chest::fillChestPotions() {
 	}
 }
 
+bool Chest::getIsOpen(){
+    return opened;
+}
+

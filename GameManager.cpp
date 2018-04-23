@@ -7,15 +7,19 @@ unsigned WINDOW_LENGTH, WINDOW_WIDTH;
 GameManager::GameManager(int width, int length) {
 	setWindowLength(length);
 	setWindowWidth(width);
+	//roomView.zoom(1.5f);
 	if (!font.loadFromFile("Fonts/light_pixel-7.ttf")) {
 		std::cout << "Could not load file" << std::endl;
 	}
-
+	level = 1;
 	//Creates Window with size WINDOW_WITDTH x WINDOW_LENGTH
 	window.create(sf::VideoMode(WINDOW_WIDTH, WINDOW_LENGTH), "TrapHouse");
 
 	//Starts loading screen
 	LoadingScreen();
+
+	//sets size and shape of health, stamina and name for player
+	player->setUI();
 }
 
 //Sets window length
@@ -33,7 +37,7 @@ void GameManager::Start() {
 
 	int numOfRooms = rand() % 5 + 8;
     //Creates randomized map
-    LinkedMap* lmap = new LinkedMap(numOfRooms);
+    LinkedMap* lmap = new LinkedMap(numOfRooms, level);
     lmap->addRooms(numOfRooms, lmap->getHead(), window);
     lmap->findStairRoom(lmap->getHead()); //sets an end room to level up room
 	lmap->placeStairs();
@@ -44,6 +48,12 @@ void GameManager::Start() {
 
     window.setKeyRepeatEnabled(false); //Disables repeated keypresses
     window.setVerticalSyncEnabled(false); //Limits refresh rate to monitor
+
+	sf::Text levelText;
+	levelText.setString("Level " + std::to_string(level));
+	levelText.setCharacterSize(25);
+	levelText.setFont(font);
+	levelText.setOrigin(levelText.getGlobalBounds().width/2,levelText.getGlobalBounds().height/2);
 
     //Initializes clock to record frames per second
     sf::Clock FPSclock;
@@ -56,16 +66,15 @@ void GameManager::Start() {
     music.play();
 
     //Sets center of window at (0,0)
-    sf::View roomView;
+
     roomView.setCenter(910, 540);
-    roomView.zoom(1.5f);
+
     window.setView(roomView);
 
     //Creates bounded Map rectangle object
     bool centered = false;
 
-    //sets size and shape of health, stamina and name for player
-    player->setUI();
+
 
     lmap->findCurrentRoom(lmap->head, player);
     //Main loop
@@ -164,11 +173,9 @@ void GameManager::Start() {
                 centered = false;
 
                 //if room is not cleared and map is not already centered, centers map and spawns enemies, only called once per room
-            } else if (!centered && !lmap->getCurrentRoom()->isCleared) {
-                std::cout << "howdy partner\n";
+            } else if (!centered && !lmap->getCurrentRoom()->isCleared && lmap->getCurrentRoom() != lmap->getChestRoom1() && lmap->getCurrentRoom() != lmap->getChestRoom2() && lmap->getCurrentRoom() != lmap->getHead()) {
                 centered = true;
-                roomView.setCenter(lmap->getCurrentRoom()->floor.getPosition());
-                window.setView(roomView);
+                changeView(lmap);
                 spawnEnemies(lmap);
 
                 //if room is cleared and player is inside, locks window view to players position until unvisited room is found
@@ -197,7 +204,11 @@ void GameManager::Start() {
 			}
             player->displayPlayerInfo(window); //Draws player info: health, stamina, name
 
-            //Draws Enemmies to screen
+			levelText.setString("Level " + std::to_string(level));
+			levelText.setPosition(window.getView().getCenter().x + window.getView().getSize().x/2 - 180, window.getView().getCenter().y - window.getView().getSize().y/2 + 100);
+			window.draw(levelText);
+
+			//Draws Enemmies to screen
             for (unsigned i = 0; i < Enemy::getEnemies().size(); i++) {
                 Enemy::getEnemies()[i]->Update(player, deltaTime);
                 Enemy::getEnemies()[i]->Draw(window);
@@ -219,6 +230,37 @@ void GameManager::Start() {
             }
         }
     }
+
+void GameManager::changeView(LinkedMap* lmap){
+	sf::View viewMotion = roomView;
+	sf::Vector2f direction;
+	sf::RectangleShape bounds;
+	bounds.setSize(sf::Vector2f(20,20));
+	bounds.setOrigin(bounds.getSize().x/2, bounds.getSize().y/2);
+	bounds.setPosition(lmap->getCurrentRoom()->floor.getPosition());
+
+	sf::RectangleShape vectorSquare;
+
+	vectorSquare.setSize(sf::Vector2f(10,10));
+	vectorSquare.setOrigin(10,10);
+
+	direction = (lmap->getCurrentRoom()->floor.getPosition() - player->getPlayer().getPosition());
+	float mag = sqrt(pow(direction.x, 2) + pow(direction.y, 2));
+	direction.x = direction.x / mag;
+	direction.y = direction.y / mag;
+
+	while(!bounds.getGlobalBounds().intersects(vectorSquare.getGlobalBounds())) {
+		window.clear();
+		vectorSquare.setPosition(window.getView().getCenter());
+		viewMotion.move(direction);
+		window.setView(viewMotion);
+		lmap->displayCurrentRoom(window);
+		window.display();
+}
+	roomView.setCenter(lmap->getCurrentRoom()->floor.getPosition());
+	window.setView(roomView);
+
+}
 
 Player* GameManager::createPlayer() {
 	window.setKeyRepeatEnabled(true);
@@ -430,6 +472,7 @@ void GameManager::LoadingScreen() {
 
 void GameManager::levelUp(LinkedMap* lmap){
 	delete(lmap);
+	level++;
 	player->getPlayer().setPosition(0,0);
 	Start();
 }
@@ -563,14 +606,14 @@ void GameManager::DisplayMap(Player* player, LinkedMap* linkedMap){
 void GameManager::spawnEnemies(LinkedMap* linkedMap) {
 
     //Spawning monsters
-    int numOfEnemies = rand() % 5 + 1;
+    int numOfEnemies = rand() % 5 + level;
 
     for (int i = 0; i < numOfEnemies; i++) {
-        Enemy::Spawn(new Skeleton(), linkedMap->getCurrentRoom());
-    }
-    numOfEnemies = rand() % 5 + 1;
-    for (int i = 0; i < numOfEnemies; i++) {
-        Enemy::Spawn(new Spider(), linkedMap->getCurrentRoom());
+        Enemy::Spawn(new Skeleton("Skeleton", 100 + ((level-1) * 20), 10 + ((level-1)*2)), linkedMap->getCurrentRoom());
     }
 
+    numOfEnemies = rand() % 5 + level;
+    for (int i = 0; i < numOfEnemies; i++) {
+        Enemy::Spawn(new Spider("Spider", 30 + ((level-1)*10), 2 + (level-1)), linkedMap->getCurrentRoom());
+    }
 }

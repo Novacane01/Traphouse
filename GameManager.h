@@ -27,12 +27,14 @@ public:
 	void Pause();
 	void DisplayMap(Player *, LinkedMap*);
 	void levelUp(LinkedMap* lmap);
+	void changeView(LinkedMap*);
 private:
 	sf::Font font;
 	sf::View view;
 	sf::RenderWindow window;
 	Player *player;
-
+	int level;
+	sf::View roomView;
 	Weapon defaultKnife;
 	Weapon defaultPistol;
 	Weapon heavyPistol;

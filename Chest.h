@@ -12,6 +12,8 @@ public:
 	std::vector<Potion *>& getPotionContents();
     sf::Sprite getChestSprite();
     void setData(float,float);
+    bool getIsOpen();
+
 	~Chest();
 
 
