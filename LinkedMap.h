@@ -4,12 +4,15 @@
 #include "cstdlib"
 #include <random>
 #include <iostream>
+#include "Player.h"
+#include "Chest.h"
 
 class Player;
 class LinkedMap {
 public:
 	struct hallway{
 		sf::RectangleShape floor;
+		sf::RectangleShape wallTop, wallRight, wallBottom, wallLeft;
 	};
 	struct room {
 		std::string name;
@@ -22,29 +25,66 @@ public:
 		room* neighbor3;
 		room* previous;
 		sf::RectangleShape floor;
+		sf::RectangleShape wallTop, wallRight, wallBottom, wallLeft;
 		LinkedMap::hallway* hallway;
-
 	};
-
-
+	sf::Texture floorTexture;
 	const int hallwayWidth = 150;
-	LinkedMap(int);
+	LinkedMap(int,int);
 	room* head;
 
+	void doesCollide(Player *);
 	bool doesIntersect(LinkedMap::room* current);
 	void addRooms(int rooms,room* current, sf::RenderWindow &);
 	void displayMap(room* current, sf::RenderWindow &window);
-	void displayCurrentRoom(sf::RenderWindow &window);
+	void displayCurrentRoom(room *, sf::RenderWindow &window, bool);
 	void printRoomNames(room* current);
     LinkedMap::room* getCurrentRoom();
+    LinkedMap::room* getHead();
+    LinkedMap::room* getLevelUpRoom();
     void findCurrentRoom(LinkedMap::room*, Player* player);
-    void setCurrentRoom();
-private:
-	std::vector<sf::RectangleShape> positions;
 
+    //Gets room on map that will contain staircase to level up
+    void findStairRoom(room* current);
+    //Spawns staircase in level up room
+    void placeStairs();
+    bool displayStairs(sf::RenderWindow &window, Player* player);
+    void placeLevelUpText();
+	void findChestRoom(room* current);
+	void placeChests();
+	void placeChestText();
+	bool displayChest1(sf::RenderWindow &window, Player* player);
+	bool displayChest2(sf::RenderWindow &window, Player* player);
+	LinkedMap::room* getChestRoom1();
+	LinkedMap::room* getChestRoom2();
+	Chest* getChest1();
+	Chest* getChest2();
+
+private:
+    //list of all rectangle shapes added to check for intersections as rooms are made
+    std::vector<sf::RectangleShape> positions;
+    sf::Sprite stairs;
+	int level;
     room* current = nullptr;
-	int roomsToAdd;
-	int count = 0;
+    room* levelUpRoom = nullptr;
+	room* chestRoom = nullptr;
+	room* chestRoom2 = nullptr;
+
+	Chest* chest1;
+	Chest* chest2;
+
+	//counts
+    int roomsToAdd;
+	int count = 0; //helps show rooms added
+	int endRoomCount = 0; //number of rooms with no neighbors = number of map branches
+
+	//Text, Textures and Fonts
+    sf::Texture stairTexture;
+    sf::Texture chestTexture;
+    sf::Text levelUpText;
+    sf::Text chestText;
+    sf::Font font;
+
 
 
 	bool createRoom(LinkedMap::room* current, std::string, sf::RenderWindow &);

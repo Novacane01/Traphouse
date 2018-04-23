@@ -1,4 +1,3 @@
-
 #include "Chest.h"
 
 Chest::Chest() {
@@ -19,13 +18,19 @@ Chest::Chest() {
 }
 
 void Chest::Open(Player *player) {
-	if (weaponContents.size() == 1) {
-		player->getWeapons().push_back(*weaponContents[0]);
-		std::cout << weaponContents[0]->getName() << " added" << std::endl;
-	}
-	if (potionContents.size() == 1) {
-		player->getPotions().push_back(potionContents[0]);
-		std::cout << potionContents[0]->getName() << " added" << std::endl;
+	if(!opened) {
+		opened = true;
+		if (weaponContents.size() == 1) {
+			player->getWeapons().push_back(*weaponContents[0]);
+			std::cout << weaponContents[0]->getName() << " added" << std::endl;
+		}
+		if (potionContents.size() == 1) {
+			player->getPotions().push_back(potionContents[0]);
+			std::cout << potionContents[0]->getName() << " added" << std::endl;
+		}
+		if (closedTexture.loadFromFile("Sprites/Map/openchest.png")) {
+			chest.setTexture(closedTexture);
+		}
 	}
 }
 
@@ -49,6 +54,18 @@ void Chest::fillChestWeapons() {
 	};
 }
 
+sf::Sprite Chest::getChestSprite(){
+    return chest;
+}
+
+void Chest::setData(float x, float y){
+	if (openTexture.loadFromFile("Sprites/Map/chest.png")) {
+		chest.setTexture(openTexture);
+		chest.setOrigin(chest.getGlobalBounds().width / 2, chest.getGlobalBounds().height / 2);
+		chest.setPosition(x, y);
+	}
+}
+
 void Chest::fillChestPotions() {
 	std::mt19937 gen(rd()); //Standard mersenne_twister_engine seeded with rd()
 	std::uniform_real_distribution<> dis(0.f, 1.f);
@@ -68,5 +85,9 @@ void Chest::fillChestPotions() {
 	else {
 		potionContents.push_back(new TimePotion());
 	}
+}
+
+bool Chest::getIsOpen(){
+    return opened;
 }
 

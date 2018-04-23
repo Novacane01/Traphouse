@@ -1,6 +1,5 @@
-//#include "stdafx.h"
 #include "Player.h"
-#include "Chest.h"
+
 
 //Player Constructor
 Player::Player(std::string name, float hp, float walkspeed, float maxStamina):maxHp(hp),defaultWalkspeed(walkspeed){
@@ -10,10 +9,15 @@ Player::Player(std::string name, float hp, float walkspeed, float maxStamina):ma
 	setMaxStamina(maxStamina);
 	setCurrentStamina(this->maxStamina);
 	setCurrentWalkSpeed(walkspeed);
-	player.setOrigin(20,20);
+	player.setOrigin(32,20);
 	player.setPosition(0,0);
-	setTexture("Sprites/PlayerAnims/Walking/Walking1.png");
-	weaponInventory.push_back(*Weapon::weaponList["defaultPistol"]);
+	score = 0;
+
+
+
+
+	setTexture("Sprites/PlayerAnims/Walking/WalkingAK47.png");
+	weaponInventory.push_back(*Weapon::weaponList["assaultRifle"]);
 	std::cout << "\'Pistol\' added to inventory" << std::endl;
 	//chest->Open(this);
 	weaponInventory.push_back(*Weapon::weaponList["minigun"]);
@@ -36,9 +40,11 @@ void Player::setUI() {
 	healthBar.setFillColor(sf::Color::Red);
 	staminaBar.setFillColor(sf::Color::Green);
 
+	playerScore.setFont(font);
+	playerScore.setCharacterSize(30);
+	playerScore.setString("Score: " + score);
 
 	playerName.setFont(font);
-	playerName.setFillColor(sf::Color::White);
 	playerName.setCharacterSize(25);
 	playerName.setString(getName());
 
@@ -110,6 +116,14 @@ float Player::getDefaultWalkspeed() const {
 	return defaultWalkspeed;
 }
 
+void Player::setScore(int scoreValue){
+	score = scoreValue;
+}
+
+int Player::getScore(){
+	return score;
+}
+
 //Returns player sprite
 sf::Sprite& Player::getPlayer(){
 	return player;
@@ -157,16 +171,25 @@ void Player::displayPlayerInfo(sf::RenderWindow &window) {
 	}
 
 	healthBar.setSize(sf::Vector2f(currentHp*2.5f, 5));
-    healthBar.setPosition(window.getView().getCenter().x - (window.getView().getSize().x/2) + 20, window.getView().getCenter().y - (window.getView().getSize().y/2) + 70);
+    healthBar.setPosition(window.getView().getCenter().x - (window.getView().getSize().x/2) + 20, window.getView().getCenter().y - (window.getView().getSize().y/2) + 90);
 
+    //places stamina bar below health bar
 	staminaBar.setSize(sf::Vector2f(currentStamina/2.f, 5));
-    staminaBar.setPosition(healthBar.getPosition().x, healthBar.getPosition().y + 40);
+    staminaBar.setPosition(healthBar.getPosition().x, healthBar.getPosition().y + 20);
 
-	hpNum.setString(std::to_string((int)currentHp) + "/" + std::to_string((int)maxHp));
-    hpNum.setPosition(healthBar.getPosition().x + (healthBar.getSize().x/2) - (hpNum.getGlobalBounds().width/2), healthBar.getPosition().y + 15);
+    //Places player name above health bar, top left corner
+	playerName.setPosition(healthBar.getPosition().x, healthBar.getPosition().y - 70);
 
-	playerName.setPosition(healthBar.getPosition().x, healthBar.getPosition().y - 35);
+    //places current health above health bar, centered
+    hpNum.setString(std::to_string((int)currentHp) + "/" + std::to_string((int)maxHp));
+    hpNum.setPosition(healthBar.getPosition().x + healthBar.getSize().x/2 - hpNum.getGlobalBounds().width/2, healthBar.getPosition().y - 30);
 
+    //gets current player score and sets UI to that
+    playerScore.setString("Score: " + std::to_string(score));
+    //Places player score in top right corner of view
+    playerScore.setPosition(window.getView().getCenter().x + window.getView().getSize().x/2 - 240, window.getView().getCenter().y - window.getView().getSize().y/2 + 20);
+
+    window.draw(playerScore);
     window.draw(playerName);
     window.draw(staminaBar);
 	window.draw(healthBar);
@@ -179,6 +202,8 @@ void Player::Update(sf::RenderWindow &window, float dt) {
 		disableTimer.restart();
 	}
 	else {
+
+
 		float dTime = disableTimer.restart().asSeconds();
 		for (unsigned i = 0;i < disables.size();) {
 			if (disables[i].first == "Slow") {
@@ -275,7 +300,6 @@ void Player::Update(sf::RenderWindow &window, float dt) {
 			}
 		}
 	}
-
 	if (currentStamina >= maxStamina) {
 		bCanSprint = true;
 	}
@@ -298,19 +322,30 @@ void Player::Update(sf::RenderWindow &window, float dt) {
 		bIsDead = false;
 	}
 	if (!stunned) {
-		if (isMovingUp) {
+		if (isMovingUp&&canMoveUp) {
 			MoveUp(dt);
 		}
-		if (isMovingDown) {
+		if (isMovingDown&&canMoveDown) {
 			MoveDown(dt);
 		}
-		if (isMovingRight) {
+		if (isMovingRight&&canMoveRight) {
 			MoveRight(dt);
 		}
-		if (isMovingLeft) {
+		if (isMovingLeft&&canMoveLeft) {
 			MoveLeft(dt);
 		}
 	}
+
+	if (bCanShoot&&shootTimer.getElapsedTime().asSeconds() > ((triggerhappy) ? getCurrentWeapon().getAttackSpeed() / 2.f : getCurrentWeapon().getAttackSpeed())) {
+		getCurrentWeapon().Shoot(this, window);
+		shootTimer.restart();
+	}
+
+
+
+
+
+
 
 	//Rotates player based off of mouse position
 	sf::Vector2f playerPosition = player.getPosition();
@@ -319,6 +354,10 @@ void Player::Update(sf::RenderWindow &window, float dt) {
 	float b = WorldCoords.y - playerPosition.y;
 	float angle = -atan2(a, b) * 180 / 3.14f;
 	player.setRotation(angle);
+
+
+
+
 }
 
 
@@ -379,6 +418,71 @@ void Player::switchWeapons() {
 		}
 		getCurrentWeapon().bIsReloading = false;
 		getCurrentWeapon().bCanReload = true;
+
+        std::string gunName = getCurrentWeapon().getName();
+
+        if(gunName == "M1911")
+        {
+            player.setOrigin(20, 20);
+            setTexture("Sprites/PlayerAnims/Walking/WalkingM1911.png");
+
+        }
+        if(gunName == "Desert Eagle")
+        {
+            player.setOrigin(27, 20);
+
+            setTexture("Sprites/PlayerAnims/Walking/WalkingDesertEagle.png");
+
+        }
+        if(gunName == "L96A1")
+        {
+            player.setOrigin(32, 20);
+
+            setTexture("Sprites/PlayerAnims/Walking/WalkingL96A1.png");
+
+        }
+        if(gunName == "M14")
+        {
+            player.setOrigin(32, 20);
+
+            setTexture("Sprites/PlayerAnims/Walking/WalkingM14.png");
+
+        }
+        if(gunName == "KSG")
+        {
+            player.setOrigin(32, 20);
+
+            setTexture("Sprites/PlayerAnims/Walking/WalkingKSG.png");
+
+        }
+        if(gunName == "AK47")
+        {
+            player.setOrigin(32, 20);
+
+            setTexture("Sprites/PlayerAnims/Walking/WalkingAK47.png");
+
+        }
+        if(gunName == "Minigun")
+        {
+            player.setOrigin(32, 20);
+
+            setTexture("Sprites/PlayerAnims/Walking/WalkingMinigun.png");
+
+        }
+        if(gunName == "Barrett .50 Cal")
+        {
+            player.setOrigin(32, 20);
+
+            setTexture("Sprites/PlayerAnims/Walking/WalkingBarrett.png");
+
+        }
+        if(gunName == "MP40")
+        {
+            player.setOrigin(32, 20);
+
+            setTexture("Sprites/PlayerAnims/Walking/WalkingMP40.png");
+
+        }
 	}
 }
 

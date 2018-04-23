@@ -1,4 +1,4 @@
-//#include "stdafx.h"
+
 #include "GameManager.h"
 #include "Player.h"
 #include "Weapon.h"
@@ -80,6 +80,7 @@ Weapon::Bullet Weapon::createBullet(Player* player, sf::RenderWindow &window) {
 	b.damage = (player->empowered)?damage*1.5f:damage;
 	b.bullet.setRadius(2.5f);
 	b.bullet.setPosition(player->getPlayer().getPosition());
+
 	//Setting accuracy
 	sf::Vector2f WorldCoords = window.mapPixelToCoords(sf::Mouse::getPosition(window));
 	sf::Vector2f dVector = WorldCoords - player->getPlayer().getPosition();

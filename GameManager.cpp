@@ -10,6 +10,14 @@ GameManager::GameManager(int width, int length) {
 	if (!font.loadFromFile("Fonts/light_pixel-7.ttf")) {
 		std::cout << "Could not load file" << std::endl;
 	}
+	level = 1;
+	//Creates Window with size WINDOW_WITDTH x WINDOW_LENGTH
+	window.create(sf::VideoMode(WINDOW_WIDTH, WINDOW_LENGTH), "TrapHouse");
+
+	//Starts loading screen
+	LoadingScreen();
+	//sets size and shape of health, stamina and name for player
+	player->setUI();
 }
 
 //Sets window length
@@ -24,20 +32,26 @@ void GameManager::setWindowWidth(int value) {
 
 //Starts The Game
 void GameManager::Start() {
-    //Creates Window with size WINDOW_WITDTH x WINDOW_LENGTH
-    static sf::RenderWindow window(sf::VideoMode(WINDOW_WIDTH, WINDOW_LENGTH), "Traphouse");
 
-
-    //Starts loading screen
-    LoadingScreen(window);
-
-    int numOfRooms = rand() % 5 + 8;
+	int numOfRooms = rand() % 5 + 8;
     //Creates randomized map
-    LinkedMap lmap(numOfRooms);
-    lmap.addRooms(numOfRooms, lmap.head, window);
+    LinkedMap* lmap = new LinkedMap(numOfRooms, level);
+    lmap->addRooms(numOfRooms, lmap->getHead(), window);
+    lmap->findStairRoom(lmap->getHead()); //sets an end room to level up room
+	lmap->placeStairs();
+	lmap->placeLevelUpText();
+	lmap->findChestRoom(lmap->getHead());
+	lmap->placeChests();
+	lmap->placeChestText();
 
     window.setKeyRepeatEnabled(false); //Disables repeated keypresses
     window.setVerticalSyncEnabled(false); //Limits refresh rate to monitor
+
+	sf::Text levelText;
+	levelText.setString("Level " + std::to_string(level));
+	levelText.setCharacterSize(25);
+	levelText.setFont(font);
+	levelText.setOrigin(levelText.getGlobalBounds().width/2,levelText.getGlobalBounds().height/2);
 
     //Initializes clock to record frames per second
     sf::Clock FPSclock;
@@ -50,35 +64,31 @@ void GameManager::Start() {
     music.play();
 
     //Sets center of window at (0,0)
-    sf::View roomView;
+
     roomView.setCenter(910, 540);
-    roomView.zoom(1.5f);
     window.setView(roomView);
 
     //Creates bounded Map rectangle object
     bool centered = false;
 
-    //sets size and shape of health, stamina and name for player
-    player->setUI();
+    lmap->findCurrentRoom(lmap->head, player);
 
-    lmap.findCurrentRoom(lmap.head, player);
     //Main loop
     while (window.isOpen()) {
 
         float deltaTime = FPSclock.restart().asSeconds();
         //Records window events such as mouse movement, mouse clicks, and key strokes
         sf::Event event;
-
-            if (clickInterval.getElapsedTime().asSeconds() > ((player->triggerhappy) ? player->getCurrentWeapon().getAttackSpeed() / 2.f : player->getCurrentWeapon().getAttackSpeed())) {
-                if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Left)) {
-                    player->getCurrentWeapon().Shoot(player, window);
-                    clickInterval.restart();
-                }
-            }
-            while (window.pollEvent(event)) {
-                if (event.type == event.Closed) {
-                    window.close();
-                }
+        while (window.pollEvent(event)) {
+        	if (event.type == event.Closed) {
+        		window.close();
+        	}
+        	if (event.mouseButton.button == sf::Mouse::Left&&event.type == sf::Event::MouseButtonPressed) {
+        		player->bCanShoot = true;
+        	}
+        	if (event.mouseButton.button == sf::Mouse::Left&&event.type == sf::Event::MouseButtonReleased) {
+        		player->bCanShoot = false;
+        	}
                 if (event.type == sf::Event::KeyPressed) {
                     if (event.key.code == sf::Keyboard::W) {
                         player->isMovingUp = true;
@@ -96,7 +106,7 @@ void GameManager::Start() {
 
                     }
                     if (event.key.code == sf::Keyboard::M) {
-                        DisplayMap(window, player, &lmap);
+                        DisplayMap(player, lmap);
                     }
                     if (event.key.code == sf::Keyboard::R &&
                         player->getCurrentWeapon().getCurrentClip() < player->getCurrentWeapon().getMaxClip()) {
@@ -106,12 +116,10 @@ void GameManager::Start() {
                         player->bIsSprinting = true;
                     }
                     if (event.key.code == sf::Keyboard::Escape) {
+						paused = true;
                         music.pause();
-                        Pause(window);
+                        Pause();
                         music.play();
-                    }
-                    if (event.key.code == sf::Keyboard::M) {
-                        DisplayMap(window, player, &lmap);
                     }
                     if (event.key.code == sf::Keyboard::X) {
                         if (player->getPotions().size() > 0) {
@@ -119,6 +127,18 @@ void GameManager::Start() {
                             std::cout << player->getCurrentPotion()->getName() << " used" << std::endl;
                             player->getPotions().erase(player->getPotions().begin());
                         }
+                    }
+                    if(event.key.code == sf::Keyboard::F){
+                    	if(lmap->displayStairs(window, player)){
+							levelUp(lmap);
+							return;
+                    	}
+                    	if(lmap->displayChest1(window, player)){
+                    		lmap->getChest1()->Open(player);
+                    	}
+                    	if(lmap->displayChest2(window,player)){
+							lmap->getChest2()->Open(player);
+                    	}
                     }
                 } else if (event.type == sf::Event::KeyReleased) {
                     if (event.key.code == sf::Keyboard::W) {
@@ -141,40 +161,55 @@ void GameManager::Start() {
                 }
             }
             //If not in current room (Between rooms/In hallways)
-            if (!lmap.getCurrentRoom()->playerIsInside) {
+            if (!lmap->getCurrentRoom()->playerIsInside) {
 
-                lmap.findCurrentRoom(lmap.head, player);
+                lmap->findCurrentRoom(lmap->head, player);
                 roomView.setCenter(player->getPlayer().getPosition());
                 window.setView(roomView);
                 centered = false;
 
                 //if room is not cleared and map is not already centered, centers map and spawns enemies, only called once per room
-            } else if (!centered && !lmap.getCurrentRoom()->isCleared) {
-                std::cout << "howdy partner\n";
+            } else if (!centered && !lmap->getCurrentRoom()->isCleared && lmap->getCurrentRoom() != lmap->getChestRoom1() && lmap->getCurrentRoom() != lmap->getChestRoom2() && lmap->getCurrentRoom() != lmap->getHead()) {
                 centered = true;
-                roomView.setCenter(lmap.getCurrentRoom()->floor.getPosition());
-                window.setView(roomView);
-                spawnEnemies(&lmap);
+                changeView(lmap);
+                spawnEnemies(lmap);
 
                 //if room is cleared and player is inside, locks window view to players position until unvisited room is found
-            } else if (lmap.getCurrentRoom()->isCleared) {
-                lmap.findCurrentRoom(lmap.head, player);
+            } else if (lmap->getCurrentRoom()->isCleared) {
+                lmap->findCurrentRoom(lmap->head, player);
                 roomView.setCenter(player->getPlayer().getPosition());
                 window.setView(roomView);
                 centered = false;
             } else if (Enemy::getEnemies().size() == 0) { //If all enemies have been killed, room is cleared;
-                lmap.getCurrentRoom()->isCleared = true;
+                lmap->getCurrentRoom()->isCleared = true;
             }
 
+			if (paused) {
+				paused = false;
+				player->bCanShoot = false;
+			}
+			lmap->doesCollide(player);
             window.clear(); //Clears window
             //map->Draw(window); //Draws map
 
-            lmap.displayCurrentRoom(window); //Draws Map
+            lmap->displayCurrentRoom(lmap->getHead(),window, lmap->getCurrentRoom()->isCleared); //Draws Map
 
+			if(lmap->getCurrentRoom() == lmap->getLevelUpRoom()){
+				lmap->displayStairs(window, player);
+			}
+			if(lmap->getCurrentRoom() == lmap->getChestRoom1()){
+				lmap->displayChest1(window,player);
+			}
+			if(lmap->getCurrentRoom() == lmap->getChestRoom2()){
+				lmap->displayChest2(window,player);
+			}
+            player->displayPlayerInfo(window); //Draws player info: health, stamina, name
 
-            player->displayPlayerInfo(window);
+			levelText.setString("Level " + std::to_string(level));
+			levelText.setPosition(window.getView().getCenter().x + window.getView().getSize().x/2 - 180, window.getView().getCenter().y - window.getView().getSize().y/2 + 100);
+			window.draw(levelText);
 
-            //Draws Enemmies to screen
+			//Draws Enemmies to screen
             for (unsigned i = 0; i < Enemy::getEnemies().size(); i++) {
                 Enemy::getEnemies()[i]->Update(player, deltaTime);
                 Enemy::getEnemies()[i]->Draw(window);
@@ -188,17 +223,47 @@ void GameManager::Start() {
             for (unsigned i = 0; i < player->getWeapons().size(); i++) {
                 player->getWeapons()[i].Update(window, player, deltaTime); //Updates weapons and bullets
             }
-
-            player->getCurrentWeapon().displayWeaponInfo(window);
+            player->getCurrentWeapon().displayWeaponInfo(window); //draws gun name, bullets and ammo
 
             window.display(); //Displays all drawn objects
             if (player->isDead()) {
-                GameOver(window);
+                GameOver();
             }
         }
     }
 
-Player* GameManager::createPlayer(sf::RenderWindow &window) {
+void GameManager::changeView(LinkedMap* lmap){
+	sf::View viewMotion = roomView;
+	sf::Vector2f direction;
+	sf::RectangleShape bounds;
+	bounds.setSize(sf::Vector2f(20,20));
+	bounds.setOrigin(bounds.getSize().x/2, bounds.getSize().y/2);
+	bounds.setPosition(lmap->getCurrentRoom()->floor.getPosition());
+
+	sf::RectangleShape vectorSquare;
+
+	vectorSquare.setSize(sf::Vector2f(10,10));
+	vectorSquare.setOrigin(10,10);
+
+	direction = (lmap->getCurrentRoom()->floor.getPosition() - player->getPlayer().getPosition());
+	float mag = sqrt(pow(direction.x, 2) + pow(direction.y, 2));
+	direction.x = direction.x / mag;
+	direction.y = direction.y / mag;
+
+	while(!bounds.getGlobalBounds().intersects(vectorSquare.getGlobalBounds())) {
+		window.clear();
+		vectorSquare.setPosition(window.getView().getCenter());
+		viewMotion.move(direction);
+		window.setView(viewMotion);
+		lmap->displayCurrentRoom(lmap->getHead(), window, lmap->getCurrentRoom()->isCleared);
+		window.display();
+}
+	roomView.setCenter(lmap->getCurrentRoom()->floor.getPosition());
+	window.setView(roomView);
+
+}
+
+Player* GameManager::createPlayer() {
 	window.setKeyRepeatEnabled(true);
 	bool created = false;
 
@@ -226,7 +291,6 @@ Player* GameManager::createPlayer(sf::RenderWindow &window) {
 
 	std::string name; //Player name
 
-	
 	//Draw Loop
 	while (window.isOpen()&&!created) {
 		sf::Event event;
@@ -247,7 +311,6 @@ Player* GameManager::createPlayer(sf::RenderWindow &window) {
 				text.setString(name);
 				text.setPosition(text.getPosition().x - (textBox.getSize().x/ (text.getCharacterSize()*1.15f)), text.getPosition().y);
 			}
-
 			if (event.type == event.Closed) {
                 window.close();
             }
@@ -265,7 +328,7 @@ Player* GameManager::createPlayer(sf::RenderWindow &window) {
 	return new Player(name);
 }
 
-void GameManager::GameOver(sf::RenderWindow &window) {
+void GameManager::GameOver() {
 	std::cout << "You have died" << std::endl;
 	Enemy::getEnemies().clear();
 
@@ -302,14 +365,12 @@ void GameManager::GameOver(sf::RenderWindow &window) {
 
 	//Fades into GameOver
 	for (int i = 2; i < 250; i++) {
-		usleep(10000);
 		window.draw(fade);
 		window.display();
 		fade.setFillColor(sf::Color(0, 0, 0, i));
 	}
 	while (gameOverText.getPosition().x != window.getView().getCenter().x) {
 		gameOverText.setPosition(gameOverText.getPosition().x + 1, gameOverText.getPosition().y);
-		usleep(2000);
 		window.clear();
 		window.draw(fade);
 		window.draw(gameOverText);
@@ -323,7 +384,7 @@ void GameManager::GameOver(sf::RenderWindow &window) {
 									restartButton.getGlobalBounds().height / 2);
 			restartButton.setPosition(window.getView().getCenter().x, window.getView().getCenter().y - 100);
 			if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Left)) {
-				Start();
+				LoadingScreen();
 			}
 		} else {
 			restartButton.setCharacterSize(48);
@@ -358,7 +419,7 @@ void GameManager::GameOver(sf::RenderWindow &window) {
 	}
 }
 
-void GameManager::LoadingScreen(sf::RenderWindow &window) {
+void GameManager::LoadingScreen() {
 	sf::Music music;
 	if (!music.openFromFile("Music/LoadingScreen.wav")) {
 		std::cout << "Could not open music file"<<std::endl;
@@ -369,7 +430,7 @@ void GameManager::LoadingScreen(sf::RenderWindow &window) {
 	playButton.setCharacterSize(50);
 	playButton.setFont(font);
 	playButton.setString("Play");
-	title.setPosition(WINDOW_WIDTH / 2, WINDOW_LENGTH*.3f);
+	title.setPosition(window.getView().getCenter().x, window.getView().getCenter().y - 300);
 	title.setFont(font);
 	title.setString("TrapHouse");
 	float x = 0;
@@ -388,16 +449,16 @@ void GameManager::LoadingScreen(sf::RenderWindow &window) {
 			if (playButton.getGlobalBounds().contains(window.mapPixelToCoords(sf::Mouse::getPosition(window)))) {
 				playButton.setCharacterSize(60);
 				playButton.setOrigin(playButton.getGlobalBounds().width / 2, playButton.getGlobalBounds().height / 2);
-				playButton.setPosition(WINDOW_WIDTH / 2, WINDOW_LENGTH*.7f);
+				playButton.setPosition(title.getPosition().x,title.getPosition().y + 300);
 				if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Left)) {
-					player = createPlayer(window);
+					player = createPlayer();
 					return;
 				}
 			}
 			else {
 				playButton.setCharacterSize(50);
 				playButton.setOrigin(playButton.getGlobalBounds().width / 2, playButton.getGlobalBounds().height / 2);
-				playButton.setPosition(WINDOW_WIDTH / 2, WINDOW_LENGTH*.7f);
+				playButton.setPosition(title.getPosition().x,title.getPosition().y + 300);
 			}
 		}
 		window.clear();
@@ -407,7 +468,15 @@ void GameManager::LoadingScreen(sf::RenderWindow &window) {
 	}
 }
 
-void GameManager::Pause(sf::RenderWindow &window) {
+void GameManager::levelUp(LinkedMap* lmap){
+	delete(lmap);
+	level++;
+	player->setScore(player->getScore() + (100 * level));
+	player->getPlayer().setPosition(0,0);
+	Start();
+}
+
+void GameManager::Pause() {
 	sf::Music music;
 	if (!music.openFromFile("Music/PauseMusic.wav")) {
 		std::cout << "Could not open music file" << std::endl;
@@ -472,7 +541,7 @@ void GameManager::Pause(sf::RenderWindow &window) {
 	}
 }
 
-void GameManager::DisplayMap(sf::RenderWindow &window, Player* player, LinkedMap* linkedMap){
+void GameManager::DisplayMap(Player* player, LinkedMap* linkedMap){
     sf::Event event;
     sf::View mapView;
     sf::View roomView;
@@ -491,9 +560,7 @@ void GameManager::DisplayMap(sf::RenderWindow &window, Player* player, LinkedMap
 
     while(window.isOpen())
     {
-
     	while (window.pollEvent(event)) {
-
         	/*
         	 * Methods For changing window location by clicking and dragging mouse
         	 */
@@ -532,25 +599,29 @@ void GameManager::DisplayMap(sf::RenderWindow &window, Player* player, LinkedMap
         linkedMap->displayMap(linkedMap->head,window);
         player->Draw(window);
         window.display();
-
 	}
-
 }
 
 void GameManager::spawnEnemies(LinkedMap* linkedMap) {
 
     //Spawning monsters
-    int numOfEnemies = rand() % 5 + 1;
+    int numOfEnemies = rand() % 5 + level;
 
     for (int i = 0; i < numOfEnemies; i++) {
-        Enemy::Spawn(new Skeleton(), linkedMap->getCurrentRoom());
-
-
+        Enemy::Spawn(new Skeleton("Skeleton", 100 + ((level-1) * 20), 10 + ((level-1)*2)), linkedMap->getCurrentRoom());
     }
 
-    numOfEnemies = rand() % 5 + 1;
+    numOfEnemies = rand() % 10 + level;
     for (int i = 0; i < numOfEnemies; i++) {
-        Enemy::Spawn(new Spider(), linkedMap->getCurrentRoom());
+        Enemy::Spawn(new Spider("Spider", 30 + ((level-1)*10), 2 + (level-1)), linkedMap->getCurrentRoom());
     }
 
-}
+    numOfEnemies = rand() % 1 + level;
+	for (int i = 0; i < numOfEnemies; i++) {
+		Enemy::Spawn(new Troll("Troll", 100 + ((level-1) * 20), 10 + ((level-1)*2)), linkedMap->getCurrentRoom());
+	}
+
+	numOfEnemies = rand() % 1 + level;
+	for (int i = 0; i < numOfEnemies; i++) {
+		Enemy::Spawn(new Demon("Demon", 30 + ((level-1)*10), 2 + (level-1)), linkedMap->getCurrentRoom());
+}}

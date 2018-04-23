@@ -5,6 +5,8 @@
 #include "Potion.h"
 #include <iostream>
 #include <map>
+#include <string>
+
 
 //Player class
 class Player{
@@ -18,6 +20,7 @@ public:
 	 void setCurrentStamina(float);
 	 void setCurrentWalkSpeed(float);
 	 void setTexture(std::string);
+	 void setScore(int);
 	 //Getters
 	 const std::string getName() const;
 	 float getCurrentWalkspeed() const;
@@ -28,6 +31,7 @@ public:
 	 float getCurrentStamina() const;
 	 sf::Sprite& getPlayer();
 	 bool isDead() const;
+	 int getScore();
 
 	 //Moving
 	 void MoveLeft(float);
@@ -39,11 +43,15 @@ public:
 	 bool isMovingRight = false;
 	 bool isMovingUp = false;
 	 bool isMovingDown = false;
+	 bool canMoveLeft = false;
+	 bool canMoveRight = false;
+	 bool canMoveUp = false;
+	 bool canMoveDown = false;
 	 void Draw(sf::RenderWindow &);
 	 bool bIsSprinting;
 	 bool bCanSprint;
 	 //Disables
-	 bool slowed, stunned, poisoned;
+	 bool slowed = false, stunned = false, poisoned = false;
 	 sf::Clock poisonTimer;
 	 //Buffs
 	 bool empowered, triggerhappy, energized, stopwatch/*<-Subject to change*/; //Attack buff, Speed buff, Stamina buff, Time buff (respectively)
@@ -58,6 +66,8 @@ public:
 	 Weapon& getCurrentWeapon();
 	 void switchWeapons();
 	 void setWeapon(Weapon &);
+	 bool bCanShoot;
+	 sf::Clock shootTimer;
 
 	 //Potions
 	 std::vector<Potion *>& getPotions();
@@ -68,6 +78,7 @@ public:
 	 void setUI();
 	 void displayPlayerInfo(sf::RenderWindow &);
 	 ~Player();
+
 private:
 	sf::Sprite player;
 	sf::Texture texture;
@@ -83,7 +94,7 @@ private:
 	bool invulnerable;
 	bool bIsDead;
 	float staminaUsage = .5f;
-
+    int score = 0;
 public:
 	//UI
 	sf::RectangleShape healthBar;
@@ -91,4 +102,5 @@ public:
 	sf::Text playerName;
 	sf::Text hpNum;
 	sf::Font font;
+	sf::Text playerScore;
 };

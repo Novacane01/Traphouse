@@ -13,6 +13,9 @@ public:
 		return *this;
 	}
 	Enemy(std::string, int, float, float, float);
+    int scoreValue;
+
+
 	//Setters
     void setHp(int);
 	void setWalkspeed(float);
@@ -66,15 +69,20 @@ protected:
 	sf::IntRect AttackRect;
 	sf::IntRect WalkRect;
 	sf::IntRect DeathRect;
+	sf::IntRect RangedRect;
+
+
 	sf::Texture attackTexture;
 	sf::Texture	walkTexture;
 	sf::Texture	deathTexture;
+	sf::Texture rangedTexture;
+	LinkedMap::room* room;
 	bool bIsDead;
 };
 
 class Skeleton:public Enemy {
 public:
-	Skeleton(std::string name = "Skeleton", float hp = 100.f, float attack = 10.f, float walkspeed = 100.f, float attackspeed = 2.f);
+	Skeleton(std::string name = "Skeleton", float hp = 100.f, float attack = 10.f, float walkspeed = 150.f, float attackspeed = 1.f);
 	void boneWhack(Player *);
 	void boneThrow(Player *);
 	void Update(Player *, float);
@@ -112,7 +120,7 @@ private:
 
 class Troll :public Enemy {
 public:
-	Troll(std::string name = "Troll", float hp = 500.f, float attack = 30, float walkspeed = 25.f, float attackspeed = 3.f);
+	Troll(std::string name = "Troll", float hp = 500.f, float attack = 30, float walkspeed = 75.f, float attackspeed = 3.f);
 	void groundSmash(Player *);
 	void melee(Player *);
 	void Update(Player *, float);
@@ -122,3 +130,25 @@ private:
 
 };
 
+class Demon:public Enemy {
+public:
+	Demon(std::string name = "Demon", float hp = 1000.f, float attack = 25.f, float walkspeed = 200.f, float attackspeed = 2.f);
+	void swipe(Player *);
+	void fireball(Player *);
+	void Update(Player *, float);
+	void Draw(sf::RenderWindow &);
+	void Animate(Player *);
+	void spawnMinions(LinkedMap::room *linkedMap);
+
+private:
+	int spawnClock;
+	int numSpawned;
+	struct Flameball {
+		sf::Sprite flameball;
+		sf::Texture texture;
+		sf::Vector2f direction;
+		float velocity = 350.f;
+		sf::Clock deleteTimer;
+	}flameball;
+	std::vector<Flameball> flameballs;
+};
