@@ -11,3 +11,5 @@ TrapHouse.vcxproj.user
 cmake_modules/
 Debug/
 openal32.dll
+/.dll
+.DS_Store
