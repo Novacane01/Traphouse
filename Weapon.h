@@ -56,6 +56,8 @@ public:
 	void setUI();
 	//Audio
 	void playAudio(sf::SoundBuffer *);
+	sf::SoundBuffer FXgunshot;
+	sf::SoundBuffer FXreload;
 	~Weapon();
 
 	//Audio
@@ -80,8 +82,7 @@ private:
 	float attackSpeed = 0.f;
 	const float dropChance = 0;
 	float reloadTime = 0.f;
-	sf::SoundBuffer FXgunshot;
-	sf::SoundBuffer FXreload;
+	
 	//
 	std::vector<Bullet> bullets;
 	sf::Sprite weapon;

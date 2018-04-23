@@ -44,7 +44,8 @@ void GameManager::Start() {
     if (!music.openFromFile("Music/GameBGM.wav")) {
         std::cout << "Could not open sound file" << std::endl;
     }
-    music.play();
+	music.setVolume(10);
+    //music.play();
 
     //Sets center of window at (0,0)
     sf::View roomView;
@@ -99,6 +100,7 @@ void GameManager::Start() {
                     if (event.key.code == sf::Keyboard::R &&
                         player->getCurrentWeapon().getCurrentClip() < player->getCurrentWeapon().getMaxClip()) {
                         player->getCurrentWeapon().bIsReloading = true;
+						player->getCurrentWeapon().playAudio(&player->getCurrentWeapon().FXreload);
                     }
                     if (event.key.code == sf::Keyboard::LShift) {
                         player->bIsSprinting = true;
@@ -546,14 +548,14 @@ void GameManager::DisplayMap(Player* player, LinkedMap* linkedMap){
 void GameManager::spawnEnemies(LinkedMap* linkedMap) {
 
     //Spawning monsters
-    int numOfEnemies = rand() % 5 + 1;
+    int numOfSkellies = rand() % 5 + 1;
 
-    for (int i = 0; i < numOfEnemies; i++) {
+    for (int i = 0; i < numOfSkellies; i++) {
         Enemy::Spawn(new Skeleton(), linkedMap->getCurrentRoom());
     }
 
-    numOfEnemies = rand() % 5 + 1;
-    for (int i = 0; i < numOfEnemies; i++) {
+    int numOfSpiders = rand() % 5 + 1;
+    for (int i = 0; i < numOfSpiders; i++) {
         Enemy::Spawn(new Spider(), linkedMap->getCurrentRoom());
     }
 

@@ -27,6 +27,7 @@ public:
 		LinkedMap::hallway* hallway;
 	};
 
+	sf::Texture wallTexture;
 	sf::Texture floorTexture;
 	const int hallwayWidth = 150;
 	LinkedMap(int);

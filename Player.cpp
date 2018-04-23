@@ -13,10 +13,10 @@ Player::Player(std::string name, float hp, float walkspeed, float maxStamina):ma
 	player.setOrigin(20,20);
 	player.setPosition(0,0);
 	setTexture("Sprites/PlayerAnims/Walking/Walking1.png");
-	weaponInventory.push_back(*Weapon::weaponList["defaultPistol"]);
+	weaponInventory.push_back(*Weapon::weaponList["boltSniper"]);
 	std::cout << "\'Pistol\' added to inventory" << std::endl;
 	//chest->Open(this);
-	weaponInventory.push_back(*Weapon::weaponList["minigun"]);
+	weaponInventory.push_back(*Weapon::weaponList["assaultRifle"]);
 	std::cout << "\'Shotgun\' added to inventory" << std::endl;
 	potionInventory.push_back(new TimePotion());
 	potionInventory.push_back(new AttackPotion());
