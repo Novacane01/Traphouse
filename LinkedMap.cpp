@@ -20,19 +20,15 @@ LinkedMap::LinkedMap(int rta, int level) {
     head->isCleared = false;
 	count++;
 	head->floor.setSize(sf::Vector2f(900, 900));
-	head->wallTop.setFillColor(sf::Color::Red);
 	head->wallTop.setSize(sf::Vector2f(head->floor.getGlobalBounds().width+100, 50));
 	head->wallTop.setPosition(head->floor.getPosition().x-head->floor.getGlobalBounds().width/2-50, head->floor.getPosition().y - head->floor.getGlobalBounds().height/2-50);
 	head->wallTop.setTexture(&floorTexture);
-	head->wallRight.setFillColor(sf::Color::Green);
 	head->wallRight.setSize(sf::Vector2f(50, head->floor.getGlobalBounds().height));
 	head->wallRight.setPosition(head->floor.getPosition().x + head->floor.getGlobalBounds().width / 2, head->floor.getPosition().y - head->floor.getGlobalBounds().height / 2);
 	head->wallRight.setTexture(&floorTexture);
-	head->wallBottom.setFillColor(sf::Color::Yellow);
 	head->wallBottom.setSize(sf::Vector2f(head->floor.getGlobalBounds().width+100, 50));
 	head->wallBottom.setPosition(head->floor.getPosition().x - head->floor.getGlobalBounds().width / 2-50, head->floor.getPosition().y + head->floor.getGlobalBounds().height / 2);
 	head->wallBottom.setTexture(&floorTexture);
-	head->wallLeft.setFillColor(sf::Color::Magenta);
 	head->wallLeft.setSize(sf::Vector2f(50, head->floor.getGlobalBounds().height));
 	head->wallLeft.setPosition(head->floor.getPosition().x - head->floor.getGlobalBounds().width / 2-50, head->floor.getPosition().y - head->floor.getGlobalBounds().height / 2);
 	head->wallLeft.setTexture(&floorTexture);
@@ -542,39 +538,31 @@ bool LinkedMap::createRoom(LinkedMap::room* current,std::string dir,sf::RenderWi
 	}
 	temp->name = "room " + std::to_string(count++);
 	temp->floor.setTexture(&floorTexture);
-	temp->wallTop.setFillColor(sf::Color::Red);
 	temp->wallTop.setSize(sf::Vector2f(temp->floor.getGlobalBounds().width + 100, 50));
 	temp->wallTop.setPosition(temp->floor.getPosition().x - temp->floor.getGlobalBounds().width / 2 - 50, temp->floor.getPosition().y - temp->floor.getGlobalBounds().height / 2 - 50);
 	temp->wallTop.setTexture(&floorTexture);
-	temp->wallRight.setFillColor(sf::Color::Green);
 	temp->wallRight.setSize(sf::Vector2f(50, temp->floor.getGlobalBounds().height));
 	temp->wallRight.setPosition(temp->floor.getPosition().x + temp->floor.getGlobalBounds().width / 2, temp->floor.getPosition().y - temp->floor.getGlobalBounds().height / 2);
 	temp->wallRight.setTexture(&floorTexture);
-	temp->wallBottom.setFillColor(sf::Color::Yellow);
 	temp->wallBottom.setSize(sf::Vector2f(temp->floor.getGlobalBounds().width + 100, 50));
 	temp->wallBottom.setPosition(temp->floor.getPosition().x - temp->floor.getGlobalBounds().width / 2 - 50, temp->floor.getPosition().y + temp->floor.getGlobalBounds().height / 2);
 	temp->wallBottom.setTexture(&floorTexture);
-	temp->wallLeft.setFillColor(sf::Color::Magenta);
 	temp->wallLeft.setSize(sf::Vector2f(50, temp->floor.getGlobalBounds().height));
 	temp->wallLeft.setPosition(temp->floor.getPosition().x - temp->floor.getGlobalBounds().width / 2 - 50, temp->floor.getPosition().y - temp->floor.getGlobalBounds().height / 2);
 	temp->wallLeft.setTexture(&floorTexture);
 	temp->hallway->floor.setTexture(&floorTexture);
 	if (temp->hallway->floor.getSize().x > temp->hallway->floor.getSize().y) {
-		temp->hallway->wallTop.setFillColor(sf::Color::Red);
 		temp->hallway->wallTop.setSize(sf::Vector2f(temp->hallway->floor.getGlobalBounds().width, 50));
 		temp->hallway->wallTop.setPosition(temp->hallway->floor.getPosition().x - temp->hallway->floor.getGlobalBounds().width / 2, temp->hallway->floor.getPosition().y - temp->hallway->floor.getGlobalBounds().height / 2 - 50);
 		temp->hallway->wallTop.setTexture(&floorTexture);
-		temp->hallway->wallBottom.setFillColor(sf::Color::Yellow);
 		temp->hallway->wallBottom.setSize(sf::Vector2f(temp->hallway->floor.getGlobalBounds().width, 50));
 		temp->hallway->wallBottom.setPosition(temp->hallway->floor.getPosition().x - temp->hallway->floor.getGlobalBounds().width / 2, temp->hallway->floor.getPosition().y + temp->hallway->floor.getGlobalBounds().height / 2);
 		temp->hallway->wallBottom.setTexture(&floorTexture);
 	}
 	else if (temp->hallway->floor.getSize().x < temp->hallway->floor.getSize().y) {
-		temp->hallway->wallRight.setFillColor(sf::Color::Green);
 		temp->hallway->wallRight.setSize(sf::Vector2f(50, temp->hallway->floor.getGlobalBounds().height));
 		temp->hallway->wallRight.setPosition(temp->hallway->floor.getPosition().x + temp->hallway->floor.getGlobalBounds().width / 2, temp->hallway->floor.getPosition().y - temp->hallway->floor.getGlobalBounds().height / 2);
 		temp->hallway->wallRight.setTexture(&floorTexture);
-		temp->hallway->wallLeft.setFillColor(sf::Color::Magenta);
 		temp->hallway->wallLeft.setSize(sf::Vector2f(50, temp->hallway->floor.getGlobalBounds().height));
 		temp->hallway->wallLeft.setPosition(temp->hallway->floor.getPosition().x - temp->hallway->floor.getGlobalBounds().width / 2 - 50, temp->hallway->floor.getPosition().y - temp->hallway->floor.getGlobalBounds().height / 2);
 		temp->hallway->wallLeft.setTexture(&floorTexture);

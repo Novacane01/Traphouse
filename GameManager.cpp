@@ -106,6 +106,10 @@ void GameManager::Start() {
 
                     }
                     if (event.key.code == sf::Keyboard::M) {
+						player->isMovingDown = false;
+						player->isMovingUp = false;
+						player-> isMovingLeft = false;
+						player->isMovingRight = false;
                         DisplayMap(player, lmap);
                     }
                     if (event.key.code == sf::Keyboard::R &&
@@ -116,6 +120,10 @@ void GameManager::Start() {
                         player->bIsSprinting = true;
                     }
                     if (event.key.code == sf::Keyboard::Escape) {
+						player->isMovingDown = false;
+						player->isMovingUp = false;
+						player-> isMovingLeft = false;
+						player->isMovingRight = false;
 						paused = true;
                         music.pause();
                         Pause();
@@ -171,6 +179,10 @@ void GameManager::Start() {
                 //if room is not cleared and map is not already centered, centers map and spawns enemies, only called once per room
             } else if (!centered && !lmap->getCurrentRoom()->isCleared && lmap->getCurrentRoom() != lmap->getChestRoom1() && lmap->getCurrentRoom() != lmap->getChestRoom2() && lmap->getCurrentRoom() != lmap->getHead()) {
                 centered = true;
+				player->isMovingDown = false;
+				player->isMovingUp = false;
+				player-> isMovingLeft = false;
+				player->isMovingRight = false;
                 changeView(lmap);
                 spawnEnemies(lmap);
 

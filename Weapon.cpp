@@ -272,7 +272,7 @@ void Weapon::displayWeaponInfo(sf::RenderWindow &window) {
 
     //sets location of ammoCount, gunName and ammoBlocks rely on this for location
     ammoCount.setPosition(infoLocation, window.getView().getCenter().y + (window.getView().getSize().y/2) - 50);
-    gunName.setPosition(ammoCount.getPosition().x, ammoCount.getPosition().y - 20);
+    gunName.setPosition(ammoCount.getPosition().x - 15, ammoCount.getPosition().y -25);
 
     float offsetX = 0, offsetY = -getMaxClip()/2.f+4, rectSizeX = 5.f, rectSizeY = 15.f, size = 0.f, standardOffset = 40.f, desiredOffset = 200.f;
     for (int i = 8;i < getMaxClip();i += 8) {
