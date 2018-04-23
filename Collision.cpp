@@ -2,7 +2,6 @@
 * File:   collision.cpp
 * Author: Nick (original version), ahnonay (SFML2 compatibility)
 */
-
 #include <map>
 #include "Collision.h"
 

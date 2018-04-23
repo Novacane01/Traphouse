@@ -294,8 +294,10 @@ Spider::Spider(std::string name, float hp, float attack, float walkspeed, float 
 	scoreValue = 5;
 	WalkRect = sf::IntRect(0, 0, 75, 70);
 	DeathRect = sf::IntRect(0, 0, 75, 75);
+	AttackRect = sf::IntRect(0, 0, 68, 70);
 	walkTexture.loadFromFile("Sprites/EnemyAnims/Spider/SpiderWalk.png");
 	deathTexture.loadFromFile("Sprites/EnemyAnims/Spider/SpiderDie.png");
+	attackTexture.loadFromFile("Sprites/EnemyAnims/Spider/SpiderAttack.png");
 	web.texture.loadFromFile("Sprites/EnemyAnims/Spider/webshot.png");
 	web.web.setTexture(web.texture);
 	web.web.setScale(.5f, .5f);
@@ -317,6 +319,24 @@ void Spider::Animate(Player * player) {
 				WalkRect.left += 77;
 				enemy.setTextureRect(WalkRect);
 				enemy.setTexture(walkTexture);
+			}
+		}
+		else if (state == animationState::MELEE||state==animationState::RANGED) {
+			if (AttackRect.left >= 600) {
+				AttackRect.left = 0;
+				if (state == animationState::MELEE) {
+					Bite(player);
+				}
+				else if (state == animationState::RANGED) {
+					webShot(player);
+				}
+				attackTimer.restart();
+				state = animationState::WALKING;
+			}
+			else {
+				enemy.setTextureRect(AttackRect);
+				enemy.setTexture(attackTexture);
+				AttackRect.left += 76;
 			}
 		}
 		else if (state == animationState::DEAD) {
@@ -362,6 +382,7 @@ void Spider::Bite(Player *player) {
 //Updates spider's position
 void Spider::Update(Player *player, float dt) {
 	if (getHp() > 0) {
+
 		mode = (player->slowed) ? behaviour::AGGRESSIVE : behaviour::PASSIVE;
 
 		sf::Vector2f newDir = player->getPlayer().getPosition() - enemy.getPosition();
@@ -369,19 +390,15 @@ void Spider::Update(Player *player, float dt) {
 		if (mode == behaviour::AGGRESSIVE) {
 			if (Collision::PixelPerfectTest(enemy, player->getPlayer())) {
 				enemy.move(0, 0);
-				if (attackTimer.getElapsedTime().asSeconds() > ((player->stopwatch) ? getAttackSpeed() * 2 : getAttackSpeed())) {
-					Bite(player);
-					attackTimer.restart();
-				}
+				state = animationState::MELEE;
 			}
 			else {
 				enemy.move(getDirection().x*dt*((player->stopwatch) ? getWalkspeed() / 2 : getWalkspeed()), getDirection().y*dt*((player->stopwatch) ? getWalkspeed() / 2 : getWalkspeed()));
 			}
 		}
 		else if (mode == behaviour::PASSIVE) {
-			if (attackTimer.getElapsedTime().asSeconds() > ((player->stopwatch) ? getAttackSpeed() * 2 : getAttackSpeed())) {
-				webShot(player);
-				attackTimer.restart();
+			if (attackTimer.getElapsedTime().asSeconds() >= getAttackSpeed()) {
+				state = animationState::RANGED;
 			}
 		}
 		for (unsigned i = 0; i < webs.size(); i++) {

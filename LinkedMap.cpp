@@ -9,6 +9,10 @@ LinkedMap::LinkedMap(int rta, int level) {
 	chest1 = new Chest;
 	chest2 = new Chest;
 	this->level = level;
+	if (!floorTexture.loadFromFile("Sprites/Map/DungeonFloorStone.png")) {
+		std::cout << "Could not load file<<std" << std::endl;
+	}
+	srand(time(0));
 	roomsToAdd = rta;
 	head = new room;
 	head->playerIsInside = true;
@@ -16,8 +20,24 @@ LinkedMap::LinkedMap(int rta, int level) {
     head->isCleared = false;
 	count++;
 	head->floor.setSize(sf::Vector2f(900, 900));
-
+	head->wallTop.setFillColor(sf::Color::Red);
+	head->wallTop.setSize(sf::Vector2f(head->floor.getGlobalBounds().width+100, 50));
+	head->wallTop.setPosition(head->floor.getPosition().x-head->floor.getGlobalBounds().width/2-50, head->floor.getPosition().y - head->floor.getGlobalBounds().height/2-50);
+	head->wallTop.setTexture(&floorTexture);
+	head->wallRight.setFillColor(sf::Color::Green);
+	head->wallRight.setSize(sf::Vector2f(50, head->floor.getGlobalBounds().height));
+	head->wallRight.setPosition(head->floor.getPosition().x + head->floor.getGlobalBounds().width / 2, head->floor.getPosition().y - head->floor.getGlobalBounds().height / 2);
+	head->wallRight.setTexture(&floorTexture);
+	head->wallBottom.setFillColor(sf::Color::Yellow);
+	head->wallBottom.setSize(sf::Vector2f(head->floor.getGlobalBounds().width+100, 50));
+	head->wallBottom.setPosition(head->floor.getPosition().x - head->floor.getGlobalBounds().width / 2-50, head->floor.getPosition().y + head->floor.getGlobalBounds().height / 2);
+	head->wallBottom.setTexture(&floorTexture);
+	head->wallLeft.setFillColor(sf::Color::Magenta);
+	head->wallLeft.setSize(sf::Vector2f(50, head->floor.getGlobalBounds().height));
+	head->wallLeft.setPosition(head->floor.getPosition().x - head->floor.getGlobalBounds().width / 2-50, head->floor.getPosition().y - head->floor.getGlobalBounds().height / 2);
+	head->wallLeft.setTexture(&floorTexture);
 	head->floor.setOrigin(head->floor.getSize().x / 2, head->floor.getSize().y / 2);
+	head->floor.setTexture(&floorTexture);
 	head->floor.setPosition(0, 0);
 	positions.push_back(head->floor);
 	head->floor.setFillColor(sf::Color::Blue);
@@ -38,6 +58,249 @@ bool LinkedMap::doesIntersect(LinkedMap::room* current) {
 		}
 	}
 	return false;
+}
+
+void LinkedMap::doesCollide(Player *player) {
+	if (!current->isCleared) {
+		if (current->wallTop.getGlobalBounds().intersects(player->getPlayer().getGlobalBounds())) {
+			player->canMoveUp = false;
+		}
+		else {
+			player->canMoveUp = true;
+		}
+		if (player->getPlayer().getGlobalBounds().intersects(current->wallBottom.getGlobalBounds())) {
+			player->canMoveDown = false;
+		}
+		else {
+			player->canMoveDown = true;
+		}
+		if (player->getPlayer().getGlobalBounds().intersects(current->wallLeft.getGlobalBounds())) {
+			player->canMoveLeft = false;
+		}
+		else {
+			player->canMoveLeft = true;
+		}
+		if (player->getPlayer().getGlobalBounds().intersects(current->wallRight.getGlobalBounds())) {
+			player->canMoveRight = false;
+		}
+		else {
+			player->canMoveRight = true;
+		}
+	}
+	else {
+		if (current->wallTop.getGlobalBounds().intersects(player->getPlayer().getGlobalBounds())) {
+			player->canMoveUp = false;
+		}
+		else {
+			player->canMoveUp = true;
+		}
+		if (player->getPlayer().getGlobalBounds().intersects(current->wallBottom.getGlobalBounds())) {
+			player->canMoveDown = false;
+		}
+		else {
+			player->canMoveDown = true;
+		}
+		if (player->getPlayer().getGlobalBounds().intersects(current->wallLeft.getGlobalBounds())) {
+			player->canMoveLeft = false;
+		}
+		else {
+			player->canMoveLeft = true;
+		}
+		if (player->getPlayer().getGlobalBounds().intersects(current->wallRight.getGlobalBounds())) {
+			player->canMoveRight = false;
+		}
+		else {
+			player->canMoveRight = true;
+		}
+		//Checks for the hallways of the current room's neighbors
+		if (current->neighbor1 != nullptr) {
+			//Checks if the neighbor is a right room
+			if (current->neighbor1->floor.getPosition().x > current->floor.getPosition().x) {
+				//Checks for collision of hallway walls
+				if (current->neighbor1->hallway->wallTop.getGlobalBounds().intersects(player->getPlayer().getGlobalBounds())) {
+					player->canMoveUp = false;
+				}
+				if (current->neighbor1->hallway->wallBottom.getGlobalBounds().intersects(player->getPlayer().getGlobalBounds())) {
+					player->canMoveDown = false;
+				}
+				if (player->getPlayer().getPosition().y > current->neighbor1->hallway->floor.getPosition().y-current->neighbor1->hallway->floor.getSize().y/2&&player->getPlayer().getPosition().y < current->neighbor1->hallway->floor.getPosition().y + current->neighbor1->hallway->floor.getSize().y/2)
+					player->canMoveRight = true;
+			}
+			//Checks if the neighbor is a left room
+			if (current->neighbor1->floor.getPosition().x < current->floor.getPosition().x) {
+				if (current->neighbor1->hallway->wallTop.getGlobalBounds().intersects(player->getPlayer().getGlobalBounds())) {
+					player->canMoveUp = false;
+				}
+				if (current->neighbor1->hallway->wallBottom.getGlobalBounds().intersects(player->getPlayer().getGlobalBounds())) {
+					player->canMoveDown = false;
+				}
+				if (player->getPlayer().getPosition().y > current->neighbor1->hallway->floor.getPosition().y - current->neighbor1->hallway->floor.getSize().y / 2 && player->getPlayer().getPosition().y < current->neighbor1->hallway->floor.getPosition().y + current->neighbor1->hallway->floor.getSize().y / 2)
+					player->canMoveLeft = true;
+			}
+			//Checks if the neighbor is a up room
+			if (current->neighbor1->floor.getPosition().y < current->floor.getPosition().y) {
+				if (current->neighbor1->hallway->wallLeft.getGlobalBounds().intersects(player->getPlayer().getGlobalBounds())) {
+					player->canMoveLeft = false;
+				}
+				if (current->neighbor1->hallway->wallRight.getGlobalBounds().intersects(player->getPlayer().getGlobalBounds())) {
+					player->canMoveRight = false;
+				}
+				if (player->getPlayer().getPosition().x > current->neighbor1->hallway->floor.getPosition().x - current->neighbor1->hallway->floor.getSize().x / 2 && player->getPlayer().getPosition().x < current->neighbor1->hallway->floor.getPosition().x + current->neighbor1->hallway->floor.getSize().x / 2)
+					player->canMoveUp = true;
+			}
+			//Checks if neighbor is a down room
+			if (current->neighbor1->floor.getPosition().y > current->floor.getPosition().y) {
+				if (current->neighbor1->hallway->wallLeft.getGlobalBounds().intersects(player->getPlayer().getGlobalBounds())) {
+					player->canMoveLeft = false;
+				}
+				if (current->neighbor1->hallway->wallRight.getGlobalBounds().intersects(player->getPlayer().getGlobalBounds())) {
+					player->canMoveRight = false;
+				}
+				if (player->getPlayer().getPosition().x > current->neighbor1->hallway->floor.getPosition().x - current->neighbor1->hallway->floor.getSize().y / 2 && player->getPlayer().getPosition().x < current->neighbor1->hallway->floor.getPosition().x + current->neighbor1->hallway->floor.getSize().x / 2)
+					player->canMoveDown = true;
+			}
+		}
+		if (current->neighbor2 != nullptr) {
+			//Checks if neighbor is a right room
+			if (current->neighbor2->floor.getPosition().x > current->floor.getPosition().x) {
+				if (current->neighbor2->hallway->wallTop.getGlobalBounds().intersects(player->getPlayer().getGlobalBounds())) {
+					player->canMoveUp = false;
+				}
+				if (current->neighbor2->hallway->wallBottom.getGlobalBounds().intersects(player->getPlayer().getGlobalBounds())) {
+					player->canMoveDown = false;
+				}
+				if (player->getPlayer().getPosition().y > current->neighbor2->hallway->floor.getPosition().y - current->neighbor2->hallway->floor.getSize().y / 2 && player->getPlayer().getPosition().y < current->neighbor2->hallway->floor.getPosition().y + current->neighbor2->hallway->floor.getSize().y / 2)
+					player->canMoveRight = true;
+			}
+			//Checks if neighbor is a left room
+			if (current->neighbor2->floor.getPosition().x < current->floor.getPosition().x) {
+				if (current->neighbor2->hallway->wallTop.getGlobalBounds().intersects(player->getPlayer().getGlobalBounds())) {
+					player->canMoveUp = false;
+				}
+				if (current->neighbor2->hallway->wallBottom.getGlobalBounds().intersects(player->getPlayer().getGlobalBounds())) {
+					player->canMoveDown = false;
+				}
+				if (player->getPlayer().getPosition().y > current->neighbor2->hallway->floor.getPosition().y - current->neighbor2->hallway->floor.getSize().y / 2 && player->getPlayer().getPosition().y < current->neighbor2->hallway->floor.getPosition().y + current->neighbor2->hallway->floor.getSize().y / 2)
+					player->canMoveLeft = true;
+			}
+			//Checks if neighbor is a up room
+			if (current->neighbor2->floor.getPosition().y < current->floor.getPosition().y) {
+				if (current->neighbor2->hallway->wallLeft.getGlobalBounds().intersects(player->getPlayer().getGlobalBounds())) {
+					player->canMoveLeft = false;
+				}
+				if (current->neighbor2->hallway->wallRight.getGlobalBounds().intersects(player->getPlayer().getGlobalBounds())) {
+					player->canMoveRight = false;
+				}
+				if (player->getPlayer().getPosition().x > current->neighbor2->hallway->floor.getPosition().x - current->neighbor2->hallway->floor.getSize().x / 2 && player->getPlayer().getPosition().x < current->neighbor2->hallway->floor.getPosition().x + current->neighbor2->hallway->floor.getSize().x / 2)
+					player->canMoveUp = true;
+			}
+			//Checks if neighbor is a down room
+			if (current->neighbor2->floor.getPosition().y > current->floor.getPosition().y) {
+				if (current->neighbor2->hallway->wallLeft.getGlobalBounds().intersects(player->getPlayer().getGlobalBounds())) {
+					player->canMoveLeft = false;
+				}
+				if (current->neighbor2->hallway->wallRight.getGlobalBounds().intersects(player->getPlayer().getGlobalBounds())) {
+					player->canMoveRight = false;
+				}
+				if (player->getPlayer().getPosition().x > current->neighbor2->hallway->floor.getPosition().x - current->neighbor2->hallway->floor.getSize().x / 2 && player->getPlayer().getPosition().x < current->neighbor2->hallway->floor.getPosition().x + current->neighbor2->hallway->floor.getSize().x / 2)
+					player->canMoveDown = true;
+			}
+		}
+		//Checks if current has a 3rd neighbor
+		if (current->neighbor3 != nullptr){
+			//Checks if neighbor is a right room
+			if (current->neighbor3->floor.getPosition().x > current->floor.getPosition().x) {
+				if (current->neighbor3->hallway->wallTop.getGlobalBounds().intersects(player->getPlayer().getGlobalBounds())) {
+					player->canMoveUp = false;
+				}
+				if (current->neighbor3->hallway->wallBottom.getGlobalBounds().intersects(player->getPlayer().getGlobalBounds())) {
+					player->canMoveDown = false;
+				}
+				if (player->getPlayer().getPosition().y > current->neighbor3->hallway->floor.getPosition().y - current->neighbor3->hallway->floor.getSize().y / 2 && player->getPlayer().getPosition().y < current->neighbor3->hallway->floor.getPosition().y + current->neighbor3->hallway->floor.getSize().y / 2)
+					player->canMoveRight = true;
+			}
+			//Checks if neighbor is a left room
+			if (current->neighbor3->floor.getPosition().x < current->floor.getPosition().x) {
+				if (current->neighbor3->hallway->wallTop.getGlobalBounds().intersects(player->getPlayer().getGlobalBounds())) {
+					player->canMoveUp = false;
+				}
+				if (current->neighbor3->hallway->wallBottom.getGlobalBounds().intersects(player->getPlayer().getGlobalBounds())) {
+					player->canMoveDown = false;
+				}
+				if (player->getPlayer().getPosition().y > current->neighbor3->hallway->floor.getPosition().y - current->neighbor3->hallway->floor.getSize().y / 2 && player->getPlayer().getPosition().y < current->neighbor3->hallway->floor.getPosition().y + current->neighbor3->hallway->floor.getSize().y / 2)
+					player->canMoveLeft = true;
+			}
+			//Checks if neighbor is an up room
+			if (current->neighbor3->floor.getPosition().y < current->floor.getPosition().y) {
+				if (current->neighbor3->hallway->wallLeft.getGlobalBounds().intersects(player->getPlayer().getGlobalBounds())) {
+					player->canMoveLeft = false;
+				}
+				if (current->neighbor3->hallway->wallRight.getGlobalBounds().intersects(player->getPlayer().getGlobalBounds())) {
+					player->canMoveRight = false;
+				}
+				if (player->getPlayer().getPosition().x > current->neighbor3->hallway->floor.getPosition().x - current->neighbor3->hallway->floor.getSize().x / 2 && player->getPlayer().getPosition().x < current->neighbor3->hallway->floor.getPosition().x + current->neighbor3->hallway->floor.getSize().x / 2)
+					player->canMoveUp = true;
+			}
+			//Checks if neighbor is a down room
+			if (current->neighbor3->floor.getPosition().y > current->floor.getPosition().y) {
+				if (current->neighbor3->hallway->wallLeft.getGlobalBounds().intersects(player->getPlayer().getGlobalBounds())) {
+					player->canMoveLeft = false;
+				}
+				if (current->neighbor3->hallway->wallRight.getGlobalBounds().intersects(player->getPlayer().getGlobalBounds())) {
+					player->canMoveRight = false;
+				}
+				if (player->getPlayer().getPosition().x > current->neighbor3->hallway->floor.getPosition().x - current->neighbor3->hallway->floor.getSize().x / 2 && player->getPlayer().getPosition().x < current->neighbor3->hallway->floor.getPosition().x + current->neighbor3->hallway->floor.getSize().x / 2)
+					player->canMoveDown = true;
+			}
+		}
+		//Checks if current has a previous neighbor
+		if (current->previous != nullptr&&current!=head) {
+			//Checks if neighbor is a left Room
+			if (current->floor.getPosition().x > current->previous->floor.getPosition().x) {
+				if (current->hallway->wallTop.getGlobalBounds().intersects(player->getPlayer().getGlobalBounds())) {
+					player->canMoveUp = false;
+				}
+				if (current->hallway->wallBottom.getGlobalBounds().intersects(player->getPlayer().getGlobalBounds())) {
+					player->canMoveDown = false;
+				}
+				if (player->getPlayer().getPosition().y > current->hallway->floor.getPosition().y - current->hallway->floor.getSize().y / 2 && player->getPlayer().getPosition().y < current->hallway->floor.getPosition().y + current->hallway->floor.getSize().y / 2)
+					player->canMoveLeft = true;
+			}
+			//Checks if neighbor is a right room
+			if (current->floor.getPosition().x < current->previous->floor.getPosition().x) {
+				if (current->hallway->wallTop.getGlobalBounds().intersects(player->getPlayer().getGlobalBounds())) {
+					player->canMoveUp = false;
+				}
+				if (current->hallway->wallBottom.getGlobalBounds().intersects(player->getPlayer().getGlobalBounds())) {
+					player->canMoveDown = false;
+				}
+				if (player->getPlayer().getPosition().y > current->hallway->floor.getPosition().y - current->hallway->floor.getSize().y / 2 && player->getPlayer().getPosition().y < current->hallway->floor.getPosition().y + current->hallway->floor.getSize().y / 2)
+					player->canMoveRight = true;
+			}
+			//Checks if neighbor is an up rooom
+			if (current->floor.getPosition().y < current->previous->floor.getPosition().y) {
+				if (current->hallway->wallLeft.getGlobalBounds().intersects(player->getPlayer().getGlobalBounds())) {
+					player->canMoveLeft = false;
+				}
+				if (current->hallway->wallRight.getGlobalBounds().intersects(player->getPlayer().getGlobalBounds())) {
+					player->canMoveRight = false;
+				}
+				if (player->getPlayer().getPosition().x > current->hallway->floor.getPosition().x - current->hallway->floor.getSize().x / 2 && player->getPlayer().getPosition().x < current->hallway->floor.getPosition().x + current->hallway->floor.getSize().x / 2)
+					player->canMoveDown = true;
+			}
+			//Checks if neighbor is a down room
+			if (current->floor.getPosition().y > current->previous->floor.getPosition().y) {
+				if (current->hallway->wallLeft.getGlobalBounds().intersects(player->getPlayer().getGlobalBounds())) {
+					player->canMoveLeft = false;
+				}
+				if (current->hallway->wallRight.getGlobalBounds().intersects(player->getPlayer().getGlobalBounds())) {
+					player->canMoveRight = false;
+				}
+				if (player->getPlayer().getPosition().x > current->hallway->floor.getPosition().x - current->hallway->floor.getSize().x / 2 && player->getPlayer().getPosition().x < current->hallway->floor.getPosition().x + current->hallway->floor.getSize().x / 2)
+					player->canMoveUp = true;
+			}
+		}
+	}
 }
 
 bool LinkedMap::createRoom(LinkedMap::room* current,std::string dir,sf::RenderWindow &window) {
@@ -278,6 +541,44 @@ bool LinkedMap::createRoom(LinkedMap::room* current,std::string dir,sf::RenderWi
 		}
 	}
 	temp->name = "room " + std::to_string(count++);
+	temp->floor.setTexture(&floorTexture);
+	temp->wallTop.setFillColor(sf::Color::Red);
+	temp->wallTop.setSize(sf::Vector2f(temp->floor.getGlobalBounds().width + 100, 50));
+	temp->wallTop.setPosition(temp->floor.getPosition().x - temp->floor.getGlobalBounds().width / 2 - 50, temp->floor.getPosition().y - temp->floor.getGlobalBounds().height / 2 - 50);
+	temp->wallTop.setTexture(&floorTexture);
+	temp->wallRight.setFillColor(sf::Color::Green);
+	temp->wallRight.setSize(sf::Vector2f(50, temp->floor.getGlobalBounds().height));
+	temp->wallRight.setPosition(temp->floor.getPosition().x + temp->floor.getGlobalBounds().width / 2, temp->floor.getPosition().y - temp->floor.getGlobalBounds().height / 2);
+	temp->wallRight.setTexture(&floorTexture);
+	temp->wallBottom.setFillColor(sf::Color::Yellow);
+	temp->wallBottom.setSize(sf::Vector2f(temp->floor.getGlobalBounds().width + 100, 50));
+	temp->wallBottom.setPosition(temp->floor.getPosition().x - temp->floor.getGlobalBounds().width / 2 - 50, temp->floor.getPosition().y + temp->floor.getGlobalBounds().height / 2);
+	temp->wallBottom.setTexture(&floorTexture);
+	temp->wallLeft.setFillColor(sf::Color::Magenta);
+	temp->wallLeft.setSize(sf::Vector2f(50, temp->floor.getGlobalBounds().height));
+	temp->wallLeft.setPosition(temp->floor.getPosition().x - temp->floor.getGlobalBounds().width / 2 - 50, temp->floor.getPosition().y - temp->floor.getGlobalBounds().height / 2);
+	temp->wallLeft.setTexture(&floorTexture);
+	temp->hallway->floor.setTexture(&floorTexture);
+	if (temp->hallway->floor.getSize().x > temp->hallway->floor.getSize().y) {
+		temp->hallway->wallTop.setFillColor(sf::Color::Red);
+		temp->hallway->wallTop.setSize(sf::Vector2f(temp->hallway->floor.getGlobalBounds().width, 50));
+		temp->hallway->wallTop.setPosition(temp->hallway->floor.getPosition().x - temp->hallway->floor.getGlobalBounds().width / 2, temp->hallway->floor.getPosition().y - temp->hallway->floor.getGlobalBounds().height / 2 - 50);
+		temp->hallway->wallTop.setTexture(&floorTexture);
+		temp->hallway->wallBottom.setFillColor(sf::Color::Yellow);
+		temp->hallway->wallBottom.setSize(sf::Vector2f(temp->hallway->floor.getGlobalBounds().width, 50));
+		temp->hallway->wallBottom.setPosition(temp->hallway->floor.getPosition().x - temp->hallway->floor.getGlobalBounds().width / 2, temp->hallway->floor.getPosition().y + temp->hallway->floor.getGlobalBounds().height / 2);
+		temp->hallway->wallBottom.setTexture(&floorTexture);
+	}
+	else if (temp->hallway->floor.getSize().x < temp->hallway->floor.getSize().y) {
+		temp->hallway->wallRight.setFillColor(sf::Color::Green);
+		temp->hallway->wallRight.setSize(sf::Vector2f(50, temp->hallway->floor.getGlobalBounds().height));
+		temp->hallway->wallRight.setPosition(temp->hallway->floor.getPosition().x + temp->hallway->floor.getGlobalBounds().width / 2, temp->hallway->floor.getPosition().y - temp->hallway->floor.getGlobalBounds().height / 2);
+		temp->hallway->wallRight.setTexture(&floorTexture);
+		temp->hallway->wallLeft.setFillColor(sf::Color::Magenta);
+		temp->hallway->wallLeft.setSize(sf::Vector2f(50, temp->hallway->floor.getGlobalBounds().height));
+		temp->hallway->wallLeft.setPosition(temp->hallway->floor.getPosition().x - temp->hallway->floor.getGlobalBounds().width / 2 - 50, temp->hallway->floor.getPosition().y - temp->hallway->floor.getGlobalBounds().height / 2);
+		temp->hallway->wallLeft.setTexture(&floorTexture);
+	}
 	if (current->neighbor1 == nullptr) {
 		current->neighbor1 = temp;
 	}
@@ -290,7 +591,6 @@ bool LinkedMap::createRoom(LinkedMap::room* current,std::string dir,sf::RenderWi
 	std::cout << "Adding room " << count << std::endl;
 	positions.push_back(temp->floor);
 	window.clear();
-	displayMap(head, window);
 	window.display();
 	return true;
 }
@@ -300,6 +600,7 @@ void LinkedMap::addRooms(int rooms, room* current, sf::RenderWindow &window) {
 	if (rooms <= 0||current == nullptr) {
 		return;
 	}
+
 	int neighbors = rand() % 3 + 1;
 
     if (current->neighbors == 0) {
@@ -467,15 +768,25 @@ void LinkedMap::displayMap(room* current, sf::RenderWindow &window) {
 	}
 }
 
-void LinkedMap::displayCurrentRoom(sf::RenderWindow &window) {
-	if (current != nullptr) {
-		window.draw(current->floor);
-		if (current != head) {
-			window.draw(current->hallway->floor);
+void LinkedMap::displayCurrentRoom(room * curr, sf::RenderWindow &window, bool cleared) {
+	if (cleared) {
+		if (curr != nullptr) {
+			window.draw(curr->floor);
+			window.draw(curr->wallTop);
+			window.draw(curr->wallRight);
+			window.draw(curr->wallLeft);
+			window.draw(curr->wallBottom);
+			if (curr != head) {
+				window.draw(curr->hallway->floor);
+				window.draw(curr->hallway->wallTop);
+				window.draw(curr->hallway->wallRight);
+				window.draw(curr->hallway->wallLeft);
+				window.draw(curr->hallway->wallBottom);
+			}
 		}
 	}
-	if (current->previous != nullptr) {
-		window.draw(current->previous->floor);
+	//if (current->previous != nullptr) {
+		/*window.draw(current->previous->floor);
 		if (current->previous != head) {
 			window.draw(current->previous->hallway->floor);
 		}
@@ -484,68 +795,32 @@ void LinkedMap::displayCurrentRoom(sf::RenderWindow &window) {
 			if (current->previous->neighbor1 != head) {
 				window.draw(current->previous->neighbor1->hallway->floor);
 
-			}
-		}
-		if (current->previous->neighbor2 != nullptr) {
-			window.draw(current->previous->neighbor2->floor);
-			if (current->previous->neighbor2 != head) {
-				window.draw(current->previous->neighbor2->hallway->floor);
-			}
-		}
-		if (current->previous->neighbor3 != nullptr) {
-			window.draw(current->previous->neighbor3->floor);
-			if (current->previous->neighbor3 != head) {
-				window.draw(current->previous->neighbor3->hallway->floor);
+			}*/
+		//}
+	if (curr->neighbor1 != nullptr) {
+		displayCurrentRoom(curr->neighbor1, window, cleared);
+	}
+	if (curr->neighbor2 != nullptr) {
+		displayCurrentRoom(curr->neighbor2,window,cleared);
+	}
+	if (curr->neighbor3 != nullptr) {
+		displayCurrentRoom(curr->neighbor3, window, cleared);
+	}
 
+	if (!cleared) {
+		if (current != nullptr) {
+			if (current != head) {
+				window.draw(current->hallway->floor);
+				window.draw(current->hallway->wallTop);
+				window.draw(current->hallway->wallRight);
+				window.draw(current->hallway->wallLeft);
+				window.draw(current->hallway->wallBottom);
 			}
-		}
-	}
-	if (current->neighbor1 != nullptr) {
-		window.draw(current->neighbor1->floor);
-		window.draw(current->neighbor1->hallway->floor);
-		if (current->neighbor1->neighbor1 != nullptr) {
-			window.draw(current->neighbor1->neighbor1->hallway->floor);
-			window.draw(current->neighbor1->neighbor1->floor);
-		}
-		if (current->neighbor1->neighbor2 != nullptr) {
-			window.draw(current->neighbor1->neighbor2->hallway->floor);
-			window.draw(current->neighbor1->neighbor2->floor);
-		}
-		if (current->neighbor1->neighbor3 != nullptr) {
-			window.draw(current->neighbor1->neighbor3->hallway->floor);
-			window.draw(current->neighbor1->neighbor3->floor);
-		}
-	}
-	if (current->neighbor2 != nullptr) {
-		window.draw(current->neighbor2->floor);
-		window.draw(current->neighbor2->hallway->floor);
-		if (current->neighbor2->neighbor1 != nullptr) {
-			window.draw(current->neighbor2->neighbor1->hallway->floor);
-			window.draw(current->neighbor2->neighbor1->floor);
-		}
-		if (current->neighbor2->neighbor2 != nullptr) {
-			window.draw(current->neighbor2->neighbor2->hallway->floor);
-			window.draw(current->neighbor2->neighbor2->floor);
-			if (current->neighbor2->neighbor3 != nullptr) {
-				window.draw(current->neighbor2->neighbor3->hallway->floor);
-				window.draw(current->neighbor2->neighbor3->floor);
-			}
-		}
-	}
-	if (current->neighbor3 != nullptr) {
-		window.draw(current->neighbor3->floor);
-		window.draw(current->neighbor3->hallway->floor);
-		if (current->neighbor3->neighbor1 != nullptr) {
-			window.draw(current->neighbor3->neighbor1->hallway->floor);
-			window.draw(current->neighbor3->neighbor1->floor);
-		}
-		if (current->neighbor3->neighbor2 != nullptr) {
-			window.draw(current->neighbor3->neighbor2->hallway->floor);
-			window.draw(current->neighbor3->neighbor2->floor);
-		}
-		if (current->neighbor3->neighbor3 != nullptr) {
-			window.draw(current->neighbor3->neighbor3->hallway->floor);
-			window.draw(current->neighbor3->neighbor3->floor);
+			window.draw(current->floor);
+			window.draw(current->wallTop);
+			window.draw(current->wallRight);
+			window.draw(current->wallLeft);
+			window.draw(current->wallBottom);
 		}
 	}
 }
@@ -593,7 +868,7 @@ void LinkedMap::placeLevelUpText(){
 	levelUpText.setCharacterSize(24);
 	levelUpText.setString("Press 'F' to Descend");
 	levelUpText.setPosition(stairs.getPosition().x + 40,stairs.getPosition().y - 40);
-	
+
 }
 
 void LinkedMap::findChestRoom(room* current){
@@ -612,7 +887,7 @@ void LinkedMap::findChestRoom(room* current){
 				} else{
 					return;
 				}
-				
+
 			} else{
 				findChestRoom(current->neighbor2);
 			}

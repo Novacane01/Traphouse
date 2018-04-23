@@ -1,4 +1,3 @@
-//#include "stdafx.h"
 #include "Player.h"
 
 
@@ -317,18 +316,23 @@ void Player::Update(sf::RenderWindow &window, float dt) {
 		bIsDead = false;
 	}
 	if (!stunned) {
-		if (isMovingUp) {
+		if (isMovingUp&&canMoveUp) {
 			MoveUp(dt);
 		}
-		if (isMovingDown) {
+		if (isMovingDown&&canMoveDown) {
 			MoveDown(dt);
 		}
-		if (isMovingRight) {
+		if (isMovingRight&&canMoveRight) {
 			MoveRight(dt);
 		}
-		if (isMovingLeft) {
+		if (isMovingLeft&&canMoveLeft) {
 			MoveLeft(dt);
 		}
+	}
+
+	if (bCanShoot&&shootTimer.getElapsedTime().asSeconds() > ((triggerhappy) ? getCurrentWeapon().getAttackSpeed() / 2.f : getCurrentWeapon().getAttackSpeed())) {
+		getCurrentWeapon().Shoot(this, window);
+		shootTimer.restart();
 	}
 
 	//Rotates player based off of mouse position

@@ -58,8 +58,6 @@ private:
 	float attackSpeed = 0.f;
 	sf::Vector2f spawnlocation;
 
-	int colour;
-
 protected:
 	sf::Sprite enemy;
 	//Animation

@@ -7,7 +7,6 @@ unsigned WINDOW_LENGTH, WINDOW_WIDTH;
 GameManager::GameManager(int width, int length) {
 	setWindowLength(length);
 	setWindowWidth(width);
-	//roomView.zoom(1.5f);
 	if (!font.loadFromFile("Fonts/light_pixel-7.ttf")) {
 		std::cout << "Could not load file" << std::endl;
 	}
@@ -17,7 +16,6 @@ GameManager::GameManager(int width, int length) {
 
 	//Starts loading screen
 	LoadingScreen();
-
 	//sets size and shape of health, stamina and name for player
 	player->setUI();
 }
@@ -68,32 +66,29 @@ void GameManager::Start() {
     //Sets center of window at (0,0)
 
     roomView.setCenter(910, 540);
-
     window.setView(roomView);
 
     //Creates bounded Map rectangle object
     bool centered = false;
 
-
-
     lmap->findCurrentRoom(lmap->head, player);
+
     //Main loop
     while (window.isOpen()) {
 
         float deltaTime = FPSclock.restart().asSeconds();
         //Records window events such as mouse movement, mouse clicks, and key strokes
         sf::Event event;
-
-            if (clickInterval.getElapsedTime().asSeconds() > ((player->triggerhappy) ? player->getCurrentWeapon().getAttackSpeed() / 2.f : player->getCurrentWeapon().getAttackSpeed())) {
-                if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Left)) {
-                    player->getCurrentWeapon().Shoot(player, window);
-                    clickInterval.restart();
-                }
-            }
-            while (window.pollEvent(event)) {
-                if (event.type == event.Closed) {
-                    window.close();
-                }
+        while (window.pollEvent(event)) {
+        	if (event.type == event.Closed) {
+        		window.close();
+        	}
+        	if (event.mouseButton.button == sf::Mouse::Left&&event.type == sf::Event::MouseButtonPressed) {
+        		player->bCanShoot = true;
+        	}
+        	if (event.mouseButton.button == sf::Mouse::Left&&event.type == sf::Event::MouseButtonReleased) {
+        		player->bCanShoot = false;
+        	}
                 if (event.type == sf::Event::KeyPressed) {
                     if (event.key.code == sf::Keyboard::W) {
                         player->isMovingUp = true;
@@ -121,6 +116,7 @@ void GameManager::Start() {
                         player->bIsSprinting = true;
                     }
                     if (event.key.code == sf::Keyboard::Escape) {
+						paused = true;
                         music.pause();
                         Pause();
                         music.play();
@@ -188,10 +184,15 @@ void GameManager::Start() {
                 lmap->getCurrentRoom()->isCleared = true;
             }
 
+			if (paused) {
+				paused = false;
+				player->bCanShoot = false;
+			}
+			lmap->doesCollide(player);
             window.clear(); //Clears window
             //map->Draw(window); //Draws map
 
-            lmap->displayCurrentRoom(window); //Draws Map
+            lmap->displayCurrentRoom(lmap->getHead(),window, lmap->getCurrentRoom()->isCleared); //Draws Map
 
 			if(lmap->getCurrentRoom() == lmap->getLevelUpRoom()){
 				lmap->displayStairs(window, player);
@@ -254,7 +255,7 @@ void GameManager::changeView(LinkedMap* lmap){
 		vectorSquare.setPosition(window.getView().getCenter());
 		viewMotion.move(direction);
 		window.setView(viewMotion);
-		lmap->displayCurrentRoom(window);
+		lmap->displayCurrentRoom(lmap->getHead(), window, lmap->getCurrentRoom()->isCleared);
 		window.display();
 }
 	roomView.setCenter(lmap->getCurrentRoom()->floor.getPosition());
@@ -310,7 +311,6 @@ Player* GameManager::createPlayer() {
 				text.setString(name);
 				text.setPosition(text.getPosition().x - (textBox.getSize().x/ (text.getCharacterSize()*1.15f)), text.getPosition().y);
 			}
-
 			if (event.type == event.Closed) {
                 window.close();
             }
@@ -365,14 +365,12 @@ void GameManager::GameOver() {
 
 	//Fades into GameOver
 	for (int i = 2; i < 250; i++) {
-		usleep(10000);
 		window.draw(fade);
 		window.display();
 		fade.setFillColor(sf::Color(0, 0, 0, i));
 	}
 	while (gameOverText.getPosition().x != window.getView().getCenter().x) {
 		gameOverText.setPosition(gameOverText.getPosition().x + 1, gameOverText.getPosition().y);
-		usleep(2000);
 		window.clear();
 		window.draw(fade);
 		window.draw(gameOverText);
@@ -432,7 +430,7 @@ void GameManager::LoadingScreen() {
 	playButton.setCharacterSize(50);
 	playButton.setFont(font);
 	playButton.setString("Play");
-	title.setPosition(WINDOW_WIDTH / 2, WINDOW_LENGTH*.3f);
+	title.setPosition(window.getView().getCenter().x, window.getView().getCenter().y - 300);
 	title.setFont(font);
 	title.setString("TrapHouse");
 	float x = 0;
@@ -451,7 +449,7 @@ void GameManager::LoadingScreen() {
 			if (playButton.getGlobalBounds().contains(window.mapPixelToCoords(sf::Mouse::getPosition(window)))) {
 				playButton.setCharacterSize(60);
 				playButton.setOrigin(playButton.getGlobalBounds().width / 2, playButton.getGlobalBounds().height / 2);
-				playButton.setPosition(WINDOW_WIDTH / 2, WINDOW_LENGTH*.7f);
+				playButton.setPosition(title.getPosition().x,title.getPosition().y + 300);
 				if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Left)) {
 					player = createPlayer();
 					return;
@@ -460,7 +458,7 @@ void GameManager::LoadingScreen() {
 			else {
 				playButton.setCharacterSize(50);
 				playButton.setOrigin(playButton.getGlobalBounds().width / 2, playButton.getGlobalBounds().height / 2);
-				playButton.setPosition(WINDOW_WIDTH / 2, WINDOW_LENGTH*.7f);
+				playButton.setPosition(title.getPosition().x,title.getPosition().y + 300);
 			}
 		}
 		window.clear();

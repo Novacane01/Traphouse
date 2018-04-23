@@ -32,6 +32,8 @@ private:
 	sf::Font font;
 	sf::View view;
 	sf::RenderWindow window;
+	bool paused;
+
 	Player *player;
 	int level;
 	sf::View roomView;
