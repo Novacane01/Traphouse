@@ -124,8 +124,8 @@ float Enemy::getWalkspeed() const {
 }
 
 //Returns enemy object
-sf::Sprite Enemy::getEnemy() const{
-	return enemy;
+sf::Sprite* Enemy::getEnemy(){
+	return &enemy;
 }
 
 //Returns enemy hp
@@ -147,7 +147,7 @@ Enemy::~Enemy() {
 
 
 //Skeleton Class
-Skeleton::Skeleton(std::string name, float hp, float attack, float walkspeed, float attackspeed):Enemy(name,hp,attack,walkspeed,attackspeed) {
+Skeleton::Skeleton(std::string name, float hp, float attack, float walkspeed, float attackspeed, std::string type):Enemy(name,hp,attack,walkspeed,attackspeed),type(type) {
 	WalkRect = sf::IntRect(0,0,64,67);
 	AttackRect = sf::IntRect(0, 0, 110, 63);
 	DeathRect = sf::IntRect(0, 0, 130, 75);
@@ -181,50 +181,92 @@ void Skeleton::boneThrow(Player *player) {
 void Skeleton::Animate(Player *player) {
 	//Attacking
 	if (animationTimer.getElapsedTime().asSeconds() > 0.07f) {
-		if (state == animationState::RANGED || state == animationState::MELEE) {
-			if (AttackRect.left >= 1950&&state==animationState::MELEE) {
-				AttackRect.left = 0;
-				boneWhack(player);
-				state = animationState::IDLE;
-				attackTimer.restart();
-			}
-			else if (AttackRect.left>=1700 && state == animationState::RANGED) {
-				AttackRect.left = 0;
-				boneThrow(player);
-				state = animationState::WALKING;
-				attackTimer.restart();
-			}
-			else {
-				enemy.setTexture(attackTexture);
-				enemy.setTextureRect(AttackRect);
-				AttackRect.left += 150;
-			}
-		}
-		else if (state == animationState::WALKING) {
-			if (WalkRect.left >= 909) {
-				WalkRect.left = 0;
-			}
-			else {
-				enemy.setTexture(walkTexture);
-				enemy.setTextureRect(WalkRect);
-				WalkRect.left += 65;
-			}
-			AttackRect.left = 0;
-		}
-		else if (state == animationState::DEAD) {
-			enemy.setOrigin(50, 20);
-			if (DeathRect.left >= 1200) {
-				if (deathTimer.getElapsedTime().asSeconds() > 2.f) {
-					bIsDead = true;
-					player->setScore(scoreValue);
+		if (type == "Regular") {
+			if (state == animationState::RANGED || state == animationState::MELEE) {
+				if (AttackRect.left >= 1950 && state == animationState::MELEE) {
+					AttackRect.left = 0;
+					boneWhack(player);
+					state = animationState::IDLE;
+					attackTimer.restart();
+				}
+				else if (AttackRect.left >= 1700 && state == animationState::RANGED) {
+					AttackRect.left = 0;
+					boneThrow(player);
+					state = animationState::WALKING;
+					attackTimer.restart();
+				}
+				else {
+					enemy.setTexture(attackTexture);
+					enemy.setTextureRect(AttackRect);
+					AttackRect.left += 150;
 				}
 			}
-			else {
-				enemy.setTextureRect(DeathRect);
-				enemy.setTexture(deathTexture);
-				DeathRect.left += 150;
+			else if (state == animationState::WALKING) {
+				if (WalkRect.left >= 909) {
+					WalkRect.left = 0;
+				}
+				else {
+					enemy.setTexture(walkTexture);
+					enemy.setTextureRect(WalkRect);
+					WalkRect.left += 65;
+				}
+				AttackRect.left = 0;
 			}
+			else if (state == animationState::DEAD) {
+				enemy.setOrigin(50, 20);
+				if (DeathRect.left >= 1200) {
+					if (deathTimer.getElapsedTime().asSeconds() > 2.f) {
+						bIsDead = true;
+						player->setScore(scoreValue);
+					}
+				}
+				else {
+					enemy.setTextureRect(DeathRect);
+					enemy.setTexture(deathTexture);
+					DeathRect.left += 150;
+				}
 
+			}
+		}
+		else if (type == "Minion") {
+			if (state == animationState::MELEE) {
+				if (AttackRect.left >= 1950) {
+					AttackRect.left = 0;
+					boneWhack(player);
+					state = animationState::IDLE;
+					attackTimer.restart();
+				}
+				else {
+					enemy.setTexture(attackTexture);
+					enemy.setTextureRect(AttackRect);
+					AttackRect.left += 150;
+				}
+			}
+			else if (state == animationState::WALKING) {
+				if (WalkRect.left >= 909) {
+					WalkRect.left = 0;
+				}
+				else {
+					enemy.setTexture(walkTexture);
+					enemy.setTextureRect(WalkRect);
+					WalkRect.left += 65;
+				}
+				AttackRect.left = 0;
+			}
+			else if (state == animationState::DEAD) {
+				enemy.setOrigin(50, 20);
+				if (DeathRect.left >= 1200) {
+					if (deathTimer.getElapsedTime().asSeconds() > 2.f) {
+						bIsDead = true;
+						player->setScore(scoreValue);
+					}
+				}
+				else {
+					enemy.setTextureRect(DeathRect);
+					enemy.setTexture(deathTexture);
+					DeathRect.left += 150;
+				}
+			}
 		}
 		if (enemy.getColor() != sf::Color::White) {
 			enemy.setColor(sf::Color::White);
@@ -254,7 +296,7 @@ void Skeleton::Update(Player *player, float dt) {
 				state = animationState::MELEE;
 			}
 		}
-		else if (attackTimer.getElapsedTime().asSeconds() > ((player->stopwatch) ? getAttackSpeed() * 2 : getAttackSpeed())) {
+		else if (attackTimer.getElapsedTime().asSeconds() > ((player->stopwatch) ? getAttackSpeed() * 2 : getAttackSpeed())&&type=="Regular") {
 			state = animationState::RANGED;
 		}
 		else {
@@ -299,7 +341,6 @@ Spider::Spider(std::string name, float hp, float attack, float walkspeed, float 
 	web.web.setTexture(web.texture);
 	web.web.setScale(.5f, .5f);
 	enemy.setOrigin(20, 20);
-	//enemy.setTextureRect(rectSourceSprite);
 }
 
 
@@ -328,7 +369,7 @@ void Spider::Animate(Player * player) {
 					webShot(player);
 				}
 				attackTimer.restart();
-				state = animationState::WALKING;
+				state = animationState::IDLE;
 			}
 			else {
 				enemy.setTextureRect(AttackRect);
@@ -338,7 +379,6 @@ void Spider::Animate(Player * player) {
 		}
 		else if (state == animationState::DEAD) {
 			if (DeathRect.left >= 450) {
-				static sf::Clock deathTimer;
 				if (deathTimer.getElapsedTime().asSeconds() > 2.f) {
 					bIsDead = true;
 					player->setScore(scoreValue);
@@ -387,9 +427,12 @@ void Spider::Update(Player *player, float dt) {
 		if (mode == behaviour::AGGRESSIVE) {
 			if (Collision::PixelPerfectTest(enemy, player->getPlayer())) {
 				enemy.move(0, 0);
-				state = animationState::MELEE;
+				if (attackTimer.getElapsedTime().asSeconds() >= getAttackSpeed()/8) {
+					state = animationState::MELEE;
+				}
 			}
 			else {
+				state = animationState::WALKING;
 				enemy.move(getDirection().x*dt*((player->stopwatch) ? getWalkspeed() / 2 : getWalkspeed()), getDirection().y*dt*((player->stopwatch) ? getWalkspeed() / 2 : getWalkspeed()));
 			}
 		}
@@ -425,50 +468,48 @@ void Spider::Draw(sf::RenderWindow &window) {
 }
 
 Troll::Troll(std::string name, float hp, float attack, float walkspeed, float attackspeed):Enemy(name,hp,attack,walkspeed,attackspeed) {
-    WalkRect = sf::IntRect(0, 0, 250, 150);
-    AttackRect = sf::IntRect(0, 0, 250, 250);
-    DeathRect = sf::IntRect(0, 0, 250, 315);
+    WalkRect = sf::IntRect(0, 0, 100, 121);
+    AttackRect = sf::IntRect(0, 0, 100, 200);
+    DeathRect = sf::IntRect(0, 0, 100, 290);
     walkTexture.loadFromFile("Sprites/EnemyAnims/Troll/TrollWalk.png");
     attackTexture.loadFromFile("Sprites/EnemyAnims/Troll/TrollAttack.png");
     deathTexture.loadFromFile("Sprites/EnemyAnims/Troll/TrollDie.png");
     scoreValue = 25;
-    enemy.setOrigin(125, 100);
+    enemy.setOrigin(50, 100);
 }
 
 void Troll::Animate(Player *player) {
     if (animationTimer.getElapsedTime().asSeconds() > 0.09f) {
         if (state == animationState::MELEE)
         {
-            if (AttackRect.left >= 1950 && state==animationState::MELEE) {
-                enemy.setOrigin(125, 150);
+			enemy.setOrigin(50, 150);
+            if (AttackRect.left >= 1950) {
                 AttackRect.left = 0;
-                melee(player);
+                groundSmash(player);
                 state = animationState::IDLE;
                 attackTimer.restart();
             }
             else {
-
                 enemy.setTexture(attackTexture);
                 enemy.setTextureRect(AttackRect);
-                AttackRect.left += 250;
+                AttackRect.left += 251;
             }
         }
         else if (state == animationState::WALKING) {
-            if (WalkRect.left >= 2500) {
+			enemy.setOrigin(50, 100);
+            if (WalkRect.left >= 2430) {
                 WalkRect.left = 0;
             }
             else {
-                enemy.setOrigin(125, 100);
                 enemy.setTexture(walkTexture);
                 enemy.setTextureRect(WalkRect);
-                WalkRect.left += 250;
+                WalkRect.left += 251;
             }
             AttackRect.left = 0;
         }
         else if (state == animationState::DEAD) {
-            enemy.setOrigin(125, 280);
-            if (DeathRect.left >= 1200) {
-                static sf::Clock deathTimer;
+			enemy.setOrigin(50, 200);
+            if (DeathRect.left >= 1427) {
                 if (deathTimer.getElapsedTime().asSeconds() > 2.f) {
                     bIsDead = true;
                     player->setScore(player->getScore() + scoreValue);
@@ -477,10 +518,15 @@ void Troll::Animate(Player *player) {
             else {
                 enemy.setTextureRect(DeathRect);
                 enemy.setTexture(deathTexture);
-                DeathRect.left += 250;
+                DeathRect.left += 251;
             }
 
         }
+		else {
+			AttackRect.left = 0;
+			enemy.setTextureRect(AttackRect);
+			enemy.setTexture(attackTexture);
+		}
         if (enemy.getColor() != sf::Color::White) {
             enemy.setColor(sf::Color::White);
         }
@@ -490,8 +536,9 @@ void Troll::Animate(Player *player) {
 }
 
 //Damages and poisons player
-void Troll::melee(Player *player) {
+void Troll::groundSmash(Player *player) {
     player->setCurrentHp(player->getCurrentHp() - getAttack());
+	player->disables.insert(player->disables.begin(), std::pair<std::string,float> ("Stun", 1.f));
 }
 
 //Updates spider's position
@@ -530,12 +577,12 @@ void Troll::Draw(sf::RenderWindow &window) {
 
 //Skeleton Class walk 119x70 (55, 40), ranged 119x90 (55, 70)  melee 119x70 (55, 40)   die 119x90 (55,55)
 Demon::Demon(std::string name, float hp, float attack, float walkspeed, float attackspeed):Enemy(name,hp,attack,walkspeed,attackspeed) {
-    WalkRect = sf::IntRect(0,0,119,70);
-    AttackRect = sf::IntRect(0, 0, 119, 70);
+    WalkRect = sf::IntRect(0,0,55,60);
+    AttackRect = sf::IntRect(0, 0, 60, 52);
     DeathRect = sf::IntRect(0, 0, 119, 90);
     RangedRect = sf::IntRect(0, 0, 118, 90);
 
-    enemy.setOrigin(55,40);
+    enemy.setOrigin(20,20);
 
     scoreValue = 50;
 
@@ -561,7 +608,6 @@ void Demon::fireball(Player *player) {
     Flameball flameball = this->flameball;
     flameball.deleteTimer.restart();
     flameball.flameball.setPosition(enemy.getPosition());
-    flameball.flameball.setOrigin(20,20);
     flameball.direction = player->getPlayer().getPosition() - enemy.getPosition();
 
     flameball.direction = getUDirection(flameball.direction);
@@ -575,12 +621,11 @@ void Demon::Animate(Player *player) {
     if (animationTimer.getElapsedTime().asSeconds() > 0.09f) {
         if (state == animationState::RANGED) {
             if (RangedRect.left >= 960) {
-                enemy.setOrigin(55, 70);
-                enemy.setTexture(rangedTexture);
-                enemy.setTextureRect(RangedRect);
                 fireball(player);
-                state = animationState::WALKING;
-                attackTimer.restart();
+				if (attackTimer.getElapsedTime().asSeconds() > 8.f) {
+					state = animationState::WALKING;
+					attackTimer.restart();
+				}
             } else {
                 enemy.setTexture(rangedTexture);
                 enemy.setTextureRect(RangedRect);
@@ -604,7 +649,6 @@ void Demon::Animate(Player *player) {
         if (state == animationState::MELEE)
         {
             if (AttackRect.left >= 840) {
-                enemy.setOrigin(55, 40);
                 enemy.setTexture(attackTexture);
                 enemy.setTextureRect(AttackRect);
                 swipe(player);
@@ -620,7 +664,6 @@ void Demon::Animate(Player *player) {
             if (WalkRect.left >= 1320) {
                 WalkRect.left = 0;
             } else {
-                enemy.setOrigin(55, 40);
                 enemy.setTexture(walkTexture);
                 enemy.setTextureRect(WalkRect);
                 WalkRect.left += 120;
@@ -631,8 +674,7 @@ void Demon::Animate(Player *player) {
         } else if (state == animationState::DEAD) {
             enemy.setOrigin(55, 55);
             if (DeathRect.left >= 1080) {
-                static sf::Clock deathTimer;
-                if (deathTimer.getElapsedTime().asSeconds() > 2.f) {
+                if (deathTimer.getElapsedTime().asSeconds() > .5f) {
                     bIsDead = true;
                     player->setScore(player->getScore() + scoreValue);
                 }
@@ -646,6 +688,13 @@ void Demon::Animate(Player *player) {
         if (enemy.getColor() != sf::Color::White) {
             enemy.setColor(sf::Color::White);
         }
+		for (unsigned i = 0; i < flameballs.size(); i++) {
+			flameballs[i].flameballRect.left += 32;
+			if (flameballs[i].flameballRect.left >= 118) {
+				flameballs[i].flameballRect.left = 0;
+			}
+			flameballs[i].flameball.setTextureRect(flameballs[i].flameballRect);
+		}
         animationTimer.restart();
     }
 }
@@ -657,7 +706,6 @@ void Demon::Update(Player *player, float dt) {
         for (unsigned i = 0; i < flameballs.size(); i++) {
             flameballs[i].flameball.move(flameballs[i].velocity * flameballs[i].direction.x * dt,
                                          flameballs[i].velocity * flameballs[i].direction.y * dt);
-            flameballs[i].flameball.rotate(180 * dt);
             if (flameballs[i].flameball.getGlobalBounds().intersects(player->getPlayer().getGlobalBounds())) {
                 std::cout << player->getName() << " took " << getAttack() << " damage!" << std::endl;
                 player->setCurrentHp(player->getCurrentHp() - getAttack());
@@ -688,8 +736,6 @@ void Demon::Update(Player *player, float dt) {
         float b = enemy.getPosition().y - playerPosition.y;
         float angle = -atan2(a, b) * 180 / 3.14f;
         enemy.setRotation(angle);
-
-
     }
     Animate(player);
 }
@@ -708,7 +754,8 @@ void Demon::Draw(sf::RenderWindow &window) {
 
 void Demon::spawnMinions(LinkedMap::room *linkedMap)
 {
-
-    Enemy::Spawn(new Skeleton(), linkedMap);
+	Skeleton *s = new Skeleton("Baby Skeleton",25.f,3.f,175.f,1.f,"Minion");
+	s->getEnemy()->setScale(.5f, .5f);
+    Enemy::Spawn(s, linkedMap);
 }
 
