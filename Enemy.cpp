@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include "Enemy.h"
 #include "Player.h"
 #include "Collision.h"
@@ -213,7 +214,7 @@ void Skeleton::Animate(Player *player) {
 		else if (state == animationState::DEAD) {
 			enemy.setOrigin(50, 20);
 			if (DeathRect.left >= 1200) {
-				if (deathTimer.getElapsedTime().asSeconds() > 3.f) {
+				if (deathTimer.getElapsedTime().asSeconds() > 2.f) {
 					bIsDead = true;
 					player->setScore(scoreValue);
 				}
@@ -278,7 +279,7 @@ void Skeleton::Draw(sf::RenderWindow &window) {
 	window.draw(enemy);
 	for (unsigned i = 0; i < bones.size() && state != animationState::DEAD;i++) {
 		window.draw(bones[i].bone);
-		if (bones[i].deleteTimer.getElapsedTime().asSeconds() > 3) {
+		if (bones[i].deleteTimer.getElapsedTime().asSeconds() > 3.f) {
 			std::cout << "Deleting Bone" << std::endl;
 			bones.erase(bones.begin() + i);
 		}
@@ -338,7 +339,7 @@ void Spider::Animate(Player * player) {
 		else if (state == animationState::DEAD) {
 			if (DeathRect.left >= 450) {
 				static sf::Clock deathTimer;
-				if (deathTimer.getElapsedTime().asSeconds() > 3.f) {
+				if (deathTimer.getElapsedTime().asSeconds() > 2.f) {
 					bIsDead = true;
 					player->setScore(scoreValue);
 				}
@@ -468,7 +469,7 @@ void Troll::Animate(Player *player) {
             enemy.setOrigin(125, 280);
             if (DeathRect.left >= 1200) {
                 static sf::Clock deathTimer;
-                if (deathTimer.getElapsedTime().asSeconds() > 3.f) {
+                if (deathTimer.getElapsedTime().asSeconds() > 2.f) {
                     bIsDead = true;
                     player->setScore(player->getScore() + scoreValue);
                 }
@@ -491,7 +492,6 @@ void Troll::Animate(Player *player) {
 //Damages and poisons player
 void Troll::melee(Player *player) {
     player->setCurrentHp(player->getCurrentHp() - getAttack());
-
 }
 
 //Updates spider's position
@@ -551,8 +551,7 @@ Demon::Demon(std::string name, float hp, float attack, float walkspeed, float at
 }
 
 //Whacks player with a Bone
-void Demon::swipe(Player *player)
-{
+void Demon::swipe(Player *player){
     player->setCurrentHp(player->getCurrentHp() - getAttack());
 }
 
@@ -633,7 +632,7 @@ void Demon::Animate(Player *player) {
             enemy.setOrigin(55, 55);
             if (DeathRect.left >= 1080) {
                 static sf::Clock deathTimer;
-                if (deathTimer.getElapsedTime().asSeconds() > 3.f) {
+                if (deathTimer.getElapsedTime().asSeconds() > 2.f) {
                     bIsDead = true;
                     player->setScore(player->getScore() + scoreValue);
                 }

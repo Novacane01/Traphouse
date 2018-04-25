@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include "LinkedMap.h"
 
 
@@ -151,7 +152,7 @@ void LinkedMap::doesCollide(Player *player) { //if it collides, move it somewher
 				if (current->neighbor1->hallway->wallRight.getGlobalBounds().intersects(player->getPlayer().getGlobalBounds())) {
 					player->canMoveRight = false;
 				}
-				if (player->getPlayer().getPosition().x > current->neighbor1->hallway->floor.getPosition().x - current->neighbor1->hallway->floor.getSize().y / 2 && player->getPlayer().getPosition().x < current->neighbor1->hallway->floor.getPosition().x + current->neighbor1->hallway->floor.getSize().x / 2)
+				if (player->getPlayer().getPosition().x > current->neighbor1->hallway->floor.getPosition().x - current->neighbor1->hallway->floor.getSize().x / 2 && player->getPlayer().getPosition().x < current->neighbor1->hallway->floor.getPosition().x + current->neighbor1->hallway->floor.getSize().x / 2)
 					player->canMoveDown = true;
 			}
 		}
