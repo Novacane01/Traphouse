@@ -58,18 +58,26 @@ private:
 	float attackSpeed = 0.f;
 	sf::Vector2f spawnlocation;
 
+	int colour;
+
 protected:
 	sf::Sprite enemy;
 	//Animation
 	sf::Clock attackTimer;
 	sf::Clock animationTimer;
 	sf::Clock deathTimer;
+
 	sf::IntRect AttackRect;
 	sf::IntRect WalkRect;
 	sf::IntRect DeathRect;
+	sf::IntRect RangedRect;
+
 	sf::Texture attackTexture;
 	sf::Texture	walkTexture;
 	sf::Texture	deathTexture;
+	sf::Texture rangedTexture;
+	LinkedMap::room* room;
+
 	bool bIsDead;
 };
 
@@ -113,13 +121,35 @@ private:
 
 class Troll :public Enemy {
 public:
-	Troll(std::string name = "Troll", float hp = 500.f, float attack = 30, float walkspeed = 25.f, float attackspeed = 3.f);
-	void groundSmash(Player *);
-	void melee(Player *);
-	void Update(Player *, float);
-	void Animate(Player *);
-	void Draw(sf::RenderWindow &);
+    Troll(std::string name = "Troll", float hp = 500.f, float attack = 30, float walkspeed = 75.f, float attackspeed = 3.f);
+    void groundSmash(Player *);
+    void melee(Player *);
+    void Update(Player *, float);
+    void Animate(Player *);
+    void Draw(sf::RenderWindow &);
 private:
 
 };
 
+class Demon:public Enemy {
+public:
+    Demon(std::string name = "Demon", float hp = 1000.f, float attack = 25.f, float walkspeed = 200.f, float attackspeed = 2.f);
+    void swipe(Player *);
+    void fireball(Player *);
+    void Update(Player *, float);
+    void Draw(sf::RenderWindow &);
+    void Animate(Player *);
+    void spawnMinions(LinkedMap::room *linkedMap);
+
+private:
+    int spawnClock;
+    int numSpawned;
+    struct Flameball {
+        sf::Sprite flameball;
+        sf::Texture texture;
+        sf::Vector2f direction;
+        float velocity = 350.f;
+        sf::Clock deleteTimer;
+    }flameball;
+    std::vector<Flameball> flameballs;
+};

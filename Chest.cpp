@@ -1,6 +1,10 @@
 #include "Chest.h"
 
 Chest::Chest() {
+	if (!font.loadFromFile("Fonts/light_pixel-7.ttf")) {
+		std::cout << "Could not load file" << std::endl;
+	}
+
 	std::mt19937 gen(rd()); //Standard mersenne_twister_engine seeded with rd()
 	std::uniform_real_distribution<> dis(0.f,1.f);
 	float n = dis(gen);
@@ -15,23 +19,38 @@ Chest::Chest() {
 		fillChestPotions();
 	}
 	std::cout << "Chest size: " <<weaponContents.size()+potionContents.size()<< std::endl;
+	weaponAcquired.setFont(font);
+	weaponAcquired.setCharacterSize(16);
+	potionAcquired.setFont(font);
+	potionAcquired.setCharacterSize(16);
+
 }
 
 void Chest::Open(Player *player) {
 	if(!opened) {
 		opened = true;
 		if (weaponContents.size() == 1) {
+
+			weaponAcquired.setString(weaponContents[0]->getName() + " Acquired");
+			weaponAcquired.setPosition(player->getPlayer().getPosition().x - weaponAcquired.getGlobalBounds().width/2, player->getPlayer().getPosition().y - 80);
+			std::cout << weaponContents[0]->getName() << " added" << std::endl;
+
 			if(player->getWeapons().size()>1){
 				player->getWeapons()[1] = *weaponContents[0];
 			}
 			else {
 				player->getWeapons().push_back(*weaponContents[0]);
 			}
-			std::cout << weaponContents[0]->getName() << " added" << std::endl;
+
+
 		}
 		if (potionContents.size() == 1) {
+			potionAcquired.setString(potionContents[0]->getName() + " Acquired");
+			potionAcquired.setPosition(player->getPlayer().getPosition().x - potionAcquired.getGlobalBounds().width/2, player->getPlayer().getPosition().y - 60);
+
 			player->getPotions().push_back(potionContents[0]);
 			std::cout << potionContents[0]->getName() << " added" << std::endl;
+
 		}
 		if (closedTexture.loadFromFile("Sprites/Map/openchest.png")) {
 			chest.setTexture(closedTexture);
@@ -97,3 +116,22 @@ bool Chest::getIsOpen(){
     return opened;
 }
 
+sf::Text Chest::getWeaponAcquired() {
+    return weaponAcquired;
+}
+
+sf::Text Chest::getPotionAcquired() {
+    return potionAcquired;
+}
+
+void Chest::setUI(Player* player, sf::RenderWindow& window){
+
+	if(weaponContents.size() == 1){
+        weaponAcquired.setPosition(player->getPlayer().getPosition().x - weaponAcquired.getGlobalBounds().width/2, player->getPlayer().getPosition().y - 60);
+        window.draw(weaponAcquired);
+    }
+    if(potionContents.size() == 1){
+        potionAcquired.setPosition(player->getPlayer().getPosition().x -potionAcquired.getGlobalBounds().width/2, player->getPlayer().getPosition().y - 30);
+        window.draw(potionAcquired);
+    }
+}

@@ -105,15 +105,18 @@ void Weapon::Reload(Player *player) {
 		std::cout << "Clip Full" << std::endl;
 	}
 	else if(player->getCurrentWeapon().getCurrentMax()-player->getCurrentWeapon().getMaxClip()>=0) {
-
-		player->getCurrentWeapon().setCurrentMax(player->getCurrentWeapon().getCurrentMax() - amountToReload);
+		if(player->getCurrentWeapon().getType() != "Pistol") {
+			player->getCurrentWeapon().setCurrentMax(player->getCurrentWeapon().getCurrentMax() - amountToReload);
+		}
 		player->getCurrentWeapon().setCurrentClip(player->getCurrentWeapon().getMaxClip());
 		std::cout << "Reloading" << std::endl;
 	}
 	else if((player->getCurrentWeapon().getCurrentMax() - player->getCurrentWeapon().getMaxClip()<0)){
 		if (player->getCurrentWeapon().getCurrentMax() - amountToReload > 0) {
 			player->getCurrentWeapon().setCurrentClip(player->getCurrentWeapon().getMaxClip());
-			player->getCurrentWeapon().setCurrentMax(player->getCurrentWeapon().getCurrentMax() - amountToReload);
+			if(player->getCurrentWeapon().getType() != "Pistol") {
+				player->getCurrentWeapon().setCurrentMax(player->getCurrentWeapon().getCurrentMax() - amountToReload);
+			}
 		}
 		else {
 			player->getCurrentWeapon().setCurrentClip(player->getCurrentWeapon().getCurrentClip()+player->getCurrentWeapon().getCurrentMax());

@@ -49,6 +49,19 @@ void Player::setUI() { // UI for name, score, health and stamina
 	hpNum.setCharacterSize(15);
 	hpNum.setFont(font);
 
+	sf::RectangleShape tempSlot;
+	tempSlot.setSize(sf::Vector2f(35,42));
+	sf::Color color(169,169,169);
+	tempSlot.setFillColor(color);
+	tempSlot.setOrigin(tempSlot.getSize().x/2,tempSlot.getSize().y/2);
+
+	potionSlots.push_back(tempSlot);
+	potionSlots.push_back(tempSlot);
+	potionSlots.push_back(tempSlot);
+	potionSlots.push_back(tempSlot);
+	potionSlots.push_back(tempSlot);
+
+
 
 }
 
@@ -188,6 +201,9 @@ void Player::displayPlayerInfo(sf::RenderWindow &window) { //displaying all info
 
     getCurrentWeapon().weaponImage.setPosition(window.getView().getCenter().x + 410, window.getView().getCenter().y + 380);
 
+    potionSlots[0].setPosition(window.getView().getCenter().x - window.getView().getSize().x/2 + 40,window.getView().getCenter().y + window.getView().getSize().y/2 - 40);
+
+    window.draw(potionSlots[0]);
     window.draw(getCurrentWeapon().weaponImage);
     window.draw(playerScore);
     window.draw(playerName);

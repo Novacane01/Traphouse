@@ -13,7 +13,9 @@ public:
     sf::Sprite getChestSprite();
     void setData(float,float);
     bool getIsOpen();
-
+    sf::Text getPotionAcquired();
+    sf::Text getWeaponAcquired();
+    void setUI(Player*,sf::RenderWindow&);
 	~Chest();
 
 
@@ -23,7 +25,9 @@ private:
 	sf::Sprite chest;
 	sf::Texture closedTexture;
 	sf::Texture openTexture;
-
+	sf::Text weaponAcquired;
+	sf::Text potionAcquired;
+	sf::Font font;
 	bool opened = false;
 
 	std::random_device rd;  //Will be used to obtain a seed for the random number engine

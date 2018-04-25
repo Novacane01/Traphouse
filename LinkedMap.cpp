@@ -1096,3 +1096,19 @@ Chest* LinkedMap::getChest1(){
 Chest* LinkedMap::getChest2(){
 	return chest2;
 }
+
+void LinkedMap::displayChestUI(Player* player, sf::RenderWindow& window){
+
+    if(chest1 != nullptr){
+        if(current == chestRoom && chest1->getIsOpen()){
+            chest1->setUI(player,window);
+        }
+
+    }
+    if(chest2 != nullptr){
+       if(current == chestRoom2 && chest2->getIsOpen()){
+           chest2->setUI(player, window);
+       }
+    }
+
+}

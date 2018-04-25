@@ -95,7 +95,7 @@ private:
 	bool bIsDead;
 	float staminaUsage = .5f;
     int score = 0;
-public:
+
 	//UI
 	sf::RectangleShape healthBar;
 	sf::RectangleShape staminaBar;
@@ -103,4 +103,6 @@ public:
 	sf::Text hpNum;
 	sf::Font font;
 	sf::Text playerScore;
+	std::vector<sf::RectangleShape> potionSlots;
+
 };

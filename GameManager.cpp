@@ -75,6 +75,9 @@ void GameManager::Start() {
 
     lmap->findCurrentRoom(lmap->head, player);
 
+    //sets text in top left for current level
+    levelText.setString("Level " + std::to_string(level));
+
     //Main loop
     while (window.isOpen()) {
 
@@ -218,8 +221,7 @@ void GameManager::Start() {
 			}
             player->displayPlayerInfo(window); //Draws player info: health, stamina, name
 
-			//sets text in top left for current level
-			levelText.setString("Level " + std::to_string(level));
+
 			levelText.setPosition(window.getView().getCenter().x + window.getView().getSize().x/2 - 180, window.getView().getCenter().y - window.getView().getSize().y/2 + 100);
 			window.draw(levelText);
 
@@ -231,7 +233,7 @@ void GameManager::Start() {
                     Enemy::Destroy(Enemy::getEnemies().begin() + i);
                 }
             }
-
+            lmap->displayChestUI(player,window);
             player->Update(window, deltaTime); //Updates player position
             player->Draw(window); //Draws player to screen
             for (unsigned i = 0; i < player->getWeapons().size(); i++) {
@@ -623,14 +625,25 @@ void GameManager::DisplayMap(Player* player, LinkedMap* linkedMap){
 void GameManager::spawnEnemies(LinkedMap* linkedMap) {
 
     //Spawning monsters
-    int numOfEnemies = rand() % 5 + level;
+    int numOfEnemies = rand() % 3 + level;
 
     for (int i = 0; i < numOfEnemies; i++) {
-        Enemy::Spawn(new Skeleton("Skeleton", 100 + ((level-1) * 20), 10 + ((level-1)*2)), linkedMap->getCurrentRoom());
+        Enemy::Spawn(new Skeleton("Skeleton", 100 + ((level - 1) * 20), 10 + ((level - 1) * 2)),
+                     linkedMap->getCurrentRoom());
     }
 
-    numOfEnemies = rand() % 5 + level;
+    numOfEnemies = rand() % 4 + level;
     for (int i = 0; i < numOfEnemies; i++) {
-        Enemy::Spawn(new Spider("Spider", 30 + ((level-1)*10), 2 + (level-1)), linkedMap->getCurrentRoom());
+        Enemy::Spawn(new Spider("Spider", 30 + ((level - 1) * 10), 2 + (level - 1)), linkedMap->getCurrentRoom());
+    }
+
+    numOfEnemies = rand() % 1 + level;
+    for (int i = 0; i < numOfEnemies; i++) {
+        Enemy::Spawn(new Troll("Troll", 400 + ((level - 1) * 20), 10 + ((level - 1) * 2)), linkedMap->getCurrentRoom());
+    }
+
+    numOfEnemies = rand() % 1;
+    for (int i = 0; i < numOfEnemies; i++) {
+        Enemy::Spawn(new Demon("Demon", 30 + ((level - 1) * 10), 2 + (level - 1)), linkedMap->getCurrentRoom());
     }
 }
