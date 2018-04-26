@@ -50,6 +50,7 @@ public:
 	 void Draw(sf::RenderWindow &);
 	 bool bIsSprinting = false;
 	 bool bCanSprint = false;
+	 bool bCanRegenStamina = false;
 	 //Disables
 	 bool slowed = false, stunned = false, poisoned = false;
 	 sf::Clock poisonTimer;

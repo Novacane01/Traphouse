@@ -38,7 +38,7 @@ bool GameManager::Start() {
 	if (player != nullptr) {
 		int numOfRooms = rand() % 5 + 8;
 		//Creates randomized map
-		LinkedMap* lmap = new LinkedMap(numOfRooms, level);
+		LinkedMap *lmap = new LinkedMap(numOfRooms, level);
 		lmap->addRooms(numOfRooms, lmap->getHead(), window);
 		lmap->findStairRoom(lmap->getHead()); //sets an end room to level up room
 		lmap->placeStairs();
@@ -90,10 +90,10 @@ bool GameManager::Start() {
 				if (event.type == event.Closed) {
 					window.close();
 				}
-				if (event.mouseButton.button == sf::Mouse::Left&&event.type == sf::Event::MouseButtonPressed) {
+				if (event.mouseButton.button == sf::Mouse::Left && event.type == sf::Event::MouseButtonPressed) {
 					player->bCanShoot = true;
 				}
-				if (event.mouseButton.button == sf::Mouse::Left&&event.type == sf::Event::MouseButtonReleased) {
+				if (event.mouseButton.button == sf::Mouse::Left && event.type == sf::Event::MouseButtonReleased) {
 					player->bCanShoot = false;
 				}
 				if (event.type == sf::Event::KeyPressed) {
@@ -144,177 +144,180 @@ bool GameManager::Start() {
 					}
 					if (event.key.code == sf::Keyboard::F) {
 						if (lmap->displayStairs(window, player)) {
-                            music.stop();
+							music.stop();
 
-                            levelUp(lmap);
-                            return false;
-                        }
-                        if(lmap->displayChest1(window, player)){
-                            lmap->getChest1()->Open(player);
-                            displayChestTime.restart();
-                        }
-                        if(lmap->displayChest2(window,player)){
-                            lmap->getChest2()->Open(player);
-                            displayChestTime.restart();
-                        }
+							levelUp(lmap);
+							return false;
+						}
+						if (lmap->displayChest1(window, player)) {
+							lmap->getChest1()->Open(player);
+							displayChestTime.restart();
+						}
+						if (lmap->displayChest2(window, player)) {
+							lmap->getChest2()->Open(player);
+							displayChestTime.restart();
+						}
 
-                    if (event.key.code == sf::Keyboard::X) {
-                        if (player->getPotions().size() > 0) {
-                            player->getCurrentPotion()->Use(player);
-                            std::cout << player->getCurrentPotion()->getName() << " used" << std::endl;
-                            for(int i = 0; i < player->getPotions().size(); i++){
-                                if(player->getCurrentPotion() == player->getPotions()[i]){
-                                    player->getPotions().erase(player->getPotions().begin() + i);
-                                    if(i == 0){
-                                    	player->setCurrentPotion(player->getPotions()[0]);
-                                    } else{
-                                    	player->setCurrentPotion(player->getPotions()[i-1]);
-                                    }
-                                }
-                            }
-                        } else{
-                        	player->setCurrentPotion(nullptr);
-                        }
-                    }
-					if (event.key.code == sf::Keyboard::Q) {
-						if(player->getPotions().size() > 1){
-							for(int i = 0; i < player->getPotions().size(); i++){
-								if(player->getCurrentPotion() == player->getPotions()[i]){
-									if(i > 0){
-										player->setCurrentPotion(player->getPotions()[i-1]);
+						if (event.key.code == sf::Keyboard::X) {
+							if (player->getPotions().size() > 0) {
+								player->getCurrentPotion()->Use(player);
+								std::cout << player->getCurrentPotion()->getName() << " used" << std::endl;
+								for (int i = 0; i < player->getPotions().size(); i++) {
+									if (player->getCurrentPotion() == player->getPotions()[i]) {
+										player->getPotions().erase(player->getPotions().begin() + i);
+										if (i == 0) {
+											player->setCurrentPotion(player->getPotions()[0]);
+										} else {
+											player->setCurrentPotion(player->getPotions()[i - 1]);
+										}
+									}
+								}
+							} else {
+								player->setCurrentPotion(nullptr);
+							}
+						}
+						if (event.key.code == sf::Keyboard::Q) {
+							if (player->getPotions().size() > 1) {
+								for (int i = 0; i < player->getPotions().size(); i++) {
+									if (player->getCurrentPotion() == player->getPotions()[i]) {
+										if (i > 0) {
+											player->setCurrentPotion(player->getPotions()[i - 1]);
+										}
 									}
 								}
 							}
 						}
-                    }
-					if (event.key.code == sf::Keyboard::E) {
-						if(player->getPotions().size() > 1){
-							for(int i = 0; i < player->getPotions().size()- 1; i++){
-								if(player->getCurrentPotion() == player->getPotions()[i]){
-									if(player->getPotions()[i + 1] != nullptr){
-										player->setCurrentPotion(player->getPotions()[i+1]);
-										break;
+						if (event.key.code == sf::Keyboard::E) {
+							if (player->getPotions().size() > 1) {
+								for (int i = 0; i < player->getPotions().size() - 1; i++) {
+									if (player->getCurrentPotion() == player->getPotions()[i]) {
+										if (player->getPotions()[i + 1] != nullptr) {
+											player->setCurrentPotion(player->getPotions()[i + 1]);
+											break;
+										}
 									}
 								}
 							}
 						}
-					}
 
-                } else if (event.type == sf::Event::KeyReleased) {
-                    if (event.key.code == sf::Keyboard::W) {
-                        player->isMovingUp = false;
-                    }
-                    if (event.key.code == sf::Keyboard::A) {
-                        player->isMovingLeft = false;
-                    }
-                    if (event.key.code == sf::Keyboard::S) {
-                        player->isMovingDown = false;
-                    }
-                    if (event.key.code == sf::Keyboard::D) {
-                        player->isMovingRight = false;
-                    }
-                    if (event.key.code == sf::Keyboard::LShift) {
-                        player->bIsSprinting = false;
-                    }
-                } else if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Right)) {
-                    player->switchWeapons();
-                }
-            }
-            //If not in current room (Between rooms/In hallways)
-            if (!lmap->getCurrentRoom()->playerIsInside) {
-
-                lmap->findCurrentRoom(lmap->head, player);
-                roomView.setCenter(player->getPlayer().getPosition());
-                window.setView(roomView);
-                centered = false;
-
-				//if room is not cleared and map is not already centered, centers map and spawns enemies, only called once per room
-			}
-			else if (!centered && !lmap->getCurrentRoom()->isCleared && lmap->getCurrentRoom() != lmap->getChestRoom1() && lmap->getCurrentRoom() != lmap->getChestRoom2() && lmap->getCurrentRoom() != lmap->getHead() && lmap->getCurrentRoom() != lmap->getLevelUpRoom()) {
-				centered = true;
-				inFunction = true;
-				changeView(lmap, deltaTime);
-				spawnEnemies(lmap);
-				while (window.pollEvent(event)) {
-
-				}
-
-				//if room is cleared and player is inside, locks window view to players position until unvisited room is found
-			}
-			else if (lmap->getCurrentRoom()->isCleared) {
-				lmap->findCurrentRoom(lmap->head, player);
-				roomView.setCenter(player->getPlayer().getPosition());
-				window.setView(roomView);
-				centered = false;
-			}
-			else if (Enemy::getEnemies().size() == 0) { //If all enemies have been killed, room is cleared;
-				lmap->getCurrentRoom()->isCleared = true;
-			}
-
-			lmap->doesCollide(player);
-			window.clear(); //Clears window
-
-			lmap->displayCurrentRoom(lmap->getHead(), window, lmap->getCurrentRoom()->isCleared); //Draws Map
-
-			if (lmap->getCurrentRoom() == lmap->getLevelUpRoom()) {
-				lmap->displayStairs(window, player);
-			}
-			if (lmap->getCurrentRoom() == lmap->getChestRoom1()) {
-				lmap->displayChest1(window, player);
-			}
-			if (lmap->getCurrentRoom() == lmap->getChestRoom2()) {
-				lmap->displayChest2(window, player);
-			}
-			player->displayPlayerInfo(window); //Draws player info: health, stamina, name
-
-
-			levelText.setPosition(window.getView().getCenter().x + window.getView().getSize().x / 2 - 180, window.getView().getCenter().y - window.getView().getSize().y / 2 + 100);
-			window.draw(levelText);
-
-			lmap->displayChestUI(player, window);
-			if (!inFunction) {
-				//Draws Enemmies to screen
-				for (unsigned i = 0; i < Enemy::getEnemies().size(); i++) {
-					Enemy::getEnemies()[i]->Update(player, deltaTime);
-					Enemy::getEnemies()[i]->Draw(window);
-					if (Enemy::getEnemies()[i]->isDead()) {
-						Enemy::Destroy(Enemy::getEnemies().begin() + i);
+					} else if (event.type == sf::Event::KeyReleased) {
+						if (event.key.code == sf::Keyboard::W) {
+							player->isMovingUp = false;
+						}
+						if (event.key.code == sf::Keyboard::A) {
+							player->isMovingLeft = false;
+						}
+						if (event.key.code == sf::Keyboard::S) {
+							player->isMovingDown = false;
+						}
+						if (event.key.code == sf::Keyboard::D) {
+							player->isMovingRight = false;
+						}
+						if (event.key.code == sf::Keyboard::LShift) {
+							player->bIsSprinting = false;
+						}
+					} else if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Right)) {
+						player->switchWeapons();
 					}
 				}
-				player->Update(window, deltaTime); //Updates player position
-			}
+				//If not in current room (Between rooms/In hallways)
+				if (!lmap->getCurrentRoom()->playerIsInside) {
 
-			if(displayChestTime.getElapsedTime().asSeconds() < 5.f){
-			    lmap->displayChestUI(player,window);
-			}
+					lmap->findCurrentRoom(lmap->head, player);
+					roomView.setCenter(player->getPlayer().getPosition());
+					window.setView(roomView);
+					centered = false;
 
-			player->Draw(window); //Draws player to screen
-			for (unsigned i = 0; i < player->getWeapons().size(); i++) {
-				player->getWeapons()[i].Update(window, player, deltaTime); //Updates weapons and bullets
-			}
-			player->getCurrentWeapon().displayWeaponInfo(window); //draws gun name, bullets and ammo
+					//if room is not cleared and map is not already centered, centers map and spawns enemies, only called once per room
+				} else if (!centered && !lmap->getCurrentRoom()->isCleared &&
+						   lmap->getCurrentRoom() != lmap->getChestRoom1() &&
+						   lmap->getCurrentRoom() != lmap->getChestRoom2() &&
+						   lmap->getCurrentRoom() != lmap->getHead() &&
+						   lmap->getCurrentRoom() != lmap->getLevelUpRoom()) {
+					centered = true;
+					inFunction = true;
+					changeView(lmap, deltaTime);
+					spawnEnemies(lmap);
+					while (window.pollEvent(event)) {
 
-			window.display(); //Displays all drawn objects
+					}
 
-			if (player->isDead()) {
-				music.stop();
-				return GameOver(deltaTime);
-			}
-			if (inFunction) {
-				inFunction = false;
-				while (window.pollEvent(event)) {
-
+					//if room is cleared and player is inside, locks window view to players position until unvisited room is found
+				} else if (lmap->getCurrentRoom()->isCleared) {
+					lmap->findCurrentRoom(lmap->head, player);
+					roomView.setCenter(player->getPlayer().getPosition());
+					window.setView(roomView);
+					centered = false;
+				} else if (Enemy::getEnemies().size() == 0) { //If all enemies have been killed, room is cleared;
+					lmap->getCurrentRoom()->isCleared = true;
 				}
-				player->isMovingUp = false;
-				player->isMovingDown = false;
-				player->isMovingLeft = false;
-				player->isMovingRight = false;
-				player->bCanRegenStamina = false;
-				player->bIsSprinting = false;
+
+				lmap->doesCollide(player);
+				window.clear(); //Clears window
+
+				lmap->displayCurrentRoom(lmap->getHead(), window, lmap->getCurrentRoom()->isCleared); //Draws Map
+
+				if (lmap->getCurrentRoom() == lmap->getLevelUpRoom()) {
+					lmap->displayStairs(window, player);
+				}
+				if (lmap->getCurrentRoom() == lmap->getChestRoom1()) {
+					lmap->displayChest1(window, player);
+				}
+				if (lmap->getCurrentRoom() == lmap->getChestRoom2()) {
+					lmap->displayChest2(window, player);
+				}
+				player->displayPlayerInfo(window); //Draws player info: health, stamina, name
+
+
+				levelText.setPosition(window.getView().getCenter().x + window.getView().getSize().x / 2 - 180,
+									  window.getView().getCenter().y - window.getView().getSize().y / 2 + 100);
+				window.draw(levelText);
+
+				lmap->displayChestUI(player, window);
+				if (!inFunction) {
+					//Draws Enemmies to screen
+					for (unsigned i = 0; i < Enemy::getEnemies().size(); i++) {
+						Enemy::getEnemies()[i]->Update(player, deltaTime);
+						Enemy::getEnemies()[i]->Draw(window);
+						if (Enemy::getEnemies()[i]->isDead()) {
+							Enemy::Destroy(Enemy::getEnemies().begin() + i);
+						}
+					}
+					player->Update(window, deltaTime); //Updates player position
+				}
+
+				if (displayChestTime.getElapsedTime().asSeconds() < 5.f) {
+					lmap->displayChestUI(player, window);
+				}
+
+				player->Draw(window); //Draws player to screen
+				for (unsigned i = 0; i < player->getWeapons().size(); i++) {
+					player->getWeapons()[i].Update(window, player, deltaTime); //Updates weapons and bullets
+				}
+				player->getCurrentWeapon().displayWeaponInfo(window); //draws gun name, bullets and ammo
+
+				window.display(); //Displays all drawn objects
+
+				if (player->isDead()) {
+					music.stop();
+					return GameOver(deltaTime);
+				}
+				if (inFunction) {
+					inFunction = false;
+					while (window.pollEvent(event)) {
+
+					}
+					player->isMovingUp = false;
+					player->isMovingDown = false;
+					player->isMovingLeft = false;
+					player->isMovingRight = false;
+					player->bCanRegenStamina = false;
+					player->bIsSprinting = false;
+				}
 			}
 		}
+		return false;
 	}
-	return false;
 }
 
 void GameManager::changeView(LinkedMap *lmap, float dt) {

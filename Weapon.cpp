@@ -1,4 +1,3 @@
-#include "stdafx.h"
 #include "GameManager.h"
 #include "Player.h"
 #include "Weapon.h"

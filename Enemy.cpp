@@ -1,4 +1,3 @@
-#include "stdafx.h"
 #include "Enemy.h"
 #include "Player.h"
 #include "Collision.h"
@@ -18,10 +17,10 @@ Enemy::Enemy(std::string name, int hp, float attack, float walkspeed, float atta
 
 void Enemy::setPosition(LinkedMap::room* room){
 
-    int roomX = (int)(room->floor.getPosition().x - ( 0.5 * room->floor.getSize().x));
-    int roomY = (int)(room->floor.getPosition().y - (0.5 *room->floor.getSize().y));
-    enemy.setPosition(roomX + (rand() % (int)(room->floor.getSize().x+ 1)), roomY + (rand() % (int)(room->floor.getSize().y + 1)));
-    Enemy::room = room;
+	int roomX = (int)(room->floor.getPosition().x - ( 0.5 * room->floor.getSize().x));
+	int roomY = (int)(room->floor.getPosition().y - (0.5 *room->floor.getSize().y));
+	enemy.setPosition(roomX + (rand() % (int)(room->floor.getSize().x+ 1)), roomY + (rand() % (int)(room->floor.getSize().y + 1)));
+	Enemy::room = room;
 }
 
 //Checks for bullet collision
@@ -152,7 +151,7 @@ Skeleton::Skeleton(std::string name, float hp, float attack, float walkspeed, fl
 	AttackRect = sf::IntRect(0, 0, 110, 63);
 	DeathRect = sf::IntRect(0, 0, 130, 75);
 	scoreValue = 10;
-	
+
 	deathTexture.loadFromFile("Sprites/EnemyAnims/Skeleton/SkeletonDeath.png");
 	walkTexture.loadFromFile("Sprites/EnemyAnims/Skeleton/SkeletonWalk.png");
 	attackTexture.loadFromFile("Sprites/EnemyAnims/Skeleton/SkeletonMelee.png");
@@ -468,226 +467,226 @@ void Spider::Draw(sf::RenderWindow &window) {
 }
 
 Troll::Troll(std::string name, float hp, float attack, float walkspeed, float attackspeed):Enemy(name,hp,attack,walkspeed,attackspeed) {
-    WalkRect = sf::IntRect(0, 0, 100, 121);
-    AttackRect = sf::IntRect(0, 0, 100, 200);
-    DeathRect = sf::IntRect(0, 0, 100, 290);
-    walkTexture.loadFromFile("Sprites/EnemyAnims/Troll/TrollWalk.png");
-    attackTexture.loadFromFile("Sprites/EnemyAnims/Troll/TrollAttack.png");
-    deathTexture.loadFromFile("Sprites/EnemyAnims/Troll/TrollDie.png");
-    scoreValue = 25;
-    enemy.setOrigin(50, 100);
+	WalkRect = sf::IntRect(0, 0, 100, 121);
+	AttackRect = sf::IntRect(0, 0, 100, 200);
+	DeathRect = sf::IntRect(0, 0, 100, 290);
+	walkTexture.loadFromFile("Sprites/EnemyAnims/Troll/TrollWalk.png");
+	attackTexture.loadFromFile("Sprites/EnemyAnims/Troll/TrollAttack.png");
+	deathTexture.loadFromFile("Sprites/EnemyAnims/Troll/TrollDie.png");
+	scoreValue = 25;
+	enemy.setOrigin(50, 100);
 }
 
 void Troll::Animate(Player *player) {
-    if (animationTimer.getElapsedTime().asSeconds() > 0.09f) {
-        if (state == animationState::MELEE)
-        {
+	if (animationTimer.getElapsedTime().asSeconds() > 0.09f) {
+		if (state == animationState::MELEE)
+		{
 			enemy.setOrigin(50, 150);
-            if (AttackRect.left >= 1950) {
-                AttackRect.left = 0;
-                groundSmash(player);
-                state = animationState::IDLE;
-                attackTimer.restart();
-            }
-            else {
-                enemy.setTexture(attackTexture);
-                enemy.setTextureRect(AttackRect);
-                AttackRect.left += 251;
-            }
-        }
-        else if (state == animationState::WALKING) {
+			if (AttackRect.left >= 1950) {
+				AttackRect.left = 0;
+				groundSmash(player);
+				state = animationState::IDLE;
+				attackTimer.restart();
+			}
+			else {
+				enemy.setTexture(attackTexture);
+				enemy.setTextureRect(AttackRect);
+				AttackRect.left += 251;
+			}
+		}
+		else if (state == animationState::WALKING) {
 			enemy.setOrigin(50, 100);
-            if (WalkRect.left >= 2430) {
-                WalkRect.left = 0;
-            }
-            else {
-                enemy.setTexture(walkTexture);
-                enemy.setTextureRect(WalkRect);
-                WalkRect.left += 251;
-            }
-            AttackRect.left = 0;
-        }
-        else if (state == animationState::DEAD) {
+			if (WalkRect.left >= 2430) {
+				WalkRect.left = 0;
+			}
+			else {
+				enemy.setTexture(walkTexture);
+				enemy.setTextureRect(WalkRect);
+				WalkRect.left += 251;
+			}
+			AttackRect.left = 0;
+		}
+		else if (state == animationState::DEAD) {
 			enemy.setOrigin(50, 200);
-            if (DeathRect.left >= 1427) {
-                if (deathTimer.getElapsedTime().asSeconds() > 2.f) {
-                    bIsDead = true;
-                    player->setScore(player->getScore() + scoreValue);
-                }
-            }
-            else {
-                enemy.setTextureRect(DeathRect);
-                enemy.setTexture(deathTexture);
-                DeathRect.left += 251;
-            }
+			if (DeathRect.left >= 1427) {
+				if (deathTimer.getElapsedTime().asSeconds() > 2.f) {
+					bIsDead = true;
+					player->setScore(player->getScore() + scoreValue);
+				}
+			}
+			else {
+				enemy.setTextureRect(DeathRect);
+				enemy.setTexture(deathTexture);
+				DeathRect.left += 251;
+			}
 
-        }
+		}
 		else {
 			AttackRect.left = 0;
 			enemy.setTextureRect(AttackRect);
 			enemy.setTexture(attackTexture);
 		}
-        if (enemy.getColor() != sf::Color::White) {
-            enemy.setColor(sf::Color::White);
-        }
-        animationTimer.restart();
-    }
+		if (enemy.getColor() != sf::Color::White) {
+			enemy.setColor(sf::Color::White);
+		}
+		animationTimer.restart();
+	}
 
 }
 
 //Damages and poisons player
 void Troll::groundSmash(Player *player) {
-    player->setCurrentHp(player->getCurrentHp() - getAttack());
+	player->setCurrentHp(player->getCurrentHp() - getAttack());
 	player->disables.insert(player->disables.begin(), std::pair<std::string,float> ("Stun", 1.f));
 }
 
 //Updates spider's position
 void Troll::Update(Player *player, float dt) {
-    if (state != animationState::DEAD) {
+	if (state != animationState::DEAD) {
 
-        //Moves enemy in respect to player position
-        if (Collision::BoundingBoxTest(enemy, player->getPlayer())) {
-            enemy.move(0, 0);
-            if (attackTimer.getElapsedTime().asSeconds() > ((player->stopwatch) ? getAttackSpeed() * 2 : getAttackSpeed()) / 2) {
-                state = animationState::MELEE;
-            }
-        }
-        else {
-            state = animationState::WALKING;
-            sf::Vector2f dir = player->getPlayer().getPosition() - enemy.getPosition();
-            setDirection(getUDirection(dir));
-            enemy.move(getDirection().x*dt*((player->stopwatch) ? getWalkspeed() / 2 : getWalkspeed()), getDirection().y*dt*((player->stopwatch) ? getWalkspeed() / 2 : getWalkspeed()));
-        }
-        isHit(player);
-        //Rotates enemy based off of player position
-        sf::Vector2f playerPosition = player->getPlayer().getPosition();
-        float a = enemy.getPosition().x - playerPosition.x;
-        float b = enemy.getPosition().y - playerPosition.y;
-        float angle = -atan2(a, b) * 180 / 3.14f;
-        enemy.setRotation(angle);
-    }
-    Animate(player);
+		//Moves enemy in respect to player position
+		if (Collision::BoundingBoxTest(enemy, player->getPlayer())) {
+			enemy.move(0, 0);
+			if (attackTimer.getElapsedTime().asSeconds() > ((player->stopwatch) ? getAttackSpeed() * 2 : getAttackSpeed()) / 2) {
+				state = animationState::MELEE;
+			}
+		}
+		else {
+			state = animationState::WALKING;
+			sf::Vector2f dir = player->getPlayer().getPosition() - enemy.getPosition();
+			setDirection(getUDirection(dir));
+			enemy.move(getDirection().x*dt*((player->stopwatch) ? getWalkspeed() / 2 : getWalkspeed()), getDirection().y*dt*((player->stopwatch) ? getWalkspeed() / 2 : getWalkspeed()));
+		}
+		isHit(player);
+		//Rotates enemy based off of player position
+		sf::Vector2f playerPosition = player->getPlayer().getPosition();
+		float a = enemy.getPosition().x - playerPosition.x;
+		float b = enemy.getPosition().y - playerPosition.y;
+		float angle = -atan2(a, b) * 180 / 3.14f;
+		enemy.setRotation(angle);
+	}
+	Animate(player);
 }
 
 //Draws troll to window
 void Troll::Draw(sf::RenderWindow &window) {
-    window.draw(enemy);
+	window.draw(enemy);
 
 }
 
 //Skeleton Class walk 119x70 (55, 40), ranged 119x90 (55, 70)  melee 119x70 (55, 40)   die 119x90 (55,55)
 Demon::Demon(std::string name, float hp, float attack, float walkspeed, float attackspeed):Enemy(name,hp,attack,walkspeed,attackspeed) {
-    WalkRect = sf::IntRect(0,0,55,60);
-    AttackRect = sf::IntRect(0, 0, 60, 52);
-    DeathRect = sf::IntRect(0, 0, 119, 90);
-    RangedRect = sf::IntRect(0, 0, 118, 90);
+	WalkRect = sf::IntRect(0,0,55,60);
+	AttackRect = sf::IntRect(0, 0, 60, 52);
+	DeathRect = sf::IntRect(0, 0, 119, 90);
+	RangedRect = sf::IntRect(0, 0, 118, 90);
 
-    enemy.setOrigin(20,20);
+	enemy.setOrigin(20,20);
 
-    scoreValue = 50;
+	scoreValue = 50;
 
-    deathTexture.loadFromFile("Sprites/EnemyAnims/Demon/DemonDie.png");
-    walkTexture.loadFromFile("Sprites/EnemyAnims/Demon/DemonWalkcycle.png");
-    attackTexture.loadFromFile("Sprites/EnemyAnims/Demon/DemonMelee.png");
-    rangedTexture.loadFromFile("Sprites/EnemyAnims/Demon/DemonRanged.png");
-    flameball.texture.loadFromFile("Sprites/EnemyAnims/Demon/Fireball.png");
-    flameball.flameball.setTexture(flameball.texture);
+	deathTexture.loadFromFile("Sprites/EnemyAnims/Demon/DemonDie.png");
+	walkTexture.loadFromFile("Sprites/EnemyAnims/Demon/DemonWalkcycle.png");
+	attackTexture.loadFromFile("Sprites/EnemyAnims/Demon/DemonMelee.png");
+	rangedTexture.loadFromFile("Sprites/EnemyAnims/Demon/DemonRanged.png");
+	flameball.texture.loadFromFile("Sprites/EnemyAnims/Demon/Fireball.png");
+	flameball.flameball.setTexture(flameball.texture);
 
-    spawnClock = 0;
-    numSpawned = 0;
+	spawnClock = 0;
+	numSpawned = 0;
 }
 
 //Whacks player with a Bone
 void Demon::swipe(Player *player){
-    player->setCurrentHp(player->getCurrentHp() - getAttack());
+	player->setCurrentHp(player->getCurrentHp() - getAttack());
 }
 
 //Throws a bone at player
 void Demon::fireball(Player *player) {
-    std::cout << "Throwing fireball" << std::endl;
-    Flameball flameball = this->flameball;
-    flameball.deleteTimer.restart();
-    flameball.flameball.setPosition(enemy.getPosition());
-    flameball.direction = player->getPlayer().getPosition() - enemy.getPosition();
+	std::cout << "Throwing fireball" << std::endl;
+	Flameball flameball = this->flameball;
+	flameball.deleteTimer.restart();
+	flameball.flameball.setPosition(enemy.getPosition());
+	flameball.direction = player->getPlayer().getPosition() - enemy.getPosition();
 
-    flameball.direction = getUDirection(flameball.direction);
-    flameballs.push_back(flameball);
+	flameball.direction = getUDirection(flameball.direction);
+	flameballs.push_back(flameball);
 }
 
 
 //Skeleton walking animation walk 119x70 (55, 40), ranged 119x90 (55, 70)  melee 119x70 (55, 40)   die 119x90 (55,55)
 void Demon::Animate(Player *player) {
-    //Attacking
-    if (animationTimer.getElapsedTime().asSeconds() > 0.09f) {
-        if (state == animationState::RANGED) {
-            if (RangedRect.left >= 960) {
-                fireball(player);
+	//Attacking
+	if (animationTimer.getElapsedTime().asSeconds() > 0.09f) {
+		if (state == animationState::RANGED) {
+			if (RangedRect.left >= 960) {
+				fireball(player);
 				if (attackTimer.getElapsedTime().asSeconds() > 8.f) {
 					state = animationState::WALKING;
 					attackTimer.restart();
 				}
-            } else {
-                enemy.setTexture(rangedTexture);
-                enemy.setTextureRect(RangedRect);
-                RangedRect.left += 120;
+			} else {
+				enemy.setTexture(rangedTexture);
+				enemy.setTextureRect(RangedRect);
+				RangedRect.left += 120;
 
-            }
+			}
 
-            if (spawnClock >= 4) {
-                if(numSpawned < 4) {
-                    spawnMinions(room);
-                    numSpawned++;
-                } else {
-                    numSpawned = 4;
-                }
-                spawnClock = 0;
-            } else {
-                spawnClock++;
-            }
+			if (spawnClock >= 4) {
+				if(numSpawned < 4) {
+					spawnMinions(room);
+					numSpawned++;
+				} else {
+					numSpawned = 4;
+				}
+				spawnClock = 0;
+			} else {
+				spawnClock++;
+			}
 
-        }
-        if (state == animationState::MELEE)
-        {
-            if (AttackRect.left >= 840) {
-                enemy.setTexture(attackTexture);
-                enemy.setTextureRect(AttackRect);
-                swipe(player);
-                AttackRect.left = 0;
-                attackTimer.restart();
-            } else {
-                enemy.setTexture(attackTexture);
-                enemy.setTextureRect(AttackRect);
-                AttackRect.left += 120;
+		}
+		if (state == animationState::MELEE)
+		{
+			if (AttackRect.left >= 840) {
+				enemy.setTexture(attackTexture);
+				enemy.setTextureRect(AttackRect);
+				swipe(player);
+				AttackRect.left = 0;
+				attackTimer.restart();
+			} else {
+				enemy.setTexture(attackTexture);
+				enemy.setTextureRect(AttackRect);
+				AttackRect.left += 120;
 
-            }
-        } else if (state == animationState::WALKING) {
-            if (WalkRect.left >= 1320) {
-                WalkRect.left = 0;
-            } else {
-                enemy.setTexture(walkTexture);
-                enemy.setTextureRect(WalkRect);
-                WalkRect.left += 120;
-            }
-            AttackRect.left = 0;
-            RangedRect.left = 0;
+			}
+		} else if (state == animationState::WALKING) {
+			if (WalkRect.left >= 1320) {
+				WalkRect.left = 0;
+			} else {
+				enemy.setTexture(walkTexture);
+				enemy.setTextureRect(WalkRect);
+				WalkRect.left += 120;
+			}
+			AttackRect.left = 0;
+			RangedRect.left = 0;
 
-        } else if (state == animationState::DEAD) {
-            enemy.setOrigin(55, 55);
-            if (DeathRect.left >= 1080) {
-                if (deathTimer.getElapsedTime().asSeconds() > .5f) {
-                    bIsDead = true;
-                    player->setScore(player->getScore() + scoreValue);
-                }
-            } else {
-                enemy.setTextureRect(DeathRect);
-                enemy.setTexture(deathTexture);
-                DeathRect.left += 120;
-            }
+		} else if (state == animationState::DEAD) {
+			enemy.setOrigin(55, 55);
+			if (DeathRect.left >= 1080) {
+				if (deathTimer.getElapsedTime().asSeconds() > .5f) {
+					bIsDead = true;
+					player->setScore(player->getScore() + scoreValue);
+				}
+			} else {
+				enemy.setTextureRect(DeathRect);
+				enemy.setTexture(deathTexture);
+				DeathRect.left += 120;
+			}
 
-        }
-        if (enemy.getColor() != sf::Color::White) {
-            enemy.setColor(sf::Color::White);
-        }
+		}
+		if (enemy.getColor() != sf::Color::White) {
+			enemy.setColor(sf::Color::White);
+		}
 		for (unsigned i = 0; i < flameballs.size(); i++) {
 			flameballs[i].flameballRect.left += 32;
 			if (flameballs[i].flameballRect.left >= 118) {
@@ -695,67 +694,66 @@ void Demon::Animate(Player *player) {
 			}
 			flameballs[i].flameball.setTextureRect(flameballs[i].flameballRect);
 		}
-        animationTimer.restart();
-    }
+		animationTimer.restart();
+	}
 }
 
 
 //Updates skeleton and bone positions
 void Demon::Update(Player *player, float dt) {
-    if (state != animationState::DEAD) {
-        for (unsigned i = 0; i < flameballs.size(); i++) {
-            flameballs[i].flameball.move(flameballs[i].velocity * flameballs[i].direction.x * dt,
-                                         flameballs[i].velocity * flameballs[i].direction.y * dt);
-            if (flameballs[i].flameball.getGlobalBounds().intersects(player->getPlayer().getGlobalBounds())) {
-                std::cout << player->getName() << " took " << getAttack() << " damage!" << std::endl;
-                player->setCurrentHp(player->getCurrentHp() - getAttack());
-                flameballs.erase(flameballs.begin() + i);
-            }
-        }
-        //Moves enemy in respect to player position
-        if (Collision::BoundingBoxTest(enemy, player->getPlayer())) {
-            enemy.move(0, 0);
-            if (attackTimer.getElapsedTime().asSeconds() >
-                ((player->stopwatch) ? getAttackSpeed() * 2 : getAttackSpeed()) / 2) {
-                state = animationState::MELEE;
-            }
-        } else if (attackTimer.getElapsedTime().asSeconds() >
-                   ((player->stopwatch) ? getAttackSpeed() * 2 : getAttackSpeed())) {
-            state = animationState::RANGED;
-        } else {
-            state = animationState::WALKING;
-            sf::Vector2f dir = player->getPlayer().getPosition() - enemy.getPosition();
-            setDirection(getUDirection(dir));
-            enemy.move(getDirection().x * dt * ((player->stopwatch) ? getWalkspeed() / 2 : getWalkspeed()),
-                       getDirection().y * dt * ((player->stopwatch) ? getWalkspeed() / 2 : getWalkspeed()));
-        }
-        isHit(player);
-        //Rotates enemy based off of player position
-        sf::Vector2f playerPosition = player->getPlayer().getPosition();
-        float a = enemy.getPosition().x - playerPosition.x;
-        float b = enemy.getPosition().y - playerPosition.y;
-        float angle = -atan2(a, b) * 180 / 3.14f;
-        enemy.setRotation(angle);
-    }
-    Animate(player);
+	if (state != animationState::DEAD) {
+		for (unsigned i = 0; i < flameballs.size(); i++) {
+			flameballs[i].flameball.move(flameballs[i].velocity * flameballs[i].direction.x * dt,
+										 flameballs[i].velocity * flameballs[i].direction.y * dt);
+			if (flameballs[i].flameball.getGlobalBounds().intersects(player->getPlayer().getGlobalBounds())) {
+				std::cout << player->getName() << " took " << getAttack() << " damage!" << std::endl;
+				player->setCurrentHp(player->getCurrentHp() - getAttack());
+				flameballs.erase(flameballs.begin() + i);
+			}
+		}
+		//Moves enemy in respect to player position
+		if (Collision::BoundingBoxTest(enemy, player->getPlayer())) {
+			enemy.move(0, 0);
+			if (attackTimer.getElapsedTime().asSeconds() >
+				((player->stopwatch) ? getAttackSpeed() * 2 : getAttackSpeed()) / 2) {
+				state = animationState::MELEE;
+			}
+		} else if (attackTimer.getElapsedTime().asSeconds() >
+				   ((player->stopwatch) ? getAttackSpeed() * 2 : getAttackSpeed())) {
+			state = animationState::RANGED;
+		} else {
+			state = animationState::WALKING;
+			sf::Vector2f dir = player->getPlayer().getPosition() - enemy.getPosition();
+			setDirection(getUDirection(dir));
+			enemy.move(getDirection().x * dt * ((player->stopwatch) ? getWalkspeed() / 2 : getWalkspeed()),
+					   getDirection().y * dt * ((player->stopwatch) ? getWalkspeed() / 2 : getWalkspeed()));
+		}
+		isHit(player);
+		//Rotates enemy based off of player position
+		sf::Vector2f playerPosition = player->getPlayer().getPosition();
+		float a = enemy.getPosition().x - playerPosition.x;
+		float b = enemy.getPosition().y - playerPosition.y;
+		float angle = -atan2(a, b) * 180 / 3.14f;
+		enemy.setRotation(angle);
+	}
+	Animate(player);
 }
 
 //Draws skeleton to window
 void Demon::Draw(sf::RenderWindow &window) {
-    window.draw(enemy);
-    for (unsigned i = 0; i < flameballs.size() && state != animationState::DEAD;i++) {
-        window.draw(flameballs[i].flameball);
-        if (flameballs[i].deleteTimer.getElapsedTime().asSeconds() > 3) {
-            std::cout << "Deleting Fireball" << std::endl;
-            flameballs.erase(flameballs.begin() + i);
-        }
-    }
+	window.draw(enemy);
+	for (unsigned i = 0; i < flameballs.size() && state != animationState::DEAD;i++) {
+		window.draw(flameballs[i].flameball);
+		if (flameballs[i].deleteTimer.getElapsedTime().asSeconds() > 3) {
+			std::cout << "Deleting Fireball" << std::endl;
+			flameballs.erase(flameballs.begin() + i);
+		}
+	}
 }
 
 void Demon::spawnMinions(LinkedMap::room *linkedMap)
 {
 	Skeleton *s = new Skeleton("Baby Skeleton",25.f,3.f,175.f,1.f,"Minion");
 	s->getEnemy()->setScale(.5f, .5f);
-    Enemy::Spawn(s, linkedMap);
+	Enemy::Spawn(s, linkedMap);
 }
-
