@@ -15,11 +15,16 @@ public:
     bool getIsOpen();
     sf::Text getPotionAcquired();
     sf::Text getWeaponAcquired();
+	void takeGun(Player* player);
+	void leaveGun(Player* player);
     void setUI(Player*,sf::RenderWindow&);
+	sf::Sound sound;
+	sf::Text choicePrompt;
 	~Chest();
 
 
 private:
+	sf::SoundBuffer openSound;
 	std::vector<Weapon *> weaponContents;
 	std::vector<Potion *> potionContents;
 	sf::Sprite chest;
@@ -27,7 +32,9 @@ private:
 	sf::Texture openTexture;
 	sf::Text weaponAcquired;
 	sf::Text potionAcquired;
+
 	sf::Font font;
+	bool gunTaken;
 	bool opened = false;
 
 	std::random_device rd;  //Will be used to obtain a seed for the random number engine

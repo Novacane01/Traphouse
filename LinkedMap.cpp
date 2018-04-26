@@ -933,11 +933,11 @@ bool LinkedMap::displayStairs(sf::RenderWindow &window, Player* player){
     return false;
 }
 //draws chest one if player is in chest 1 room
-bool LinkedMap::displayChest1(sf::RenderWindow &window, Player* player){
+bool LinkedMap::displayChest1(sf::RenderWindow &window, Player* player, bool isLookedAt){
 	if(chest1 != nullptr) {
 		window.draw(chest1->getChestSprite());
 
-		if (player->getPlayer().getGlobalBounds().intersects(chest1->getChestSprite().getGlobalBounds()) && !chest1->getIsOpen()) {
+		if (player->getPlayer().getGlobalBounds().intersects(chest1->getChestSprite().getGlobalBounds()) && !chest1->getIsOpen() && !isLookedAt) {
 			chestText.setPosition(chest1->getChestSprite().getPosition());
 			window.draw(chestText);
 			return true;
@@ -946,10 +946,10 @@ bool LinkedMap::displayChest1(sf::RenderWindow &window, Player* player){
 	return false;
 }
 //draws chest two if player is in chest 2 room
-bool LinkedMap::displayChest2(sf::RenderWindow &window, Player* player){
+bool LinkedMap::displayChest2(sf::RenderWindow &window, Player* player, bool isLookedAt){
 	if(chest2 != nullptr) {
 		window.draw(chest2->getChestSprite());
-		if (player->getPlayer().getGlobalBounds().intersects(chest2->getChestSprite().getGlobalBounds()) && !chest2->getIsOpen()) {
+		if (player->getPlayer().getGlobalBounds().intersects(chest2->getChestSprite().getGlobalBounds()) && !chest2->getIsOpen() && !isLookedAt) {
 			chestText.setPosition(chest2->getChestSprite().getPosition());
 			window.draw(chestText);
 			return true;

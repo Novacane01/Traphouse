@@ -286,11 +286,11 @@ void Weapon::displayWeaponInfo(sf::RenderWindow &window) {
     ammoCount.setString(std::to_string(getCurrentClip()) + "/" + std::to_string(getCurrentMax()));
 
     //sets x location of ammoCount based on current view
-    int infoLocation = (int)window.getView().getCenter().x + (int)window.getView().getSize().x/2 - (int)ammoCount.getGlobalBounds().width - 20;
+    int infoLocation = (int)window.getView().getCenter().x + (int)window.getView().getSize().x/2 - 130;
 
     //sets location of ammoCount, gunName and ammoBlocks rely on this for location
     ammoCount.setPosition(infoLocation, window.getView().getCenter().y + (window.getView().getSize().y/2) - 50);
-    gunName.setPosition(ammoCount.getPosition().x - 15, ammoCount.getPosition().y -25);
+    gunName.setPosition(ammoCount.getPosition().x - 50, ammoCount.getPosition().y -40);
 
     float offsetX = 0, offsetY = -getMaxClip()/2.f+4, rectSizeX = 5.f, rectSizeY = 15.f, size = 0.f, standardOffset = 40.f, desiredOffset = 200.f;
     for (int i = 8;i < getMaxClip();i += 8) {

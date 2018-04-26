@@ -31,7 +31,7 @@ public:
 	float getAttack() const;
  	float getWalkspeed() const;
 	int getHp() const;
- 	sf::Sprite getEnemy() const;
+ 	sf::Sprite* getEnemy();
 	sf::Vector2f getUDirection(sf::Vector2f &);
 	//Booleans
 	bool isDead()const;
@@ -83,7 +83,7 @@ protected:
 
 class Skeleton:public Enemy {
 public:
-	Skeleton(std::string name = "Skeleton", float hp = 100.f, float attack = 10.f, float walkspeed = 100.f, float attackspeed = 2.f);
+	Skeleton(std::string name = "Skeleton", float hp = 100.f, float attack = 10.f, float walkspeed = 100.f, float attackspeed = 2.f, std::string type = "Regular");
 	void boneWhack(Player *);
 	void boneThrow(Player *);
 	void Update(Player *, float);
@@ -98,6 +98,7 @@ private:
 		sf::Clock deleteTimer;
 	}bone;
 	std::vector<Bone> bones;
+	const std::string type;
 };
 
 class Spider :public Enemy {
@@ -121,7 +122,7 @@ private:
 
 class Troll :public Enemy {
 public:
-    Troll(std::string name = "Troll", float hp = 500.f, float attack = 30, float walkspeed = 50.f, float attackspeed = 3.f);
+    Troll(std::string name = "Troll", float hp = 500.f, float attack = 30, float walkspeed = 25.f, float attackspeed = 3.f);
     void groundSmash(Player *);
     void melee(Player *);
     void Update(Player *, float);
@@ -148,7 +149,8 @@ private:
         sf::Sprite flameball;
         sf::Texture texture;
         sf::Vector2f direction;
-        float velocity = 350.f;
+		sf::IntRect flameballRect = sf::IntRect(0,0,15,19);
+        float velocity = 450.f;
         sf::Clock deleteTimer;
     }flameball;
     std::vector<Flameball> flameballs;

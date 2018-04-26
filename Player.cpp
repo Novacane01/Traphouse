@@ -16,16 +16,15 @@ Player::Player(std::string name, float hp, float walkspeed, float maxStamina):ma
 	weaponInventory.push_back(*Weapon::weaponList["defaultPistol"]);
 	std::cout << "\'Pistol\' added to inventory" << std::endl;
 
+	weaponInventory.push_back(*Weapon::weaponList["boltSniper"]);
 
-
-	//weaponInventory.push_back(*Weapon::weaponList["minigun"]);
 	//std::cout << "\'Shotgun\' added to inventory" << std::endl;
-	potionInventory.push_back(new TimePotion());
-	potionInventory.push_back(new TimePotion());
-	potionInventory.push_back(new AttackPotion());
+	//potionInventory.push_back(new TimePotion());
+	//potionInventory.push_back(new TimePotion());
+	//potionInventory.push_back(new AttackPotion());
 	//std::cout << "\'Health Potion' added to inventory" << std::endl;
-	//weaponInventory.push_back(pickups.assaultRifle);
-	//weaponInventory.push_back(pickups.boltSniper);
+
+
 	//std::cout << "\'Minigun\' added to inventory" << std::endl;
 	//weaponInventory.push_back(pickups.defaultKnife);
 	//std::cout << "\'Knife\' added to inventory" << std::endl;
@@ -194,8 +193,11 @@ void Player::displayPlayerInfo(sf::RenderWindow &window) { //displaying all info
 
     //places current health above health bar, centered
     hpNum.setString(std::to_string((int)currentHp) + "/" + std::to_string((int)maxHp));
-    hpNum.setPosition(healthBar.getPosition().x + healthBar.getSize().x/2 - hpNum.getGlobalBounds().width/2, healthBar.getPosition().y - 30);
-
+    if(hpNum.getGlobalBounds().left  > (window.getView().getCenter().x-window.getView().getSize().x/2 + 40)){
+        hpNum.setPosition(healthBar.getPosition().x + healthBar.getSize().x/2 - hpNum.getGlobalBounds().width/2, healthBar.getPosition().y - 30);
+    } else{
+        hpNum.setPosition((window.getView().getCenter().x-window.getView().getSize().x/2) + 40, healthBar.getPosition().y - 30);
+    }
     //gets current player score and sets UI to that
     playerScore.setString("Score: " + std::to_string(score));
     //Places player score in top right corner of view
@@ -208,8 +210,6 @@ void Player::displayPlayerInfo(sf::RenderWindow &window) { //displaying all info
     potionSlots[2].setPosition(potionSlots[1].getPosition().x + 55, potionSlots[1].getPosition().y);
     potionSlots[3].setPosition(potionSlots[2].getPosition().x + 55, potionSlots[2].getPosition().y);
     potionSlots[4].setPosition(potionSlots[3].getPosition().x + 55, potionSlots[3].getPosition().y);
-
-
 
     window.draw(potionSlots[0]);
     window.draw(potionSlots[1]);
@@ -234,7 +234,6 @@ void Player::displayPlayerInfo(sf::RenderWindow &window) { //displaying all info
 	for(int i = (int)potionInventory.size(); i < 5; i++){
 		potionSlots[i].setOutlineColor(sf::Color::Transparent);
 	}
-
     window.draw(getCurrentWeapon().weaponImage);
     window.draw(playerScore);
     window.draw(playerName);
@@ -420,6 +419,10 @@ std::vector<Weapon>& Player::getWeapons() {
 	return weaponInventory;
 }
 
+void Player::pickUpWeapon(Weapon &weapon) {
+	weaponInventory[0] = weapon;
+}
+
 //Returns potion iniventory
 std::vector<Potion *>& Player::getPotions() {
 	return potionInventory;
@@ -448,7 +451,10 @@ void Player::switchPotions() {
 
 //Sets current weapon
 void Player::setWeapon(Weapon &weapon) {
-	weaponInventory[0] = weapon;
+    std::vector<Weapon> temp = weaponInventory;
+    weaponInventory.clear();
+    weaponInventory.push_back(weapon);
+	weaponInventory.push_back(temp[temp.size()-1]);
 	std::cout << "Weapon set to \"" << weapon.getName() << "\"" << std::endl;
 }
 

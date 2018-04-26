@@ -57,8 +57,8 @@ public:
 	void findChestRoom(room* current);
 	void placeChests();
 	void placeChestText();
-	bool displayChest1(sf::RenderWindow &window, Player* player);
-	bool displayChest2(sf::RenderWindow &window, Player* player);
+	bool displayChest1(sf::RenderWindow &window, Player* player,bool);
+	bool displayChest2(sf::RenderWindow &window, Player* player,bool);
 	LinkedMap::room* getChestRoom1();
 	LinkedMap::room* getChestRoom2();
 	Chest* getChest1();

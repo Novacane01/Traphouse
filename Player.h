@@ -49,8 +49,9 @@ public:
 	 bool canMoveDown = false;
 	 void Draw(sf::RenderWindow &);
 	 bool bIsSprinting = false;
-	 bool bCanSprint = false;
+	 bool bCanSprint = true;
 	 bool bCanRegenStamina = false;
+
 	 //Disables
 	 bool slowed = false, stunned = false, poisoned = false;
 	 sf::Clock poisonTimer;
@@ -67,6 +68,7 @@ public:
 	 Weapon& getCurrentWeapon();
 	 void switchWeapons();
 	 void setWeapon(Weapon &);
+	 void pickUpWeapon(Weapon &);
 	 bool bCanShoot = false;
 	 sf::Clock shootTimer;
 
