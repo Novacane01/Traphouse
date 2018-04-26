@@ -5,7 +5,10 @@ Chest::Chest() {
 	if (!font.loadFromFile("Fonts/light_pixel-7.ttf")) {
 		std::cout << "Could not load file" << std::endl;
 	}
-
+	if (!openSound.loadFromFile("SFX/Chest/ChestOpen.wav")) {
+		std::cout << "Could not load file" << std::endl;
+	}
+	sound.setBuffer(openSound);
 	std::mt19937 gen(rd()); //Standard mersenne_twister_engine seeded with rd()
 	std::uniform_real_distribution<> dis(0.f,1.f);
 	float n = dis(gen);
@@ -57,6 +60,7 @@ void Chest::Open(Player *player) {
 			chest.setTexture(closedTexture);
 		}
 	}
+	sound.play();
 }
 
 std::vector<Weapon *>& Chest::getWeaponContents() {

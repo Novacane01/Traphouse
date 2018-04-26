@@ -16,10 +16,12 @@ public:
     sf::Text getPotionAcquired();
     sf::Text getWeaponAcquired();
     void setUI(Player*,sf::RenderWindow&);
+	sf::Sound sound;
 	~Chest();
 
 
 private:
+	sf::SoundBuffer openSound;
 	std::vector<Weapon *> weaponContents;
 	std::vector<Potion *> potionContents;
 	sf::Sprite chest;

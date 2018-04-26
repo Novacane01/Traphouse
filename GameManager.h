@@ -37,7 +37,7 @@ private:
 	bool paused;
 	bool inFunction;
 
-	Player *player;
+	Player *player = nullptr;
 	int level;
 	sf::View roomView;
 

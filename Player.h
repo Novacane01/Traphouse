@@ -48,8 +48,9 @@ public:
 	 bool canMoveUp = false;
 	 bool canMoveDown = false;
 	 void Draw(sf::RenderWindow &);
-	 bool bIsSprinting;
-	 bool bCanSprint;
+	 bool bIsSprinting =  false;
+	 bool bCanSprint = false;
+	 bool bCanRegenStamina = false;
 	 //Disables
 	 bool slowed = false, stunned = false, poisoned = false;
 	 sf::Clock poisonTimer;

@@ -65,8 +65,8 @@ bool GameManager::Start() {
 		if (!music.openFromFile("Music/GameBGM.wav")) {
 			std::cout << "Could not open sound file" << std::endl;
 		}
-		music.setVolume(50);
 		music.play();
+		music.setVolume(50);
 		music.setLoop(true);
 		//Sets center of window at (0,0)
 
@@ -177,6 +177,13 @@ bool GameManager::Start() {
 				else if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Right)) {
 					player->switchWeapons();
 				}
+			}
+			if (lmap->chest1->sound.getStatus() == sf::Sound::Playing||lmap->chest2->sound.getStatus() == sf::Sound::Playing) {
+				music.pause();
+			}
+			else if(music.getStatus() == sf::Music::Paused) {
+				music.play();
+				music.setVolume(50);
 			}
 			//If not in current room (Between rooms/In hallways)
 			if (!lmap->getCurrentRoom()->playerIsInside) {
