@@ -576,14 +576,14 @@ void Troll::Draw(sf::RenderWindow &window) {
 
 //Skeleton Class walk 119x70 (55, 40), ranged 119x90 (55, 70)  melee 119x70 (55, 40)   die 119x90 (55,55)
 Demon::Demon(std::string name, float hp, float attack, float walkspeed, float attackspeed):Enemy(name,hp,attack,walkspeed,attackspeed) {
-	WalkRect = sf::IntRect(0,0,55,60);
-	AttackRect = sf::IntRect(0, 0, 60, 52);
-	DeathRect = sf::IntRect(0, 0, 119, 90);
-	RangedRect = sf::IntRect(0, 0, 118, 90);
+    WalkRect = sf::IntRect(0,0,55,60);
+    AttackRect = sf::IntRect(0, 0, 75, 52);
+    DeathRect = sf::IntRect(0, 0, 119, 90);
+    RangedRect = sf::IntRect(0, 0, 60, 63);
 
-	enemy.setOrigin(20,20);
-
-	scoreValue = 50;
+    enemy.setOrigin(30,30);
+	enemy.setScale(4, 4);
+    scoreValue = 50;
 
 	deathTexture.loadFromFile("Sprites/EnemyAnims/Demon/DemonDie.png");
 	walkTexture.loadFromFile("Sprites/EnemyAnims/Demon/DemonWalkcycle.png");
@@ -603,14 +603,20 @@ void Demon::swipe(Player *player){
 
 //Throws a bone at player
 void Demon::fireball(Player *player) {
-	std::cout << "Throwing fireball" << std::endl;
-	Flameball flameball = this->flameball;
-	flameball.deleteTimer.restart();
-	flameball.flameball.setPosition(enemy.getPosition());
-	flameball.direction = player->getPlayer().getPosition() - enemy.getPosition();
-
-	flameball.direction = getUDirection(flameball.direction);
-	flameballs.push_back(flameball);
+    std::cout << "Throwing fireball" << std::endl;
+    Flameball flameball = this->flameball;
+    flameball.deleteTimer.restart();
+    flameball.flameball.setPosition(enemy.getPosition());
+    flameball.direction = player->getPlayer().getPosition() - enemy.getPosition();
+	flameball.flameball.setScale(2, 2);
+    flameball.direction = getUDirection(flameball.direction);
+	flameball.flameball.move(50 * flameball.direction.x, 50 * flameball.direction.y);
+	sf::Vector2f playerPosition = player->getPlayer().getPosition();
+	float a = enemy.getPosition().x - playerPosition.x;
+	float b = enemy.getPosition().y - playerPosition.y;
+	float angle = -atan2(a, b) * 180 / 3.14f;
+	flameball.flameball.setRotation(angle);
+    flameballs.push_back(flameball);
 }
 
 

@@ -48,6 +48,7 @@ bool GameManager::Start() {
 		lmap->placeChests();
 		lmap->placeChestText();
 
+		window.setFramerateLimit(120);
 		window.setKeyRepeatEnabled(false); //Disables repeated keypresses
 		window.setVerticalSyncEnabled(false); //Limits refresh rate to monitor
 
@@ -90,6 +91,7 @@ bool GameManager::Start() {
 			while (window.pollEvent(event)) {
 				if (event.type == event.Closed) {
 					window.close();
+					return false;
 				}
 				if (event.mouseButton.button == sf::Mouse::Left&&event.type == sf::Event::MouseButtonPressed) {
 					player->bCanShoot = true;

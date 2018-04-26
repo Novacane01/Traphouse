@@ -3,35 +3,20 @@
 
 
 //Player Constructor
-Player::Player(std::string name, float hp, float walkspeed, float maxStamina):maxHp(hp),defaultWalkspeed(walkspeed){ //player constructor
-	setName(name);
-	setCurrentHp(maxHp);
-	setMaxStamina(maxStamina);
-	setCurrentStamina(this->maxStamina);
-	setCurrentWalkSpeed(walkspeed);
-	player.setOrigin(20,20);
-	player.setPosition(0,0);
-	score = 0;
-	setTexture("Sprites/PlayerAnims/Walking/Walking1.png");
-	weaponInventory.push_back(*Weapon::weaponList["defaultPistol"]);
-	std::cout << "\'Pistol\' added to inventory" << std::endl;
-
-	weaponInventory.push_back(*Weapon::weaponList["boltSniper"]);
-
-	//std::cout << "\'Shotgun\' added to inventory" << std::endl;
-	//potionInventory.push_back(new TimePotion());
-	//potionInventory.push_back(new TimePotion());
-	//potionInventory.push_back(new AttackPotion());
-	//std::cout << "\'Health Potion' added to inventory" << std::endl;
-
-
-	//std::cout << "\'Minigun\' added to inventory" << std::endl;
-	//weaponInventory.push_back(pickups.defaultKnife);
-	//std::cout << "\'Knife\' added to inventory" << std::endl;
-	if(potionInventory.size() > 0){
-		currentPotion = potionInventory[0];
-	}
+Player::Player(std::string name, float hp, float walkspeed, float maxStamina):maxHp(hp),defaultWalkspeed(walkspeed) { //player constructor
+    setName(name);
+    setCurrentHp(maxHp);
+    setMaxStamina(maxStamina);
+    setCurrentStamina(this->maxStamina);
+    setCurrentWalkSpeed(walkspeed);
+    player.setOrigin(20, 20);
+    player.setPosition(0, 0);
+    score = 0;
+    setTexture("Sprites/PlayerAnims/Walking/Walking1.png");
+    weaponInventory.push_back(*Weapon::weaponList["defaultPistol"]);
+    std::cout << "\'Pistol\' added to inventory" << std::endl;
 }
+
 
 //Sets UI
 void Player::setUI() { // UI for name, score, health and stamina
@@ -351,7 +336,9 @@ void Player::Update(sf::RenderWindow &window, float dt) {
 	else if (currentStamina <= 0) {
 		bCanSprint = false;
 	}
-
+	if (currentStamina >= maxStamina) {
+		currentStamina = maxStamina;
+	}
 	if (slowed||stunned) {
 		bCanRegenStamina = false;
 	}

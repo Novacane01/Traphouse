@@ -38,7 +38,7 @@ public:
 	 void MoveUp(float);
 	 void MoveDown(float);
 	 void MoveRight(float);
-	 void Update(sf::RenderWindow &window, float);
+	 void Update(sf::RenderWindow &, float);
 	 bool isMovingLeft = false;
 	 bool isMovingRight = false;
 	 bool isMovingUp = false;
