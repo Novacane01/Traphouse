@@ -49,6 +49,7 @@ void Chest::Open(Player *player) {
 			potionAcquired.setPosition(player->getPlayer().getPosition().x - potionAcquired.getGlobalBounds().width/2, player->getPlayer().getPosition().y - 60);
 
 			player->getPotions().push_back(potionContents[0]);
+			player->setCurrentPotion(potionContents[0]);
 			std::cout << potionContents[0]->getName() << " added" << std::endl;
 
 		}

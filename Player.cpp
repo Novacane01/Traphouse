@@ -17,17 +17,22 @@ Player::Player(std::string name, float hp, float walkspeed, float maxStamina):ma
 	weaponInventory.push_back(*Weapon::weaponList["defaultPistol"]);
 	std::cout << "\'Pistol\' added to inventory" << std::endl;
 
+
+
 	//weaponInventory.push_back(*Weapon::weaponList["minigun"]);
 	//std::cout << "\'Shotgun\' added to inventory" << std::endl;
-	//potionInventory.push_back(new TimePotion());
-	//potionInventory.push_back(new AttackPotion());
+	potionInventory.push_back(new TimePotion());
+	potionInventory.push_back(new TimePotion());
+	potionInventory.push_back(new AttackPotion());
 	//std::cout << "\'Health Potion' added to inventory" << std::endl;
 	//weaponInventory.push_back(pickups.assaultRifle);
 	//weaponInventory.push_back(pickups.boltSniper);
 	//std::cout << "\'Minigun\' added to inventory" << std::endl;
 	//weaponInventory.push_back(pickups.defaultKnife);
 	//std::cout << "\'Knife\' added to inventory" << std::endl;
-
+	if(potionInventory.size() > 0){
+		currentPotion = potionInventory[0];
+	}
 }
 
 //Sets UI
@@ -51,18 +56,16 @@ void Player::setUI() { // UI for name, score, health and stamina
 
 	sf::RectangleShape tempSlot;
 	tempSlot.setSize(sf::Vector2f(35,42));
-	sf::Color color(169,169,169);
+	sf::Color color(100,100,100);
 	tempSlot.setFillColor(color);
 	tempSlot.setOrigin(tempSlot.getSize().x/2,tempSlot.getSize().y/2);
-
+	tempSlot.setOutlineThickness(5);
+	tempSlot.setOutlineColor(sf::Color::Transparent);
 	potionSlots.push_back(tempSlot);
 	potionSlots.push_back(tempSlot);
 	potionSlots.push_back(tempSlot);
 	potionSlots.push_back(tempSlot);
 	potionSlots.push_back(tempSlot);
-
-
-
 }
 
 //Sets player name
@@ -201,9 +204,38 @@ void Player::displayPlayerInfo(sf::RenderWindow &window) { //displaying all info
 
     getCurrentWeapon().weaponImage.setPosition(window.getView().getCenter().x + 410, window.getView().getCenter().y + 380);
 
-    potionSlots[0].setPosition(window.getView().getCenter().x - window.getView().getSize().x/2 + 40,window.getView().getCenter().y + window.getView().getSize().y/2 - 40);
+    potionSlots[0].setPosition(window.getView().getCenter().x - window.getView().getSize().x/2 + 35,window.getView().getCenter().y + window.getView().getSize().y/2 - 40);
+    potionSlots[1].setPosition(potionSlots[0].getPosition().x + 55, potionSlots[0].getPosition().y);
+    potionSlots[2].setPosition(potionSlots[1].getPosition().x + 55, potionSlots[1].getPosition().y);
+    potionSlots[3].setPosition(potionSlots[2].getPosition().x + 55, potionSlots[2].getPosition().y);
+    potionSlots[4].setPosition(potionSlots[3].getPosition().x + 55, potionSlots[3].getPosition().y);
+
+
 
     window.draw(potionSlots[0]);
+    window.draw(potionSlots[1]);
+    window.draw(potionSlots[2]);
+    window.draw(potionSlots[3]);
+    window.draw(potionSlots[4]);
+
+	for(int i = 0; i< potionInventory.size(); i++){
+		if(i == 5){
+			break;
+		}
+		if(potionInventory[i] == currentPotion){
+			potionSlots[i].setOutlineColor(sf::Color::Red);
+		} else{
+			potionSlots[i].setOutlineColor(sf::Color::Transparent);
+		}
+
+		potionInventory[i]->potion.setPosition(potionSlots[i].getPosition());
+		window.draw(potionInventory[i]->getPotionSprite());
+	}
+
+	for(int i = (int)potionInventory.size(); i < 5; i++){
+		potionSlots[i].setOutlineColor(sf::Color::Transparent);
+	}
+
     window.draw(getCurrentWeapon().weaponImage);
     window.draw(playerScore);
     window.draw(playerName);
@@ -280,7 +312,6 @@ void Player::Update(sf::RenderWindow &window, float dt) {
 			}
 			else if (buffs[i].first == "Attack") {
 				empowered = true;
-				std::cout << buffs[i].second - bTime << " seconds left" << std::endl;
 				buffs[i].second -= bTime;
 				if (buffs[i].second <= 0) {
 					buffs.erase(buffs.begin() + i--);
@@ -388,7 +419,11 @@ std::vector<Potion *>& Player::getPotions() {
 
 //Returns current potion
 Potion* Player::getCurrentPotion() {
-	return potionInventory[0];
+	return currentPotion;
+}
+
+void Player::setCurrentPotion(Potion* potion){
+    currentPotion = potion;
 }
 
 //Swaps potions
@@ -422,6 +457,71 @@ void Player::switchWeapons() {
 		}
 		getCurrentWeapon().bIsReloading = false;
 		getCurrentWeapon().bCanReload = true;
+
+		std::string gunName = getCurrentWeapon().getName();
+
+        if(gunName == "M1911")
+        {
+            player.setOrigin(20, 20);
+            setTexture("Sprites/PlayerAnims/Walking/WalkingM1911.png");
+
+        }
+        if(gunName == "Desert Eagle")
+        {
+            player.setOrigin(27, 20);
+
+            setTexture("Sprites/PlayerAnims/Walking/WalkingDesertEagle.png");
+
+        }
+        if(gunName == "L96A1")
+        {
+            player.setOrigin(32, 20);
+
+            setTexture("Sprites/PlayerAnims/Walking/WalkingL96A1.png");
+
+        }
+        if(gunName == "M14")
+        {
+            player.setOrigin(32, 20);
+
+            setTexture("Sprites/PlayerAnims/Walking/WalkingM14.png");
+
+        }
+        if(gunName == "KSG")
+        {
+            player.setOrigin(32, 20);
+
+            setTexture("Sprites/PlayerAnims/Walking/WalkingKSG.png");
+
+        }
+        if(gunName == "AK47")
+        {
+            player.setOrigin(32, 20);
+
+            setTexture("Sprites/PlayerAnims/Walking/WalkingAK47.png");
+
+        }
+        if(gunName == "Minigun")
+        {
+            player.setOrigin(32, 20);
+
+            setTexture("Sprites/PlayerAnims/Walking/WalkingMinigun.png");
+
+        }
+        if(gunName == "Barrett .50 Cal")
+        {
+            player.setOrigin(32, 20);
+
+            setTexture("Sprites/PlayerAnims/Walking/WalkingBarrett.png");
+
+        }
+        if(gunName == "MP40")
+        {
+            player.setOrigin(32, 20);
+
+            setTexture("Sprites/PlayerAnims/Walking/WalkingMP40.png");
+
+        }
 	}
 }
 

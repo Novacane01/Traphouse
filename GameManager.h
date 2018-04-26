@@ -37,5 +37,5 @@ private:
 	Player *player;
 	int level;
 	sf::View roomView;
-
+	sf::Clock displayChestTime;
 };

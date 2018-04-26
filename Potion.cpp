@@ -23,12 +23,49 @@ const double Potion::getDropChance() const{
 
 void Potion::displayPotionInfo(sf::RenderWindow &window, Player *player) {
 	for (unsigned i = 0; i < player->getPotions().size();i++) {
+
 		window.draw(player->getPotions()[i]->potion);
 	}
 }
+
+sf::Sprite Potion::getPotionSprite(){
+	return potion;
+}
+
+
 void Potion::setUI() {
 	if (!font.loadFromFile("Fonts/light_pixel-7.ttf")) {
 		std::cout << "Could not load font from file" << std::endl;
+	}
+	if(name == "Speed Potion"){
+		if(potionTexture.loadFromFile("Sprites/Potions/speed.png")){
+			potion.setTexture(potionTexture);
+		}
+		potion.setOrigin(potion.getGlobalBounds().width/2,potion.getGlobalBounds().height/2);
+	}
+	if(name == "Health Potion"){
+		if(potionTexture.loadFromFile("Sprites/Potions/Health.png")){
+			potion.setTexture(potionTexture);
+		}
+		potion.setOrigin(potion.getGlobalBounds().width/2,potion.getGlobalBounds().height/2);
+	}
+	if(name == "Stamina Potion"){
+		if(potionTexture.loadFromFile("Sprites/Potions/stamina.png")){
+			potion.setTexture(potionTexture);
+		}
+		potion.setOrigin(potion.getGlobalBounds().width/2,potion.getGlobalBounds().height/2);
+	}
+	if(name == "Time Potion"){
+		if(potionTexture.loadFromFile("Sprites/Potions/time.png")){
+			potion.setTexture(potionTexture);
+		}
+		potion.setOrigin(potion.getGlobalBounds().width/2,potion.getGlobalBounds().height/2);
+	}
+	if(name == "Attack Potion"){
+		if(potionTexture.loadFromFile("Sprites/Potions/attack.png")){
+			potion.setTexture(potionTexture);
+		}
+		potion.setOrigin(potion.getGlobalBounds().width/2,potion.getGlobalBounds().height/2);
 	}
 
 }
@@ -38,7 +75,7 @@ void HealthPotion::Use(Player *player) {
     player->setCurrentHp(player->getMaxHp());
 }
 
-//Increases player mvoement speed and attackspeed
+//Increases player movement speed and attackspeed
 void SpeedPotion::Use(Player *player) {
 	player->buffs.push_back(std::pair <std::string, float>("Speed", 20.f));
 }

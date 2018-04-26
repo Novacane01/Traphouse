@@ -48,8 +48,8 @@ public:
 	 bool canMoveUp = false;
 	 bool canMoveDown = false;
 	 void Draw(sf::RenderWindow &);
-	 bool bIsSprinting;
-	 bool bCanSprint;
+	 bool bIsSprinting = false;
+	 bool bCanSprint = false;
 	 //Disables
 	 bool slowed = false, stunned = false, poisoned = false;
 	 sf::Clock poisonTimer;
@@ -66,13 +66,15 @@ public:
 	 Weapon& getCurrentWeapon();
 	 void switchWeapons();
 	 void setWeapon(Weapon &);
-	 bool bCanShoot;
+	 bool bCanShoot = false;
 	 sf::Clock shootTimer;
 
 	 //Potions
 	 std::vector<Potion *>& getPotions();
 	 Potion* getCurrentPotion();
+	 void setCurrentPotion(Potion* potion);
 	 void switchPotions();
+
 
 	 //UI
 	 void setUI();
@@ -95,6 +97,7 @@ private:
 	bool bIsDead;
 	float staminaUsage = .5f;
     int score = 0;
+    Potion* currentPotion = nullptr;
 
 	//UI
 	sf::RectangleShape healthBar;

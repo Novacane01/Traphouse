@@ -138,9 +138,43 @@ void GameManager::Start() {
                         if (player->getPotions().size() > 0) {
                             player->getCurrentPotion()->Use(player);
                             std::cout << player->getCurrentPotion()->getName() << " used" << std::endl;
-                            player->getPotions().erase(player->getPotions().begin());
+                            for(int i = 0; i < player->getPotions().size(); i++){
+                                if(player->getCurrentPotion() == player->getPotions()[i]){
+                                    player->getPotions().erase(player->getPotions().begin() + i);
+                                    if(i == 0){
+                                    	player->setCurrentPotion(player->getPotions()[0]);
+                                    } else{
+                                    	player->setCurrentPotion(player->getPotions()[i-1]);
+                                    }
+                                }
+                            }
+                        } else{
+                        	player->setCurrentPotion(nullptr);
                         }
                     }
+					if (event.key.code == sf::Keyboard::Q) {
+						if(player->getPotions().size() > 1){
+							for(int i = 0; i < player->getPotions().size(); i++){
+								if(player->getCurrentPotion() == player->getPotions()[i]){
+									if(i > 0){
+										player->setCurrentPotion(player->getPotions()[i-1]);
+									}
+								}
+							}
+						}
+                    }
+					if (event.key.code == sf::Keyboard::E) {
+						if(player->getPotions().size() > 1){
+							for(int i = 0; i < player->getPotions().size()- 1; i++){
+								if(player->getCurrentPotion() == player->getPotions()[i]){
+									if(player->getPotions()[i + 1] != nullptr){
+										player->setCurrentPotion(player->getPotions()[i+1]);
+										break;
+									}
+								}
+							}
+						}
+					}
                     if(event.key.code == sf::Keyboard::F){
                     	if(lmap->displayStairs(window, player)){
 							levelUp(lmap);
@@ -148,9 +182,11 @@ void GameManager::Start() {
                     	}
                     	if(lmap->displayChest1(window, player)){
                     		lmap->getChest1()->Open(player);
+                    		displayChestTime.restart();
                     	}
                     	if(lmap->displayChest2(window,player)){
 							lmap->getChest2()->Open(player);
+							displayChestTime.restart();
                     	}
                     }
                 } else if (event.type == sf::Event::KeyReleased) {
@@ -233,7 +269,11 @@ void GameManager::Start() {
                     Enemy::Destroy(Enemy::getEnemies().begin() + i);
                 }
             }
-            lmap->displayChestUI(player,window);
+
+            if(displayChestTime.getElapsedTime().asSeconds() < 5.f){
+                lmap->displayChestUI(player,window);
+            }
+
             player->Update(window, deltaTime); //Updates player position
             player->Draw(window); //Draws player to screen
             for (unsigned i = 0; i < player->getWeapons().size(); i++) {
@@ -628,22 +668,22 @@ void GameManager::spawnEnemies(LinkedMap* linkedMap) {
     int numOfEnemies = rand() % 3 + level;
 
     for (int i = 0; i < numOfEnemies; i++) {
-        Enemy::Spawn(new Skeleton("Skeleton", 100 + ((level - 1) * 20), 10 + ((level - 1) * 2)),
+        Enemy::Spawn(new Skeleton("Skeleton", 10 + ((level - 1) * 20), 10 + ((level - 1) * 2)),
                      linkedMap->getCurrentRoom());
     }
 
     numOfEnemies = rand() % 4 + level;
     for (int i = 0; i < numOfEnemies; i++) {
-        Enemy::Spawn(new Spider("Spider", 30 + ((level - 1) * 10), 2 + (level - 1)), linkedMap->getCurrentRoom());
+        Enemy::Spawn(new Spider("Spider", 3 + ((level - 1) * 10), 2 + (level - 1)), linkedMap->getCurrentRoom());
     }
 
     numOfEnemies = rand() % 1 + level;
     for (int i = 0; i < numOfEnemies; i++) {
-        Enemy::Spawn(new Troll("Troll", 400 + ((level - 1) * 20), 10 + ((level - 1) * 2)), linkedMap->getCurrentRoom());
+        Enemy::Spawn(new Troll("Troll", 40 + ((level - 1) * 20), 10 + ((level - 1) * 2)), linkedMap->getCurrentRoom());
     }
 
     numOfEnemies = rand() % 1;
     for (int i = 0; i < numOfEnemies; i++) {
-        Enemy::Spawn(new Demon("Demon", 30 + ((level - 1) * 10), 2 + (level - 1)), linkedMap->getCurrentRoom());
+        Enemy::Spawn(new Demon("Demon", 3 + ((level - 1) * 10), 2 + (level - 1)), linkedMap->getCurrentRoom());
     }
 }
