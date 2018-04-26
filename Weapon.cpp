@@ -1,4 +1,4 @@
-
+#include "stdafx.h"
 #include "GameManager.h"
 #include "Player.h"
 #include "Weapon.h"
@@ -78,6 +78,9 @@ void Weapon::playAudio(sf::SoundBuffer *buffer) {
 Weapon::Bullet Weapon::createBullet(Player* player, sf::RenderWindow &window) {
 	//Instantiating bullet
 	Bullet b;
+	if (player->empowered) {
+		b.bullet.setFillColor(sf::Color::Red);
+	}
 	if (type == "Sniper") {
 		b.velocity *= 5;
 	}

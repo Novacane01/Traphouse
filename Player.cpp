@@ -1,4 +1,4 @@
-
+#include "stdafx.h"
 #include "Player.h"
 #include "Chest.h"
 
@@ -254,12 +254,14 @@ void Player::Update(sf::RenderWindow &window, float dt) {
 		for (unsigned i = 0;i < disables.size();) {
 			if (disables[i].first == "Slow") {
 				slowed = true;
+				bCanRegenStamina = false;
 				currentWalkspeed = defaultWalkspeed / 2.f;
 				disables[i].second -= dTime;
 				if (disables[i].second <= 0) {
 					disables.erase(disables.begin() + i--);
 					currentWalkspeed = defaultWalkspeed;
 					slowed = false;
+					bCanRegenStamina = true;
 				}
 				else {
 					i++;
@@ -352,11 +354,18 @@ void Player::Update(sf::RenderWindow &window, float dt) {
 		bCanSprint = false;
 	}
 
+	if (slowed||stunned) {
+		bCanRegenStamina = false;
+	}
+	else {
+		bCanRegenStamina = true;
+	}
+
 	if ((bIsSprinting&&bCanSprint&&!slowed||energized)&&!stunned) {
 		currentWalkspeed = defaultWalkspeed*1.5f;
 		currentStamina -= (energized)?0.f:100.f*dt;
 	}
-	else if (currentStamina < 500.f&&!slowed) {
+	else if (currentStamina < maxStamina&&bCanRegenStamina) {
 		currentWalkspeed = defaultWalkspeed;
 		currentStamina += 100.f*dt;
 	}
@@ -381,7 +390,7 @@ void Player::Update(sf::RenderWindow &window, float dt) {
 		}
 	}
 
-	if (bCanShoot&&shootTimer.getElapsedTime().asSeconds() > ((triggerhappy) ? getCurrentWeapon().getAttackSpeed() / 2.f : getCurrentWeapon().getAttackSpeed())) {
+	if (bCanShoot&&shootTimer.getElapsedTime().asSeconds() > ((triggerhappy) ? getCurrentWeapon().getAttackSpeed() / 2.f : getCurrentWeapon().getAttackSpeed())&&!stunned) {
 		getCurrentWeapon().Shoot(this, window);
 		shootTimer.restart();
 	}
