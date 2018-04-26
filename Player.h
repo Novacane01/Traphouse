@@ -38,7 +38,7 @@ public:
 	 void MoveUp(float);
 	 void MoveDown(float);
 	 void MoveRight(float);
-	 void Update(sf::RenderWindow &window, float);
+	 void Update(sf::RenderWindow &, float);
 	 bool isMovingLeft = false;
 	 bool isMovingRight = false;
 	 bool isMovingUp = false;
@@ -48,9 +48,10 @@ public:
 	 bool canMoveUp = false;
 	 bool canMoveDown = false;
 	 void Draw(sf::RenderWindow &);
-	 bool bIsSprinting =  false;
-	 bool bCanSprint = false;
-	 bool bCanRegenStamina = false;
+	 bool bIsSprinting;
+	 bool bCanSprint;
+	 bool bCanRegenStamina;
+
 	 //Disables
 	 bool slowed = false, stunned = false, poisoned = false;
 	 sf::Clock poisonTimer;

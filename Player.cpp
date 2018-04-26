@@ -322,7 +322,9 @@ void Player::Update(sf::RenderWindow &window, float dt) {
 	else if (currentStamina <= 0) {
 		bCanSprint = false;
 	}
-
+	if (currentStamina >= maxStamina) {
+		currentStamina = maxStamina;
+	}
 	if (slowed||stunned) {
 		bCanRegenStamina = false;
 	}
