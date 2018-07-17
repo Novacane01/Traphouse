@@ -1,36 +1,25 @@
-#include "stdafx.h"
 #include "Player.h"
 #include "Chest.h"
 
 
 //Player Constructor
-Player::Player(std::string name, float hp, float walkspeed, float maxStamina):maxHp(hp),defaultWalkspeed(walkspeed){
-	setName(name);
-	setCurrentHp(maxHp);
-	setMaxStamina(maxStamina);
-	setCurrentStamina(this->maxStamina);
-	setCurrentWalkSpeed(walkspeed);
-	player.setOrigin(20,20);
-	player.setPosition(0,0);
-	score = 0;
-	setTexture("Sprites/PlayerAnims/Walking/Walking1.png");
-	weaponInventory.push_back(*Weapon::weaponList["defaultPistol"]);
-	std::cout << "\'Pistol\' added to inventory" << std::endl;
-	//weaponInventory.push_back(*Weapon::weaponList["assaultRifle"]);
-	//std::cout << "\'Shotgun\' added to inventory" << std::endl;
-	//potionInventory.push_back(new TimePotion());
-	//potionInventory.push_back(new AttackPotion());
-	//std::cout << "\'Health Potion' added to inventory" << std::endl;
-	//weaponInventory.push_back(pickups.assaultRifle);
-	//weaponInventory.push_back(pickups.boltSniper);
-	//std::cout << "\'Minigun\' added to inventory" << std::endl;
-	//weaponInventory.push_back(pickups.defaultKnife);
-	//std::cout << "\'Knife\' added to inventory" << std::endl;
-
+Player::Player(std::string name, float hp, float walkspeed, float maxStamina):maxHp(hp),defaultWalkspeed(walkspeed) { //player constructor
+    setName(name);
+    setCurrentHp(maxHp);
+    setMaxStamina(maxStamina);
+    setCurrentStamina(this->maxStamina);
+    setCurrentWalkSpeed(walkspeed);
+    player.setOrigin(20, 20);
+    player.setPosition(0, 0);
+    score = 0;
+    setTexture("Sprites/PlayerAnims/Walking/Walking1.png");
+    weaponInventory.push_back(*Weapon::weaponList["defaultPistol"]);
+    std::cout << "\'Pistol\' added to inventory" << std::endl;
 }
 
+
 //Sets UI
-void Player::setUI() {
+void Player::setUI() { // UI for name, score, health and stamina
 	font.loadFromFile("Fonts/light_pixel-7.ttf");
 
 	healthBar.setFillColor(sf::Color::Red);
@@ -48,7 +37,18 @@ void Player::setUI() {
 	hpNum.setCharacterSize(15);
 	hpNum.setFont(font);
 
-
+	sf::RectangleShape tempSlot;
+	tempSlot.setSize(sf::Vector2f(35,42));
+	sf::Color color(100,100,100);
+	tempSlot.setFillColor(color);
+	tempSlot.setOrigin(tempSlot.getSize().x/2,tempSlot.getSize().y/2);
+	tempSlot.setOutlineThickness(5);
+	tempSlot.setOutlineColor(sf::Color::Transparent);
+	potionSlots.push_back(tempSlot);
+	potionSlots.push_back(tempSlot);
+	potionSlots.push_back(tempSlot);
+	potionSlots.push_back(tempSlot);
+	potionSlots.push_back(tempSlot);
 }
 
 //Sets player name
@@ -57,13 +57,13 @@ void Player::setName(std::string value) {
 }
 
 //Returns player name
-const std::string Player::getName() const{
+const std::string Player::getName() const{ //getter and setters for name
 
     return name;
 }
 
 //Sets player currentStamina
-void Player::setCurrentStamina(float value) {
+void Player::setCurrentStamina(float value) { //set stamina
 	currentStamina = value;
 }
 
@@ -112,7 +112,7 @@ float Player::getDefaultWalkspeed() const {
 	return defaultWalkspeed;
 }
 
-void Player::setScore(int scoreValue){
+void Player::setScore(int scoreValue){ //incrementing score
 	score += scoreValue;
 }
 
@@ -139,7 +139,7 @@ void Player::MoveLeft(float dt) {
 
 //Moves player up
 void Player::MoveUp(float dt) {
-	player.move(0, -(dt*currentWalkspeed));
+	player.move(0, -(dt*currentWalkspeed)); //most of this is self explanatory
 }
 
 //Movbes player down
@@ -158,7 +158,7 @@ bool Player::isDead() const{
 }
 
 //Displays player info to screen
-void Player::displayPlayerInfo(sf::RenderWindow &window) {
+void Player::displayPlayerInfo(sf::RenderWindow &window) { //displaying all info about player
 	if (poisoned) {
 		healthBar.setFillColor(sf::Color::Magenta);
 	}
@@ -178,13 +178,48 @@ void Player::displayPlayerInfo(sf::RenderWindow &window) {
 
     //places current health above health bar, centered
     hpNum.setString(std::to_string((int)currentHp) + "/" + std::to_string((int)maxHp));
-    hpNum.setPosition(healthBar.getPosition().x + healthBar.getSize().x/2 - hpNum.getGlobalBounds().width/2, healthBar.getPosition().y - 30);
-
+    if(hpNum.getGlobalBounds().left  > (window.getView().getCenter().x-window.getView().getSize().x/2 + 40)){
+        hpNum.setPosition(healthBar.getPosition().x + healthBar.getSize().x/2 - hpNum.getGlobalBounds().width/2, healthBar.getPosition().y - 30);
+    } else{
+        hpNum.setPosition((window.getView().getCenter().x-window.getView().getSize().x/2) + 40, healthBar.getPosition().y - 30);
+    }
     //gets current player score and sets UI to that
     playerScore.setString("Score: " + std::to_string(score));
     //Places player score in top right corner of view
     playerScore.setPosition(window.getView().getCenter().x + window.getView().getSize().x/2 - 240, window.getView().getCenter().y - window.getView().getSize().y/2 + 20);
 
+    getCurrentWeapon().weaponImage.setPosition(window.getView().getCenter().x + 410, window.getView().getCenter().y + 380);
+
+    potionSlots[0].setPosition(window.getView().getCenter().x - window.getView().getSize().x/2 + 35,window.getView().getCenter().y + window.getView().getSize().y/2 - 40);
+    potionSlots[1].setPosition(potionSlots[0].getPosition().x + 55, potionSlots[0].getPosition().y);
+    potionSlots[2].setPosition(potionSlots[1].getPosition().x + 55, potionSlots[1].getPosition().y);
+    potionSlots[3].setPosition(potionSlots[2].getPosition().x + 55, potionSlots[2].getPosition().y);
+    potionSlots[4].setPosition(potionSlots[3].getPosition().x + 55, potionSlots[3].getPosition().y);
+
+    window.draw(potionSlots[0]);
+    window.draw(potionSlots[1]);
+    window.draw(potionSlots[2]);
+    window.draw(potionSlots[3]);
+    window.draw(potionSlots[4]);
+
+	for(int i = 0; i< potionInventory.size(); i++){
+		if(i == 5){
+			break;
+		}
+		if(potionInventory[i] == currentPotion){
+			potionSlots[i].setOutlineColor(sf::Color::Red);
+		} else{
+			potionSlots[i].setOutlineColor(sf::Color::Transparent);
+		}
+
+		potionInventory[i]->potion.setPosition(potionSlots[i].getPosition());
+		window.draw(potionInventory[i]->getPotionSprite());
+	}
+
+	for(int i = (int)potionInventory.size(); i < 5; i++){
+		potionSlots[i].setOutlineColor(sf::Color::Transparent);
+	}
+    window.draw(getCurrentWeapon().weaponImage);
     window.draw(playerScore);
     window.draw(playerName);
     window.draw(staminaBar);
@@ -202,12 +237,14 @@ void Player::Update(sf::RenderWindow &window, float dt) {
 		for (unsigned i = 0;i < disables.size();) {
 			if (disables[i].first == "Slow") {
 				slowed = true;
+				bCanRegenStamina = false;
 				currentWalkspeed = defaultWalkspeed / 2.f;
 				disables[i].second -= dTime;
 				if (disables[i].second <= 0) {
 					disables.erase(disables.begin() + i--);
 					currentWalkspeed = defaultWalkspeed;
 					slowed = false;
+					bCanRegenStamina = true;
 				}
 				else {
 					i++;
@@ -251,7 +288,7 @@ void Player::Update(sf::RenderWindow &window, float dt) {
 				energized = true;
 				buffs[i].second -= bTime;
 				if (buffs[i].second <= 0) {
-					buffs.erase(buffs.begin() + i--);
+					buffs.erase(buffs.begin() + i--); //stamina work
 					energized = false;
 				}
 				else {
@@ -260,7 +297,6 @@ void Player::Update(sf::RenderWindow &window, float dt) {
 			}
 			else if (buffs[i].first == "Attack") {
 				empowered = true;
-				std::cout << buffs[i].second - bTime << " seconds left" << std::endl;
 				buffs[i].second -= bTime;
 				if (buffs[i].second <= 0) {
 					buffs.erase(buffs.begin() + i--);
@@ -294,18 +330,27 @@ void Player::Update(sf::RenderWindow &window, float dt) {
 			}
 		}
 	}
-	if (currentStamina >= maxStamina) {
+	if (currentStamina >= maxStamina) { //can or cannot sprint
 		bCanSprint = true;
 	}
 	else if (currentStamina <= 0) {
 		bCanSprint = false;
+	}
+	if (currentStamina >= maxStamina) {
+		currentStamina = maxStamina;
+	}
+	if (slowed||stunned) {
+		bCanRegenStamina = false;
+	}
+	else {
+		bCanRegenStamina = true;
 	}
 
 	if ((bIsSprinting&&bCanSprint&&!slowed||energized)&&!stunned) {
 		currentWalkspeed = defaultWalkspeed*1.5f;
 		currentStamina -= (energized)?0.f:100.f*dt;
 	}
-	else if (currentStamina < 500.f&&!slowed) {
+	else if (currentStamina < maxStamina&&bCanRegenStamina) {
 		currentWalkspeed = defaultWalkspeed;
 		currentStamina += 100.f*dt;
 	}
@@ -322,7 +367,7 @@ void Player::Update(sf::RenderWindow &window, float dt) {
 		if (isMovingDown&&canMoveDown) {
 			MoveDown(dt);
 		}
-		if (isMovingRight&&canMoveRight) {
+		if (isMovingRight&&canMoveRight) { //stun function
 			MoveRight(dt);
 		}
 		if (isMovingLeft&&canMoveLeft) {
@@ -330,7 +375,7 @@ void Player::Update(sf::RenderWindow &window, float dt) {
 		}
 	}
 
-	if (bCanShoot&&shootTimer.getElapsedTime().asSeconds() > ((triggerhappy) ? getCurrentWeapon().getAttackSpeed() / 2.f : getCurrentWeapon().getAttackSpeed())) {
+	if (bCanShoot&&shootTimer.getElapsedTime().asSeconds() > ((triggerhappy) ? getCurrentWeapon().getAttackSpeed() / 2.f : getCurrentWeapon().getAttackSpeed())&&!stunned) {
 		getCurrentWeapon().Shoot(this, window);
 		shootTimer.restart();
 	}
@@ -361,6 +406,10 @@ std::vector<Weapon>& Player::getWeapons() {
 	return weaponInventory;
 }
 
+void Player::pickUpWeapon(Weapon &weapon) {
+	weaponInventory[0] = weapon;
+}
+
 //Returns potion iniventory
 std::vector<Potion *>& Player::getPotions() {
 	return potionInventory;
@@ -368,7 +417,11 @@ std::vector<Potion *>& Player::getPotions() {
 
 //Returns current potion
 Potion* Player::getCurrentPotion() {
-	return potionInventory[0];
+	return currentPotion;
+}
+
+void Player::setCurrentPotion(Potion* potion){
+    currentPotion = potion;
 }
 
 //Swaps potions
@@ -385,7 +438,10 @@ void Player::switchPotions() {
 
 //Sets current weapon
 void Player::setWeapon(Weapon &weapon) {
-	weaponInventory[0] = weapon;
+    std::vector<Weapon> temp = weaponInventory;
+    weaponInventory.clear();
+    weaponInventory.push_back(weapon);
+	weaponInventory.push_back(temp[temp.size()-1]);
 	std::cout << "Weapon set to \"" << weapon.getName() << "\"" << std::endl;
 }
 
@@ -402,6 +458,71 @@ void Player::switchWeapons() {
 		}
 		getCurrentWeapon().bIsReloading = false;
 		getCurrentWeapon().bCanReload = true;
+
+		std::string gunName = getCurrentWeapon().getName();
+
+        if(gunName == "M1911")
+        {
+            player.setOrigin(20, 20);
+            setTexture("Sprites/PlayerAnims/Walking/WalkingM1911.png");
+
+        }
+        if(gunName == "Desert Eagle")
+        {
+            player.setOrigin(27, 20);
+
+            setTexture("Sprites/PlayerAnims/Walking/WalkingDesertEagle.png");
+
+        }
+        if(gunName == "L96A1")
+        {
+            player.setOrigin(32, 20);
+
+            setTexture("Sprites/PlayerAnims/Walking/WalkingL96A1.png");
+
+        }
+        if(gunName == "M14")
+        {
+            player.setOrigin(32, 20);
+
+            setTexture("Sprites/PlayerAnims/Walking/WalkingM14.png");
+
+        }
+        if(gunName == "KSG")
+        {
+            player.setOrigin(32, 20);
+
+            setTexture("Sprites/PlayerAnims/Walking/WalkingKSG.png");
+
+        }
+        if(gunName == "AK47")
+        {
+            player.setOrigin(32, 20);
+
+            setTexture("Sprites/PlayerAnims/Walking/WalkingAK47.png");
+
+        }
+        if(gunName == "Minigun")
+        {
+            player.setOrigin(32, 20);
+
+            setTexture("Sprites/PlayerAnims/Walking/WalkingMinigun.png");
+
+        }
+        if(gunName == "Barrett .50 Cal")
+        {
+            player.setOrigin(32, 20);
+
+            setTexture("Sprites/PlayerAnims/Walking/WalkingBarrett.png");
+
+        }
+        if(gunName == "MP40")
+        {
+            player.setOrigin(32, 20);
+
+            setTexture("Sprites/PlayerAnims/Walking/WalkingMP40.png");
+
+        }
 	}
 }
 

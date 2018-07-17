@@ -12,10 +12,12 @@ public:
 	const double getDropChance() const;
 	void setUI();
 	void displayPotionInfo(sf::RenderWindow &, Player *);
-
-protected:
+	sf::Sprite getPotionSprite();
 	sf::Sprite potion;
+protected:
+
 	sf::Text potionName;
+	sf::Texture potionTexture;
 	sf::Font font;
     const std::string name;
     const double dropChance;

@@ -34,6 +34,9 @@ public:
 	LinkedMap(int,int);
 	room* head;
 
+	Chest* chest1;
+	Chest* chest2;
+	void displayChestUI(Player*, sf::RenderWindow&);
 	void doesCollide(Player *);
 	bool doesIntersect(LinkedMap::room* current);
 	void addRooms(int rooms,room* current, sf::RenderWindow &);
@@ -54,8 +57,8 @@ public:
 	void findChestRoom(room* current);
 	void placeChests();
 	void placeChestText();
-	bool displayChest1(sf::RenderWindow &window, Player* player);
-	bool displayChest2(sf::RenderWindow &window, Player* player);
+	bool displayChest1(sf::RenderWindow &window, Player* player,bool);
+	bool displayChest2(sf::RenderWindow &window, Player* player,bool);
 	LinkedMap::room* getChestRoom1();
 	LinkedMap::room* getChestRoom2();
 	Chest* getChest1();
@@ -70,9 +73,6 @@ private:
     room* levelUpRoom = nullptr;
 	room* chestRoom = nullptr;
 	room* chestRoom2 = nullptr;
-
-	Chest* chest1;
-	Chest* chest2;
 
 	//counts
     int roomsToAdd;

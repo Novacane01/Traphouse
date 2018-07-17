@@ -18,12 +18,14 @@ public:
 	GameManager(int, int);
 	void setWindowWidth(int);
 	void setWindowLength(int);
-	void Start();
+	bool Start();
 	void LoadingScreen();
 	Player* createPlayer();
 	void spawnEnemies(LinkedMap*);
 
-	void GameOver();
+	void restrictMovement();
+
+	bool GameOver(float);
 	void Pause();
 	void DisplayMap(Player *, LinkedMap*);
 	void levelUp(LinkedMap* lmap);
@@ -33,8 +35,14 @@ private:
 	sf::View view;
 	sf::RenderWindow window;
 	bool paused;
+	bool inFunction;
 
-	Player *player;
+	Player *player = nullptr;
 	int level;
 	sf::View roomView;
+	sf::Clock displayChestTime;
+	bool chestIsLookedAt = false;
+	bool chestIsLookedAt2 = false;
+	bool isDemonSpawned = false;
 };
+

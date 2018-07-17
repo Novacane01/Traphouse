@@ -38,7 +38,7 @@ public:
 	 void MoveUp(float);
 	 void MoveDown(float);
 	 void MoveRight(float);
-	 void Update(sf::RenderWindow &window, float);
+	 void Update(sf::RenderWindow &, float);
 	 bool isMovingLeft = false;
 	 bool isMovingRight = false;
 	 bool isMovingUp = false;
@@ -48,8 +48,10 @@ public:
 	 bool canMoveUp = false;
 	 bool canMoveDown = false;
 	 void Draw(sf::RenderWindow &);
-	 bool bIsSprinting;
-	 bool bCanSprint;
+	 bool bIsSprinting = false;
+	 bool bCanSprint = true;
+	 bool bCanRegenStamina = false;
+
 	 //Disables
 	 bool slowed = false, stunned = false, poisoned = false;
 	 sf::Clock poisonTimer;
@@ -66,13 +68,16 @@ public:
 	 Weapon& getCurrentWeapon();
 	 void switchWeapons();
 	 void setWeapon(Weapon &);
-	 bool bCanShoot;
+	 void pickUpWeapon(Weapon &);
+	 bool bCanShoot = false;
 	 sf::Clock shootTimer;
 
 	 //Potions
 	 std::vector<Potion *>& getPotions();
 	 Potion* getCurrentPotion();
+	 void setCurrentPotion(Potion* potion);
 	 void switchPotions();
+
 
 	 //UI
 	 void setUI();
@@ -95,7 +100,8 @@ private:
 	bool bIsDead;
 	float staminaUsage = .5f;
     int score = 0;
-public:
+    Potion* currentPotion = nullptr;
+
 	//UI
 	sf::RectangleShape healthBar;
 	sf::RectangleShape staminaBar;
@@ -103,4 +109,6 @@ public:
 	sf::Text hpNum;
 	sf::Font font;
 	sf::Text playerScore;
+	std::vector<sf::RectangleShape> potionSlots;
+
 };
