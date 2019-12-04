@@ -6,6 +6,7 @@
 #include "Player.h"
 #include "UI/StartScreen.h"
 #include "UI/CreatePlayerScreen.h"
+#include "UI/PauseScreen.h"
 #include <random>
 #include <iostream>
 #include <string>
@@ -21,14 +22,14 @@ public:
 	void setWindowWidth(int);
 	void setWindowLength(int);
 	bool Start();
-	
 	void spawnEnemies(LinkedMap*);
 	void restrictMovement();
 	bool GameOver(float);
-	void Pause();
 	void DisplayMap(Player *, LinkedMap*);
 	void levelUp(LinkedMap* lmap);
 	void changeView(LinkedMap*, float);
+
+	
 private:
 	sf::Font font;
 	sf::View view;
@@ -38,6 +39,7 @@ private:
 
 	StartScreen startScreen;
 	CreatePlayerScreen playerCreationScreen;
+	PauseScreen pauseScreen;
 
 	Player *player = nullptr;
 	int level;

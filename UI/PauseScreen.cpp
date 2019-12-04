@@ -1,30 +1,33 @@
-#include "CreatePlayerScreen.h"
+#include "PauseScreen.h"
 
-CreatePlayerScreen::CreatePlayerScreen(sf::Font& font) : textBox(sf::Vector2f(250, 50))
+PauseScreen::PauseScreen(sf::Font &font)
 {
-    textBox.setOrigin(textBox.getSize().x / 2, textBox.getSize().y / 2);
-	textBox.setFillColor(sf::Color::Transparent);
-	textBox.setOutlineColor(sf::Color::Red);
-	textBox.setOutlineThickness(2);
+	resume.setFont(font);
+	resume.setCharacterSize(48);
+	resume.setString("Resume");
+	resume.setOrigin(resume.getGlobalBounds().width / 2, resume.getGlobalBounds().height / 2);
+	//resume.setPosition(window.getView().getCenter().x, window.getView().getCenter().y - 200);
 
-    nameInput.setFont(font);
-	nameInput.setOrigin(nameInput.getGlobalBounds().width / 2, nameInput.getGlobalBounds().height / 2);
-	nameInput.setCharacterSize(25);
-	nameInput.setFillColor(sf::Color::White);
-
-	namePrompt.setFont(font);
-	namePrompt.setString("Enter your name:");
-	namePrompt.setOrigin(namePrompt.getGlobalBounds().width / 2, namePrompt.getGlobalBounds().height / 2);
-	namePrompt.setFillColor(sf::Color::White);
+	//Adds quit button to menu screen
+	exit.setFont(font);
+	exit.setCharacterSize(48);
+	exit.setString("Quit");
+	exit.setOrigin(exit.getGlobalBounds().width / 2, exit.getGlobalBounds().height / 2);
+	//exit.setPosition(window.getView().getCenter().x, window.getView().getCenter().y);
 }
 
-std::string CreatePlayerScreen::draw(sf::RenderWindow &window)
+void PauseScreen::draw(sf::RenderWindow &window)
 {
-	window.setKeyRepeatEnabled(true);
+	sf::Music music;
+	if (!music.openFromFile("Music/PauseMusic.wav"))
+	{
+		std::cout << "Could not open music file" << std::endl;
+	}
+	music.play();
+	music.setLoop(true);
 
-	textBox.setPosition(window.getView().getCenter().x, window.getView().getCenter().y);
-	nameInput.setPosition(textBox.getPosition().x, textBox.getPosition().y - 16);
-	namePrompt.setPosition(window.getView().getCenter().x - 100, window.getView().getCenter().y - 100);
+	resume.setPosition(window.getView().getCenter().x, window.getView().getCenter().y - 200);
+	exit.setPosition(window.getView().getCenter().x, window.getView().getCenter().y);
 
 	while (window.isOpen())
 	{
@@ -33,33 +36,55 @@ std::string CreatePlayerScreen::draw(sf::RenderWindow &window)
 		{
 			if (event.type == sf::Event::KeyPressed)
 			{
-				if (event.key.code == sf::Keyboard::BackSpace && playerName.size() > 0)
+				if (event.key.code == sf::Keyboard::Escape)
 				{
-					playerName = playerName.substr(0, playerName.size() - 1);
-					nameInput.setString(playerName);
-					nameInput.setPosition(nameInput.getPosition().x + (textBox.getSize().x / (nameInput.getCharacterSize() * 1.15f)), nameInput.getPosition().y);
-				}
-				if (playerName.size() > 0 && event.key.code == sf::Keyboard::Return)
-				{
-					window.setKeyRepeatEnabled(false);
-					return playerName;
+					return;
 				}
 			}
-			if (event.type == sf::Event::TextEntered && (char)event.text.unicode != '\b' && playerName.size() < 10)
-			{
-				playerName += (char)event.text.unicode;
-				nameInput.setString(playerName);
-				nameInput.setPosition(nameInput.getPosition().x - (textBox.getSize().x / (nameInput.getCharacterSize() * 1.15f)), nameInput.getPosition().y);
-			}
-			if (event.type == event.Closed)
+			else if (event.type == event.Closed)
 			{
 				window.close();
 			}
+			else if (event.type == sf::Event::MouseMoved)
+			{
+				//Activates buttons if pressed, respectively
+				if (resume.getGlobalBounds().contains(window.mapPixelToCoords(sf::Mouse::getPosition(window))))
+				{
+					resume.setCharacterSize(58); //enlarges text when mouse is hovering over
+					resume.setOrigin(resume.getGlobalBounds().width / 2, resume.getGlobalBounds().height / 2);
+					resume.setPosition(window.getView().getCenter().x, window.getView().getCenter().y - 200);
+				}
+				else if (exit.getGlobalBounds().contains(window.mapPixelToCoords(sf::Mouse::getPosition(window))))
+				{
+					exit.setCharacterSize(58); //enlarges text when mouse is hovering over
+					exit.setOrigin(exit.getGlobalBounds().width / 2, exit.getGlobalBounds().height / 2);
+					exit.setPosition(window.getView().getCenter().x, window.getView().getCenter().y);
+				}
+				else
+				{
+					resume.setCharacterSize(48);
+					resume.setOrigin(resume.getGlobalBounds().width / 2, resume.getGlobalBounds().height / 2);
+					resume.setPosition(window.getView().getCenter().x, window.getView().getCenter().y - 200);
+					exit.setCharacterSize(48);
+					exit.setOrigin(exit.getGlobalBounds().width / 2, exit.getGlobalBounds().height / 2);
+					exit.setPosition(window.getView().getCenter().x, window.getView().getCenter().y);
+				}
+			}
+			else if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Left))
+			{
+				if (resume.getGlobalBounds().contains(window.mapPixelToCoords(sf::Mouse::getPosition(window))))
+				{
+					return;
+				}
+				else if (exit.getGlobalBounds().contains(window.mapPixelToCoords(sf::Mouse::getPosition(window))))
+				{
+					window.close();
+				}
+			}
 		}
 		window.clear();
-		window.draw(nameInput);
-		window.draw(namePrompt);
-		window.draw(textBox);
+		window.draw(resume);
+		window.draw(exit);
 		window.display();
 	}
 }

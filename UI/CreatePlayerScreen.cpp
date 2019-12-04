@@ -24,7 +24,7 @@ std::string CreatePlayerScreen::draw(sf::RenderWindow &window)
 
 	textBox.setPosition(window.getView().getCenter().x, window.getView().getCenter().y);
 	nameInput.setPosition(textBox.getPosition().x, textBox.getPosition().y - 16);
-	namePrompt.setPosition(window.getView().getCenter().x - 100, window.getView().getCenter().y - 100);
+	namePrompt.setPosition(window.getView().getCenter().x - 150, window.getView().getCenter().y - 100);
 
 	while (window.isOpen())
 	{

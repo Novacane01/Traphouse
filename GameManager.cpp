@@ -4,7 +4,7 @@
 
 unsigned WINDOW_LENGTH, WINDOW_WIDTH;
 //Game Manager Constructor
-GameManager::GameManager(int width, int length) : startScreen(font), playerCreationScreen(font)
+GameManager::GameManager(int width, int length) : startScreen(font), playerCreationScreen(font), pauseScreen(font)
 {
 	setWindowLength(length);
 	setWindowWidth(width);
@@ -154,11 +154,13 @@ bool GameManager::Start()
 						inFunction = true;
 						paused = true;
 						music.pause();
-						Pause();
+						
+						pauseScreen.draw(window);
+
 						music.play();
-						while (window.pollEvent(event))
-						{
-						}
+						// while (window.pollEvent(event))
+						// {
+						// }
 					}
 					if (event.key.code == sf::Keyboard::X)
 					{
@@ -600,87 +602,6 @@ void GameManager::levelUp(LinkedMap *lmap)
 	level++;
 	player->getPlayer().setPosition(0, 0);
 	Start();
-}
-
-void GameManager::Pause()
-{
-	sf::Music music;
-	if (!music.openFromFile("Music/PauseMusic.wav"))
-	{
-		std::cout << "Could not open music file" << std::endl;
-	}
-	music.play();
-	music.setLoop(true);
-	sf::Event event;
-	sf::Text resumeButton;
-	resumeButton.setFont(font);
-	resumeButton.setCharacterSize(48);
-	resumeButton.setString("Resume");
-	resumeButton.setOrigin(resumeButton.getGlobalBounds().width / 2, resumeButton.getGlobalBounds().height / 2);
-	resumeButton.setPosition(window.getView().getCenter().x, window.getView().getCenter().y - 200);
-
-	//Adds quit button to menu screen
-	sf::Text exitButton;
-	exitButton.setFont(font);
-	exitButton.setCharacterSize(48);
-	exitButton.setString("Quit");
-	exitButton.setOrigin(exitButton.getGlobalBounds().width / 2, exitButton.getGlobalBounds().height / 2);
-	exitButton.setPosition(window.getView().getCenter().x, window.getView().getCenter().y);
-
-	while (window.isOpen())
-	{
-		//Activates buttons if pressed, respectively
-		if (resumeButton.getGlobalBounds().contains(window.mapPixelToCoords(sf::Mouse::getPosition(window))))
-		{
-			resumeButton.setCharacterSize(58); //enlarges text when mouse is hovering over
-			resumeButton.setOrigin(resumeButton.getGlobalBounds().width / 2, resumeButton.getGlobalBounds().height / 2);
-			resumeButton.setPosition(window.getView().getCenter().x, window.getView().getCenter().y - 200);
-			if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Left))
-			{
-				return;
-			}
-		}
-		else
-		{
-			resumeButton.setCharacterSize(48);
-			resumeButton.setOrigin(resumeButton.getGlobalBounds().width / 2, resumeButton.getGlobalBounds().height / 2);
-			resumeButton.setPosition(window.getView().getCenter().x, window.getView().getCenter().y - 200);
-		}
-		if (exitButton.getGlobalBounds().contains(window.mapPixelToCoords(sf::Mouse::getPosition(window))))
-		{
-			exitButton.setCharacterSize(58); //enlarges text when mouse is hovering over
-			exitButton.setOrigin(exitButton.getGlobalBounds().width / 2, exitButton.getGlobalBounds().height / 2);
-			exitButton.setPosition(window.getView().getCenter().x, window.getView().getCenter().y);
-			if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Left))
-			{
-				window.close();
-			}
-		}
-		else
-		{
-			exitButton.setCharacterSize(48);
-			exitButton.setOrigin(exitButton.getGlobalBounds().width / 2, exitButton.getGlobalBounds().height / 2);
-			exitButton.setPosition(window.getView().getCenter().x, window.getView().getCenter().y);
-		}
-		while (window.pollEvent(event))
-		{
-			if (event.type == sf::Event::KeyPressed)
-			{
-				if (event.key.code == sf::Keyboard::Escape)
-				{
-					return;
-				}
-			}
-			if (event.type == event.Closed)
-			{
-				window.close();
-			}
-		}
-		window.clear();
-		window.draw(resumeButton);
-		window.draw(exitButton);
-		window.display();
-	}
 }
 
 void GameManager::DisplayMap(Player *player, LinkedMap *linkedMap)

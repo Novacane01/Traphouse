@@ -5,13 +5,11 @@
 #include <cmath>
 #include <string>
 
-class CreatePlayerScreen{
-    sf::Text nameInput;
-	sf::Text namePrompt;
-    sf::RectangleShape textBox;
-    std::string playerName;
-
+class PauseScreen{
+    sf::Text resume;
+	sf::Text exit;
+  
     public:
-        CreatePlayerScreen(sf::Font&);
-        std::string draw(sf::RenderWindow& window);
+        PauseScreen(sf::Font&);
+        void draw(sf::RenderWindow& window);
 };
