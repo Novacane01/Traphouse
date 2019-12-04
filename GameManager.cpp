@@ -18,6 +18,7 @@ GameManager::GameManager(int width, int length) {
 
 	//Starts loading screen
 	LoadingScreen();
+	
 	//sets size and shape of health, stamina and name for player
 	if (player != nullptr) {
 		player->setUI();

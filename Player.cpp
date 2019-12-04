@@ -15,6 +15,12 @@ Player::Player(std::string name, float hp, float walkspeed, float maxStamina):ma
     setTexture("Sprites/PlayerAnims/Walking/Walking1.png");
     weaponInventory.push_back(*Weapon::weaponList["defaultPistol"]);
     std::cout << "\'Pistol\' added to inventory" << std::endl;
+
+    potionInventory.push_back(new HealthPotion);
+
+    if(potionInventory.size() > 0){
+    	currentPotion = potionInventory[0];
+    }
 }
 
 

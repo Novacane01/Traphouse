@@ -511,7 +511,7 @@ void Troll::Animate(Player *player) {
 			if (DeathRect.left >= 1427) {
 				if (deathTimer.getElapsedTime().asSeconds() > 2.f) {
 					bIsDead = true;
-					player->setScore(player->getScore() + scoreValue);
+					player->setScore(scoreValue);
 				}
 			}
 			else {
