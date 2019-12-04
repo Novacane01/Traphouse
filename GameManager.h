@@ -4,6 +4,8 @@
 #include "Enemy.h"
 #include "LinkedMap.h"
 #include "Player.h"
+#include "UI/StartScreen.h"
+#include "UI/CreatePlayerScreen.h"
 #include <random>
 #include <iostream>
 #include <string>
@@ -19,12 +21,9 @@ public:
 	void setWindowWidth(int);
 	void setWindowLength(int);
 	bool Start();
-	void LoadingScreen();
-	Player* createPlayer();
+	
 	void spawnEnemies(LinkedMap*);
-
 	void restrictMovement();
-
 	bool GameOver(float);
 	void Pause();
 	void DisplayMap(Player *, LinkedMap*);
@@ -36,6 +35,9 @@ private:
 	sf::RenderWindow window;
 	bool paused;
 	bool inFunction;
+
+	StartScreen startScreen;
+	CreatePlayerScreen playerCreationScreen;
 
 	Player *player = nullptr;
 	int level;
