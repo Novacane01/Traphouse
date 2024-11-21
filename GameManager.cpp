@@ -123,7 +123,7 @@ bool GameManager::Start() {
 					if (event.key.code == sf::Keyboard::R &&
 						player->getCurrentWeapon().getCurrentClip() < player->getCurrentWeapon().getMaxClip()) {
 						player->getCurrentWeapon().bIsReloading = true;
-						player->getCurrentWeapon().playAudio(&player->getCurrentWeapon().FXreload);
+						player->getCurrentWeapon().playAudioFire();
 					}
 					if (event.key.code == sf::Keyboard::LShift) {
 						player->bIsSprinting = true;
@@ -563,12 +563,15 @@ bool GameManager::GameOver(float dt) {
 		window.draw(exitButton);
 		window.display();
 	}
+
+	return true;
 }
 
 void GameManager::LoadingScreen() {
 	sf::Music music;
 	if (!music.openFromFile("Music/LoadingScreen.wav")) {
 		std::cout << "Could not open music file"<<std::endl;
+		return;
 	}
 	music.play();
 	music.setLoop(true);

@@ -40,6 +40,10 @@ float attackSpeed, float reloadTime, float Deviation, float DropChance, std::str
 	setReloadTime(reloadTime);
 	loadBuffer(FXgunshot, soundFX);
 	loadBuffer(FXreload, "SFX/Guns/Reload.wav");
+	
+	fireSound = new sf::Sound(FXgunshot);
+	reloadSound = new sf::Sound(FXreload);
+
 	setUI(weaponUI);
 }
 
@@ -56,21 +60,28 @@ void Weapon::Shoot(Player *player,sf::RenderWindow &window) {
 		}
 		//Subtracting from current ammo
 		player->getCurrentWeapon().setCurrentClip(player->getCurrentWeapon().getCurrentClip() - 1);
-		std::thread(&Weapon::playAudio, this,&FXgunshot).detach();
+		std::thread(&Weapon::playAudioFire, this).detach();
 	}
 	else if (player->getCurrentWeapon().getCurrentClip()==0) {
 		if (!bIsReloading) {
 			bIsReloading = true;
-			std::thread(&Weapon::playAudio, this, &FXreload).detach();
+			std::thread(&Weapon::playAudioReload, this).detach();
 		}
 	}
 	
 }
 
 //Plays Audio
-void Weapon::playAudio(sf::SoundBuffer *buffer) {
-	sf::Sound *s = new sf::Sound(*buffer);
-	s->play();
+void Weapon::playAudioFire() {
+
+	fireSound->play();
+
+}
+
+void Weapon::playAudioReload() {
+
+	reloadSound->play();
+
 }
 
 //Creates bullet
@@ -329,4 +340,7 @@ void Weapon::displayWeaponInfo(sf::RenderWindow &window) {
 //Weapon Deconstructor
 Weapon::~Weapon() {
 
+	delete fireSound;
+	delete reloadSound;
+	
 }

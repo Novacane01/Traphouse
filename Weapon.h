@@ -1,6 +1,6 @@
 #pragma once
-#include "SFML/Graphics.hpp"
-#include "SFML/Audio.hpp"
+#include <SFML/Graphics.hpp>
+#include <SFML/Audio.hpp>
 #include <string>
 #include <cmath>
 #include <thread>
@@ -54,9 +54,12 @@ public:
 	void canReload(Player *);
 	void setUI(std::string);
 	//Audio
-	void playAudio(sf::SoundBuffer *);
+	void playAudioFire();
+	void playAudioReload();
 	sf::SoundBuffer FXgunshot;
 	sf::SoundBuffer FXreload;
+	sf::Sound * fireSound = nullptr;
+	sf::Sound * reloadSound = nullptr;
 	sf::Sprite weaponImage;
 	sf::Texture weaponTexture;
 	~Weapon();

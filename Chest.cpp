@@ -34,6 +34,10 @@ Chest::Chest() {
 
 }
 
+Chest::~Chest() {
+
+}
+
 void Chest::Open(Player *player) {
 	if(!opened) {
 
